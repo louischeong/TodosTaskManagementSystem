@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "356756171860",
+    "project_id": "todos-task-management-system",
+    "storage_bucket": "todos-task-management-system.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356756171860:android:50d8133beb1b7ce083d1c1",
+        "android_client_info": {
+          "package_name": "com.example.todostaskmanagementsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356756171860-tsb157bnglq5qo0ipmf4qk4fcninijeo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_pxz79Vja87AETZdKBaSIqAtXJRudZ8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "356756171860-tsb157bnglq5qo0ipmf4qk4fcninijeo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
