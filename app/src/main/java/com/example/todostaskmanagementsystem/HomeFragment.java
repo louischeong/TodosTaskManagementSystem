@@ -35,7 +35,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @org.jetbrains.annotations.NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button btn = view.findViewById(R.id.button_next);
+        Button btn = view.findViewById(R.id.btn_mytodolist);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
