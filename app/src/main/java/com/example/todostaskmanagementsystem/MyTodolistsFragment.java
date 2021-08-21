@@ -50,7 +50,11 @@ public class MyTodolistsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        todolists.clear();
         Todolist todo = new Todolist("ttile","descrip",0);
+        todolists.add(todo);
+        todolists.add(todo);
+        todolists.add(todo);
         todolists.add(todo);
         todolists.add(todo);
         todolists.add(todo);

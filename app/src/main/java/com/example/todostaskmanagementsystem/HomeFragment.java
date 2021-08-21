@@ -12,19 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener{
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,13 +29,10 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull @org.jetbrains.annotations.NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Button btn = view.findViewById(R.id.btn_mytodolist);
+        Button btn2 = view.findViewById(R.id.btn_myprof);
 
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavHostFragment.findNavController(getParentFragment()).navigate(HomeFragmentDirections.actionHomeFragmentToMyTodolistsFragment());
-            }
-        });
+        btn.setOnClickListener(this);
+        btn2.setOnClickListener(this);
     }
 
     @Override
@@ -50,5 +40,19 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_mytodolist:
+                NavHostFragment.findNavController(getParentFragment()).navigate(HomeFragmentDirections.actionHomeFragmentToMyTodolistsFragment());
+                break;
+            case R.id.btn_myprof:
+                NavHostFragment.findNavController(getParentFragment()).navigate(HomeFragmentDirections.actionHomeFragmentToCreateTodoList()); //To change
+                break;
+            default:
+                break;
+        }
     }
 }
