@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todostaskmanagementsystem.R;
+import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.Todolist;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,10 +20,9 @@ import java.util.ArrayList;
 public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.MyViewHolder> {
 
     private ArrayList<Todolist> todolists;
-    private Context cont;
+    private OnItemClicked listener;
 
-    public TodolistAdapter(Context cont, ArrayList<Todolist> todolists){
-        this.cont = cont;
+    public TodolistAdapter(ArrayList<Todolist> todolists){
         this.todolists = todolists;
     }
 
@@ -40,11 +40,23 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.MyView
         holder.title.setText(todolists.get(position).getName());
         holder.desc.setText(todolists.get(position).getDesc());
         holder.incomplete.setText(Integer.toString(todolists.get(position).getIncomplete()));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(listener != null){
+                    listener.onItemClicked(position);
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return todolists.size();
+    }
+
+    public void setOnItemClickedListener(OnItemClicked listener){
+        this.listener = listener;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{

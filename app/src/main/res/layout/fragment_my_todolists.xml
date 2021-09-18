@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyTodolistsFragment">
+    tools:context=".MyTodolistsFragment"
+    android:id="@+id/rootLayout"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/textView"
@@ -16,20 +18,38 @@
         android:textColor="@color/white"
         android:textSize="25dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/searchView"
+        app:layout_constraintBottom_toTopOf="@+id/search_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <SearchView
-        android:id="@+id/searchView"
-        android:layout_width="350dp"
+    <EditText
+        android:id="@+id/search_bar"
+        android:layout_width="300dp"
         android:layout_height="34dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/white_bg"
+        android:hint="Search..."
+        android:paddingLeft="15dp"
         android:searchIcon="@drawable/searchicon"
+        android:textColor="@color/primary_blue"
+        android:textColorHint="@color/gray_text"
+        app:layout_constraintBottom_toTopOf="@+id/whiteRectangle"
+        app:layout_constraintEnd_toStartOf="@+id/btn_search"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="13dp"
+        android:background="@drawable/searchicon_round"
         app:layout_constraintBottom_toTopOf="@+id/whiteRectangle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/search_bar"></Button>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/whiteRectangle"
@@ -40,7 +60,7 @@
         app:layout_constraintStart_toStartOf="parent" >
 
         <Button
-            android:id="@+id/imageView4"
+            android:id="@+id/button_create_new"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_marginTop="18dp"
@@ -62,7 +82,7 @@
             android:layout_marginTop="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView4">
+            app:layout_constraintTop_toBottomOf="@+id/button_create_new">
 
         </androidx.recyclerview.widget.RecyclerView>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,12 +19,12 @@ import java.util.ArrayList;
 
 public class AddMemberAdapter extends RecyclerView.Adapter<AddMemberAdapter.MyViewHolder> {
 
-    private Context context;
+
     private ArrayList<String> emails;
     OnItemClicked listener;
 
-    public AddMemberAdapter(Context context, ArrayList<String> emails) {
-        this.context = context;
+    public AddMemberAdapter(ArrayList<String> emails) {
+
         this.emails = emails;
 
     }

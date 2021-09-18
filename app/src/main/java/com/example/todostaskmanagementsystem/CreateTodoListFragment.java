@@ -61,7 +61,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         btn2.setOnClickListener(this);
 
 
-        addMemberAdapter = new AddMemberAdapter(getActivity(), emails);
+        addMemberAdapter = new AddMemberAdapter(emails);
         addMemberAdapter.setOnItemClickedListener(new OnItemClicked() {
             @Override
             public void onItemClicked(int position) {

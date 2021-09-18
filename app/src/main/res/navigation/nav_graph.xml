@@ -13,20 +13,28 @@
         <action
             android:id="@+id/action_homeFragment_to_myTodolistsFragment"
             app:destination="@id/myTodolistsFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_createTodoList"
-            app:destination="@id/createTodoList" />
     </fragment>
 
     <fragment
         android:id="@+id/myTodolistsFragment"
         android:name="com.example.todostaskmanagementsystem.MyTodolistsFragment"
         android:label="fragment_my_todolists"
-        tools:layout="@layout/fragment_my_todolists" />
+        tools:layout="@layout/fragment_my_todolists" >
+        <action
+            android:id="@+id/action_myTodolistsFragment_to_todoListDetailsFragment"
+            app:destination="@id/todoListDetailsFragment" />
+        <action
+            android:id="@+id/action_myTodolistsFragment_to_createTodoList"
+            app:destination="@id/createTodoList" />
+    </fragment>
     <fragment
         android:id="@+id/createTodoList"
         android:name="com.example.todostaskmanagementsystem.CreateTodoListFragment"
         android:label="fragment_create_todo_list"
         tools:layout="@layout/fragment_create_todo_list" />
+    <fragment
+        android:id="@+id/todoListDetailsFragment"
+        android:name="com.example.todostaskmanagementsystem.TodoListDetailsFragment"
+        android:label="TodoListDetailsFragment" />
 
 </navigation>

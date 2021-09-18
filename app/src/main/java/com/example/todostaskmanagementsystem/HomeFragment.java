@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 NavHostFragment.findNavController(getParentFragment()).navigate(HomeFragmentDirections.actionHomeFragmentToMyTodolistsFragment());
                 break;
             case R.id.btn_myprof:
-                NavHostFragment.findNavController(getParentFragment()).navigate(HomeFragmentDirections.actionHomeFragmentToCreateTodoList()); //To change
+                //NavHostFragment.findNavController(getParentFragment()).navigate(HomeFragmentDirections.actionHomeFragmentToTodoListDetailsFragment()); //To change
                 break;
             default:
                 break;
