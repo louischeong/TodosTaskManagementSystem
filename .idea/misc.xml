@@ -8,14 +8,14 @@
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_create_account.xml" value="0.264" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_create_role.xml" value="0.25416666666666665" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_create_todo_list.xml" value="0.264" />
-        <entry key="..\:/Todos/app/src/main/res/layout/fragment_edit_profile.xml" value="0.25416666666666665" />
+        <entry key="..\:/Todos/app/src/main/res/layout/fragment_edit_profile.xml" value="0.4" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_login_form.xml" value="0.264" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_manage_member.xml" value="0.25416666666666665" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_my_todolists.xml" value="0.25416666666666665" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_password_recovery.xml" value="0.264" />
-        <entry key="..\:/Todos/app/src/main/res/layout/fragment_profile.xml" value="0.25416666666666665" />
-        <entry key="..\:/Todos/app/src/main/res/layout/fragment_reset_password.xml" value="0.25416666666666665" />
+        <entry key="..\:/Todos/app/src/main/res/layout/fragment_profile.xml" value="0.4" />
+        <entry key="..\:/Todos/app/src/main/res/layout/fragment_reset_password.xml" value="0.264" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_start_page.xml" value="0.264" />
         <entry key="..\:/Todos/app/src/main/res/layout/fragment_todo_list_details.xml" value="0.25416666666666665" />
         <entry key="..\:/Todos/app/src/main/res/layout/layout_email_item.xml" value="0.25416666666666665" />
