@@ -11,25 +11,40 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.adapter.AddMemberAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
+import com.example.todostaskmanagementsystem.model.Member;
+import com.example.todostaskmanagementsystem.model.Section;
+import com.example.todostaskmanagementsystem.model.Task;
+import com.example.todostaskmanagementsystem.model.Todolist;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firestore.v1.WriteResult;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateTodoListFragment extends Fragment implements View.OnClickListener {
 
-    private String m_Text = "";
     private ArrayList<String> emails = new ArrayList<>();
     private AddMemberAdapter addMemberAdapter;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public CreateTodoListFragment() {
         // Required empty public constructor
@@ -104,7 +119,28 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 builder.show();
                 break;
             case R.id.btn_createNewTodolist:
-                //To change
+                EditText editTextTitle = getView().findViewById(R.id.todolist_title);
+                String todolistTitle = editTextTitle.getText().toString();
+                EditText editTextDesc = getView().findViewById(R.id.todolist_desc);
+                String todolistDesc = editTextDesc.getText().toString();
+
+                Todolist todolist = new Todolist(todolistTitle, todolistDesc);
+
+                DocumentReference docRef = db.collection("Data").document("todolistID");
+                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        int currTodolistID  = Integer.parseInt(documentSnapshot.get("currTodolistID").toString());
+                        currTodolistID += 1;
+                        db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
+                        setMemberCollection(currTodolistID);
+                        //setSectionCollection(currTodolistID);
+                        db.collection("Data").document("todolistID").update("currTodolistID",currTodolistID);
+                        Toast.makeText(getActivity(),"Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
+                        requireActivity().onBackPressed();
+                    }
+                });
+
                 break;
             default:
                 break;
@@ -121,5 +157,23 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         addMemberAdapter.notifyDataSetChanged();
     }
 
+    private void setMemberCollection(int todolistID) {
+        CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Members"));
+        for (int i = 0; i < emails.size(); i++) {
+            Member member = new Member();
+            colRef.document(emails.get(i)).set(member);
+        }
 
+    }
+
+    private void setSectionCollection(int todolistID) {
+        CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Sections"));
+        Section section = new Section();
+        Task task = new Task();
+        colRef.document("1").set(section);
+        colRef.document("1").collection("Tasks").document("1").set(task);
+        colRef.document("1").collection("Tasks").document("2").set(task);
+        colRef.document("2").set(section);
+        colRef.document("2").collection("Tasks").document("1").set(task);
+    }
 }

@@ -4,12 +4,22 @@ public class Todolist {
     private String name, desc;
     private int incomplete;
 
+    public Todolist(String name, String desc) {
+        this.name = name;
+        this.desc = desc;
+        this.incomplete = 0;
+    }
+
     public Todolist(String name, String desc, int incomplete) {
         this.name = name;
         this.desc = desc;
         this.incomplete = incomplete;
     }
-
+    public Todolist() {
+        this.name = null;
+        this.desc = null;
+        this.incomplete = 0;
+    }
     public String getName() {
         return name;
     }

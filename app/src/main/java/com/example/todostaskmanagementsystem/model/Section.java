@@ -3,12 +3,27 @@ package com.example.todostaskmanagementsystem.model;
 import java.util.ArrayList;
 
 public class Section {
+    private int id;
     private String name;
-    private ArrayList tasks;
+    private ArrayList<Task> tasks;
 
-    public Section(String name, ArrayList tasks) {
+    public Section(int id, String name, ArrayList<Task> tasks) {
+        this.id = id;
         this.name = name;
         this.tasks = tasks;
+    }
+    public Section() {
+        this.id = 1;
+        this.name = "New Section";
+        this.tasks = null;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -19,11 +34,11 @@ public class Section {
         this.name = name;
     }
 
-    public ArrayList getTasks() {
+    public ArrayList<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(ArrayList tasks) {
+    public void setTasks(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
 }

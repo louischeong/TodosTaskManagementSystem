@@ -26,7 +26,6 @@ public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.MyViewHo
 
     private ArrayList<Section> sections;
     private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
-    private OnItemClicked listener;
     private int mExpandedPosition = -1;
 
     public SectionAdapter(ArrayList<Section> sections) {
@@ -50,7 +49,9 @@ public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.MyViewHo
         TaskAdapter taskAdapter = new TaskAdapter(sections.get(position).getTasks());
         holder.recyclerviewTasks.setAdapter(taskAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(holder.recyclerviewTasks.getContext());
-        layoutManager.setInitialPrefetchItemCount(section.getTasks().size());
+        if (section.getTasks()!=null){
+            layoutManager.setInitialPrefetchItemCount(section.getTasks().size());
+        }
         holder.recyclerviewTasks.setLayoutManager(layoutManager);
         holder.recyclerviewTasks.setRecycledViewPool(viewPool);
 

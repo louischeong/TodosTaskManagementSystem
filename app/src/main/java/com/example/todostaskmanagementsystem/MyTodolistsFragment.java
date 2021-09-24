@@ -18,20 +18,30 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.adapter.TodolistAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.Todolist;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MyTodolistsFragment extends Fragment implements View.OnClickListener {
 
-    ArrayList<Todolist> todolists = new ArrayList<Todolist>();
+
     private EditText searchBar;
     private View rootView;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public MyTodolistsFragment() {
         // Required empty public constructor
@@ -46,14 +56,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        return inflater.inflate(R.layout.fragment_my_todolists, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_my_todolists, container, false);
         rootView = view.findViewById(R.id.rootLayout);
         rootView.requestFocus();
         //setup Button
@@ -63,30 +66,41 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
         //Setup search view
         searchBar = view.findViewById(R.id.search_bar);
 
-        todolists.clear();
-        Todolist todo = new Todolist("ttile", "descrip", 0);
-        todolists.add(todo);
-        todolists.add(todo);
-        todolists.add(todo);
-        todolists.add(todo);
-        todolists.add(todo);
-        todolists.add(todo);
-
-        RecyclerView recyclerView = view.findViewById(R.id.recycle_todolists);
-
-        TodolistAdapter adapter = new TodolistAdapter(todolists);
-        adapter.setOnItemClickedListener(new OnItemClicked() {
+        db.collection("Todolists").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onItemClicked(int position) {
-                String todolistID = "1111"; //TO CHANGE
-                Bundle bundle = new Bundle();
-                bundle.putString("todolistID", todolistID);
-                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_myTodolistsFragment_to_todoListDetailsFragment, bundle);
-                closeKeyboard();
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                ArrayList<Todolist> todolists = new ArrayList();
+                ArrayList<String> todolistIDs = new ArrayList();
+                for(QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                    Todolist todolist = documentSnapshot.toObject(Todolist.class);
+                    todolists.add(todolist);
+                    todolistIDs.add(documentSnapshot.getId());
+                }
+                RecyclerView recyclerView = view.findViewById(R.id.recycle_todolists);
+
+                TodolistAdapter adapter = new TodolistAdapter(todolists);
+                adapter.setOnItemClickedListener(new OnItemClicked() {
+                    @Override
+                    public void onItemClicked(int position) {
+                        String todolistID = todolistIDs.get(position);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("todolistID", todolistID);
+                        NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_myTodolistsFragment_to_todoListDetailsFragment, bundle);
+                        closeKeyboard();
+                    }
+                });
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
         });
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 
     @Override
