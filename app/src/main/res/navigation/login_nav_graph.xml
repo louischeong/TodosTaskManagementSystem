@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_nav_graph"
+    app:startDestination="@id/startPageFragment">
+    <fragment
+        android:id="@+id/startPageFragment"
+        android:name="com.example.todostaskmanagementsystem.StartPageFragment"
+        android:label="fragment_start_page"
+        tools:layout="@layout/fragment_start_page" >
+        <action
+            android:id="@+id/action_startPageFragment_to_loginFormFragment"
+            app:destination="@id/loginFormFragment" />
+        <action
+            android:id="@+id/action_startPageFragment_to_createAccount"
+            app:destination="@id/createAccount" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFormFragment"
+        android:name="com.example.todostaskmanagementsystem.LoginFormFragment"
+        android:label="fragment_login_form"
+        tools:layout="@layout/fragment_login_form" >
+        <action
+            android:id="@+id/action_loginFormFragment_to_resetPasswordFragment"
+            app:destination="@id/resetPasswordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createAccount"
+        android:name="com.example.todostaskmanagementsystem.CreateAccount"
+        android:label="fragment_create_account"
+        tools:layout="@layout/fragment_create_account" />
+    <fragment
+        android:id="@+id/resetPasswordFragment"
+        android:name="com.example.todostaskmanagementsystem.ResetPasswordFragment"
+        android:label="fragment_reset_password"
+        tools:layout="@layout/fragment_reset_password" />
+</navigation>
