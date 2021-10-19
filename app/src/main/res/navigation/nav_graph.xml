@@ -35,6 +35,23 @@
     <fragment
         android:id="@+id/todoListDetailsFragment"
         android:name="com.example.todostaskmanagementsystem.TodoListDetailsFragment"
-        android:label="TodoListDetailsFragment" />
+        android:label="TodoListDetailsFragment" >
+        <action
+            android:id="@+id/action_todoListDetailsFragment_to_sectionDetailsFragment"
+            app:destination="@id/sectionDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewTaskFragment"
+        android:name="com.example.todostaskmanagementsystem.AddNewTaskFragment"
+        android:label="fragment_add_new_task"
+        tools:layout="@layout/fragment_add_new_task" />
+    <fragment
+        android:id="@+id/sectionDetailsFragment"
+        android:name="com.example.todostaskmanagementsystem.SectionDetailsFragment"
+        android:label="SectionDetailsFragment" >
+        <action
+            android:id="@+id/action_sectionDetailsFragment_to_addNewTaskFragment"
+            app:destination="@id/addNewTaskFragment" />
+    </fragment>
 
 </navigation>

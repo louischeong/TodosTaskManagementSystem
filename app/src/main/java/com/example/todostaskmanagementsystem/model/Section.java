@@ -3,26 +3,33 @@ package com.example.todostaskmanagementsystem.model;
 import java.util.ArrayList;
 
 public class Section {
-    private int id;
+    private String id;
     private String name;
-    private ArrayList<Task> tasks;
+    private ArrayList<TodoTask> todoTasks;
 
-    public Section(int id, String name, ArrayList<Task> tasks) {
+    public Section(String id, String name, ArrayList<TodoTask> todoTasks) {
         this.id = id;
         this.name = name;
-        this.tasks = tasks;
-    }
-    public Section() {
-        this.id = 1;
-        this.name = "New Section";
-        this.tasks = null;
+        this.todoTasks = todoTasks;
     }
 
-    public int getId() {
+    public Section(String id, String name) {
+        this.id = id;
+        this.name = name;
+        this.todoTasks = null;
+    }
+
+    public Section() {
+        this.id = "S1";
+        this.name = "New Section";
+        this.todoTasks = null;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -34,11 +41,20 @@ public class Section {
         this.name = name;
     }
 
-    public ArrayList<Task> getTasks() {
-        return tasks;
+    public ArrayList<TodoTask> getTasks() {
+        return todoTasks;
     }
 
-    public void setTasks(ArrayList<Task> tasks) {
-        this.tasks = tasks;
+    public void setTasks(ArrayList<TodoTask> TodoTasks) {
+        this.todoTasks = TodoTasks;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+
+
 }

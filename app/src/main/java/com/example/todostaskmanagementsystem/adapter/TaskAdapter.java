@@ -1,6 +1,5 @@
 package com.example.todostaskmanagementsystem.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todostaskmanagementsystem.R;
-import com.example.todostaskmanagementsystem.model.Task;
+import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
+import com.example.todostaskmanagementsystem.model.TodoTask;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -20,11 +20,11 @@ import java.util.ArrayList;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> {
 
-    private ArrayList<Task> tasks;
+    private ArrayList<TodoTask> todoTasks;
+    private OnItemClicked listener;
 
-
-    public TaskAdapter(ArrayList<Task> tasks) {
-        this.tasks = tasks;
+    public TaskAdapter(ArrayList<TodoTask> todoTasks) {
+        this.todoTasks = todoTasks;
     }
 
     @NonNull
@@ -38,16 +38,27 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull TaskAdapter.MyViewHolder holder, int position) {
-        holder.name.setText(tasks.get(position).getName());
-        //holder.due.setText(tasks.get(position).getDueDate().toString());
-        holder.complete.setChecked(tasks.get(position).getComplete());
+        holder.name.setText(todoTasks.get(position).getName());
+        holder.due.setText(todoTasks.get(position).getDueDate());
+        holder.complete.setChecked(todoTasks.get(position).getComplete());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(listener != null){
+                    listener.onItemClicked(position);
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return todoTasks.size();
     }
 
+    public void setOnItemClickedListener(OnItemClicked listener){
+        this.listener = listener;
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView name, due;

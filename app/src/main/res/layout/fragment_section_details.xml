@@ -7,34 +7,34 @@
     tools:context=".CreateTodoListFragment">
 
     <TextView
-        android:id="@+id/todolist_title"
+        android:id="@+id/section_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="10dp"
-        android:text="Todolist Title"
+        android:text="Section Title"
         android:textColor="@color/white"
         android:textSize="25dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/todolist_desc"
+        app:layout_constraintBottom_toTopOf="@+id/section_desc"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/todolist_desc"
+        android:id="@+id/section_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginBottom="6dp"
-        android:text="A Todolist description"
+        android:text="A Section description"
         android:textColor="@color/gray_text"
         android:textSize="13dp"
-        app:layout_constraintBottom_toTopOf="@+id/todolist_incomplete"
+        app:layout_constraintBottom_toTopOf="@+id/section_incomplete"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/todolist_incomplete"
+        android:id="@+id/section_incomplete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -55,7 +55,7 @@
         android:textColor="@color/gray_text"
         android:textSize="13dp"
         app:layout_constraintBottom_toTopOf="@+id/swiperefresh"
-        app:layout_constraintStart_toEndOf="@+id/todolist_incomplete" />
+        app:layout_constraintStart_toEndOf="@+id/section_incomplete" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
@@ -63,28 +63,65 @@
         android:layout_width="match_parent"
         android:layout_height="550dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/whiteRectangle"
             android:layout_width="match_parent"
             android:layout_height="550dp"
-            android:background="@drawable/white_bg">
+            android:background="@drawable/white_bg"
+            >
+
+            <TextView
+                android:id="@+id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Task Name"
+                android:textColor="@color/dark_gray_text"
+                android:textSize="13dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text"></TextView>
+
+            <TextView
+                android:id="@+id/text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="55dp"
+                android:layout_marginRight="55dp"
+                android:text="Due"
+                android:textColor="@color/dark_gray_text"
+                android:textSize="13dp"
+                app:layout_constraintEnd_toStartOf="@+id/text3"
+                app:layout_constraintTop_toBottomOf="@+id/text"></TextView>
+
+            <TextView
+                android:id="@+id/text3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginRight="15dp"
+                android:text="Complete"
+                android:textColor="@color/dark_gray_text"
+                android:textSize="13dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text"></TextView>
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycle_sections"
+                android:id="@+id/recycle_todoTasks"
                 android:layout_width="370dp"
-                android:layout_height="500dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_height="400dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
                 android:elevation="3dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text"></androidx.recyclerview.widget.RecyclerView>
+                app:layout_constraintTop_toBottomOf="@+id/text1"></androidx.recyclerview.widget.RecyclerView>
 
 
             <TextView
@@ -94,7 +131,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="18dp"
-                android:text="Sections"
+                android:text="Tasks"
                 android:textColor="@color/primary_blue"
                 android:textSize="18dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -119,18 +156,33 @@
                 android:layout_height="wrap_content"
                 android:elevation="3dp"
                 android:gravity="center_horizontal"
-                android:text="Your todolist is currently empty, \ntap 'ADD' button to add a new section."
+                android:text="Your Section is currently empty, \ntap 'ADD' button to add a new Task."
                 android:textAlignment="center"
                 android:textColor="@color/hint_color"
                 android:textSize="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/recycle_sections"
-                app:layout_constraintEnd_toEndOf="@+id/recycle_sections"
+                app:layout_constraintBottom_toBottomOf="@+id/recycle_todoTasks"
+                app:layout_constraintEnd_toEndOf="@+id/recycle_todoTasks"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/recycle_sections"
+                app:layout_constraintTop_toTopOf="@+id/recycle_todoTasks"
                 app:layout_constraintVertical_bias="0.35"></TextView>
+
+            <Button
+                android:id="@+id/btn_addNewTask"
+                android:layout_width="350dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/white_box"
+                android:text="Add New Task ＋"
+                android:textAllCaps="false"
+                android:textColor="@color/primary_blue"
+                android:textSize="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+            </Button>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

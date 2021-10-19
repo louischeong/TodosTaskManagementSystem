@@ -1,17 +1,16 @@
 package com.example.todostaskmanagementsystem.model;
 
-import com.google.firebase.Timestamp;
 
-public class Task {
-    private int id;
+public class TodoTask {
+    private String id;
     private String name;
     private String desc;
-    private Timestamp dueDate;
+    private String dueDate;
     private Boolean complete;
     private String reminder;
 
-    public Task() {
-        this.id = 1;
+    public TodoTask() {
+        this.id = "1";
         this.name = "";
         this.desc = "";
         this.dueDate = null;
@@ -19,20 +18,20 @@ public class Task {
         this.reminder = "";
     }
 
-    public Task(int id, String name, String desc, Timestamp dueDate, Boolean complete, String reminder) {
+    public TodoTask(String id, String name, String desc, String dueDate, String reminder) {
         this.id = id;
         this.name = name;
         this.desc = desc;
         this.dueDate = dueDate;
-        this.complete = complete;
+        this.complete = false;
         this.reminder = reminder;
     }
 
-    public int getID() {
+    public String getId() {
         return id;
     }
 
-    public void setID(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -52,11 +51,11 @@ public class Task {
         this.desc = desc;
     }
 
-    public Timestamp getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Timestamp dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -74,5 +73,13 @@ public class Task {
 
     public void setReminder(String reminder) {
         this.reminder = reminder;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

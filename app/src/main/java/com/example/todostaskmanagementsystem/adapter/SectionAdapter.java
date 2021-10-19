@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,8 +26,7 @@ import java.util.ArrayList;
 public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.MyViewHolder> {
 
     private ArrayList<Section> sections;
-    private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
-    private int mExpandedPosition = -1;
+    private OnItemClicked listener;
 
     public SectionAdapter(ArrayList<Section> sections) {
         this.sections = sections;
@@ -46,34 +46,18 @@ public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.MyViewHo
         Section section = sections.get(position);
         holder.name.setText(section.getName());
 
-        TaskAdapter taskAdapter = new TaskAdapter(sections.get(position).getTasks());
-        holder.recyclerviewTasks.setAdapter(taskAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(holder.recyclerviewTasks.getContext());
-        if (section.getTasks()!=null){
-            layoutManager.setInitialPrefetchItemCount(section.getTasks().size());
-        }
-        holder.recyclerviewTasks.setLayoutManager(layoutManager);
-        holder.recyclerviewTasks.setRecycledViewPool(viewPool);
-
-        final boolean isExpanded = position == mExpandedPosition;
-        if (isExpanded) {
-            holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.lightblue_bg));
-            holder.name.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.primary_blue));
-            holder.expanded.setVisibility(View.VISIBLE);
-            holder.itemView.setActivated(true);
-        } else {
-            holder.itemView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.blue_bg));
-            holder.name.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
-            holder.expanded.setVisibility(View.GONE);
-        }
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mExpandedPosition = isExpanded ? -1 : position;
-                notifyItemChanged(position);
+                if(listener != null){
+                    listener.onItemClicked(position);
+                }
             }
         });
+    }
+
+    public void setOnItemClickedListener(OnItemClicked listener){
+        this.listener = listener;
     }
 
     @Override
@@ -83,14 +67,10 @@ public class SectionAdapter extends RecyclerView.Adapter<SectionAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
-        private RecyclerView recyclerviewTasks;
-        private ConstraintLayout expanded;
 
         public MyViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.section_title);
-            recyclerviewTasks = itemView.findViewById(R.id.recycle_tasks);
-            expanded = itemView.findViewById(R.id.expanded_section);
         }
 
     }

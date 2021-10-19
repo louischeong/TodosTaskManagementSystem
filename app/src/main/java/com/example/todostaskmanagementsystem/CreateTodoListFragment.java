@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,20 +22,16 @@ import android.widget.Toast;
 import com.example.todostaskmanagementsystem.adapter.AddMemberAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.Member;
-import com.example.todostaskmanagementsystem.model.Section;
-import com.example.todostaskmanagementsystem.model.Task;
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firestore.v1.WriteResult;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -134,7 +129,10 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                         currTodolistID += 1;
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
                         setMemberCollection(currTodolistID);
-                        //setSectionCollection(currTodolistID);
+                        Map<String, Object> docData = new HashMap<>();
+                        docData.put("currSectionID",0);
+                        docData.put("currTaskID",0);
+                        db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("Data").document("Data").set(docData);
                         db.collection("Data").document("todolistID").update("currTodolistID",currTodolistID);
                         Toast.makeText(getActivity(),"Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
                         requireActivity().onBackPressed();
@@ -164,16 +162,5 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
             colRef.document(emails.get(i)).set(member);
         }
 
-    }
-
-    private void setSectionCollection(int todolistID) {
-        CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Sections"));
-        Section section = new Section();
-        Task task = new Task();
-        colRef.document("1").set(section);
-        colRef.document("1").collection("Tasks").document("1").set(task);
-        colRef.document("1").collection("Tasks").document("2").set(task);
-        colRef.document("2").set(section);
-        colRef.document("2").collection("Tasks").document("1").set(task);
     }
 }
