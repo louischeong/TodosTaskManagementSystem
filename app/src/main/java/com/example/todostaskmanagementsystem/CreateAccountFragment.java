@@ -38,15 +38,15 @@ public class CreateAccountFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText newName = view.findViewById(R.id.txt_name);
+                EditText newName = getView().findViewById(R.id.txt_name);
                 String name = newName.getText().toString();
-                EditText newEmail = view.findViewById(R.id.txt_email);
+                EditText newEmail = getView().findViewById(R.id.txt_email);
                 String email = newEmail.getText().toString();
-                EditText newContact = view.findViewById(R.id.txt_phone);
+                EditText newContact = getView().findViewById(R.id.txt_phone);
                 String contact = newContact.getText().toString();
-                EditText newPass = view.findViewById(R.id.txt_pass);
+                EditText newPass = getView().findViewById(R.id.txt_pass);
                 String pass = newPass.getText().toString();
-                EditText newConPass = view.findViewById(R.id.txt_confirmPass);
+                EditText newConPass = getView().findViewById(R.id.txt_confirmPass);
                 String conPass = newConPass.getText().toString();
 
                 if(pass.equals(conPass)){
@@ -54,7 +54,7 @@ public class CreateAccountFragment extends Fragment {
                     User user = new User(pass, name, contact, email);
                     docRef.set(user);
                     Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
-                    getActivity().onBackPressed();
+                    getParentFragmentManager().popBackStack();
                 }else{
                     Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
                 }

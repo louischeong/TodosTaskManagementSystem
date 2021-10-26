@@ -52,6 +52,14 @@
         <action
             android:id="@+id/action_sectionDetailsFragment_to_addNewTaskFragment"
             app:destination="@id/addNewTaskFragment" />
+        <action
+            android:id="@+id/action_sectionDetailsFragment_to_taskDetailsFragment"
+            app:destination="@id/taskDetailsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/taskDetailsFragment"
+        android:name="com.example.todostaskmanagementsystem.TaskDetailsFragment"
+        android:label="fragment_task_details"
+        tools:layout="@layout/fragment_task_details" />
 
 </navigation>

@@ -30,6 +30,7 @@ public class SectionDetailsFragment extends Fragment {
     private ArrayList<TodoTask> todoTasks = new ArrayList();
     private String todolistID;
     private String sectionID;
+    private String sectionName;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TaskAdapter taskAdapter;
 
@@ -45,6 +46,7 @@ public class SectionDetailsFragment extends Fragment {
         if (bundle != null) {
             todolistID = bundle.getString("todolistID");
             sectionID = bundle.getString("sectionID");
+            sectionName = bundle.getString("sectionName");
         }
     }
 
@@ -88,7 +90,8 @@ public class SectionDetailsFragment extends Fragment {
                         bundle.putString("todolistID", todolistID);
                         bundle.putString("sectionID", sectionID);
                         bundle.putString("todoTasksID", todoTasksID);
-                        //NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_todoListDetailsFragment_to_addNewTaskFragment, bundle);
+                        bundle.putString("sectionName",sectionName);
+                        NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_sectionDetailsFragment_to_taskDetailsFragment, bundle);
                     }
                 });
 

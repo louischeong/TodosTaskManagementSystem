@@ -209,6 +209,7 @@ public class TodoListDetailsFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putString("todolistID", todolistID);
                         bundle.putString("sectionID", sectionID);
+                        bundle.putString("sectionName", sections.get(position).getName());
                         NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_todoListDetailsFragment_to_sectionDetailsFragment, bundle);
                     }
                 });

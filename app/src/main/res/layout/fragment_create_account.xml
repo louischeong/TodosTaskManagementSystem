@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".CreateAccountFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <Button
         android:id="@+id/btn_register"
         android:layout_width="340dp"

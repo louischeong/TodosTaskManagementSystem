@@ -13,7 +13,7 @@ public class TodoTask {
         this.id = "1";
         this.name = "";
         this.desc = "";
-        this.dueDate = null;
+        this.dueDate = "";
         this.complete = false;
         this.reminder = "";
     }
@@ -24,6 +24,15 @@ public class TodoTask {
         this.desc = desc;
         this.dueDate = dueDate;
         this.complete = false;
+        this.reminder = reminder;
+    }
+
+    public TodoTask(String id, String name, String desc, String dueDate, boolean complete ,String reminder) {
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
+        this.dueDate = dueDate;
+        this.complete = complete;
         this.reminder = reminder;
     }
 
