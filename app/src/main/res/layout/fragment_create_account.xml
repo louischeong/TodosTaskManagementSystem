@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateAccount">
+    tools:context=".CreateAccountFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <Button
         android:id="@+id/btn_register"
         android:layout_width="340dp"
         android:layout_height="36dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="120dp"
         android:background="@drawable/addmember_email"
         android:text="Register"
         android:textAllCaps="false"
@@ -93,7 +93,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="30dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="30dp"
         android:layout_marginRight="30dp"
         android:background="@drawable/textbox"
@@ -105,7 +105,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_DOB"
+        app:layout_constraintTop_toBottomOf="@+id/txt_email"
         tools:ignore="TouchTargetSizeCheck"></EditText>
 
     <EditText
@@ -150,28 +150,4 @@
         app:layout_constraintTop_toBottomOf="@id/txt_phone"
         tools:ignore="TouchTargetSizeCheck"></EditText>
 
-    <DatePicker
-        android:id="@+id/btn_DOB"
-        android:layout_width="300dp"
-        android:layout_height="85dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="2dp"
-        android:calendarViewShown="false"
-        android:datePickerMode="spinner"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
-
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="10dp"
-        android:text="Date of Birth"
-        android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_email" />
 </androidx.constraintlayout.widget.ConstraintLayout>
