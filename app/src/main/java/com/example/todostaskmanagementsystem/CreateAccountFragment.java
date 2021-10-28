@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,26 @@ public class CreateAccountFragment extends Fragment {
                 EditText newConPass = getView().findViewById(R.id.txt_confirmPass);
                 String conPass = newConPass.getText().toString();
 
+                if(TextUtils.isEmpty(name)){
+                    newName.setError("Name is required!");
+                    return;
+                }
+                if(TextUtils.isEmpty(email)){
+                    newEmail.setError("Email is required!");
+                    return;
+                }
+                if(TextUtils.isEmpty(contact)){
+                    newContact.setError("Contact number is required!");
+                    return;
+                }
+                if(TextUtils.isEmpty(pass)){
+                    newPass.setError("Password is required!");
+                    return;
+                }
+                if(TextUtils.isEmpty(conPass)){
+                    newConPass.setError("Confirm Password is required!");
+                    return;
+                }
                 if(pass.equals(conPass)){
                     DocumentReference docRef = db.collection("Users").document(email);
                     User user = new User(pass, name, contact, email);

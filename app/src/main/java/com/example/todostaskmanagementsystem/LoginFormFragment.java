@@ -1,15 +1,19 @@
 package com.example.todostaskmanagementsystem;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.example.todostaskmanagementsystem.model.User;
@@ -45,22 +49,40 @@ public class LoginFormFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                EditText editText = view.findViewById(R.id.txt_loginEmail);
-                EditText editText2 = view.findViewById(R.id.txt_loginPassword);
+                EditText editText = getView().findViewById(R.id.txt_loginEmail);
+                String loginEmail = editText.getText().toString();
+                EditText editText2 = getView().findViewById(R.id.txt_loginPassword);
+                String loginPass = editText2.getText().toString();
+
+                if(TextUtils.isEmpty(loginEmail)){
+                    editText.setError("Email is required!");
+                    return;
+                }
+
+                if(TextUtils.isEmpty(loginPass)){
+                    editText2.setError("Password is required!");
+                    return;
+                }
 
                 db.collection("Users").document(editText.getText().toString()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
-                        user.getPassword(); // user password from database
-                        // proceed to homepage if password correct
+                        String pass = user.getPassword(); // user password from database
+                        if (pass.equals(loginPass)){
+                            Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                            startActivity(myIntent);
+                            getActivity().finish();
+                        }
+                         //proceed to homepage if password correct
                         // else prompt login fail
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull @NotNull Exception e) {
-                        //prompt login fail
+                        Toast.makeText(getActivity(), "Failed to log in due to incorrect password.", Toast.LENGTH_SHORT).show();//prompt login fail
+
                     }
                 });
             }
