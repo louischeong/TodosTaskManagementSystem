@@ -39,7 +39,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.MyView
     public void onBindViewHolder(@NonNull @NotNull TodolistAdapter.MyViewHolder holder, int position) {
         holder.title.setText(todolists.get(position).getName());
         holder.desc.setText(todolists.get(position).getDesc());
-        holder.incomplete.setText(Integer.toString(todolists.get(position).getIncomplete()));
+        holder.owner.setText(todolists.get(position).getOwner());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,13 +61,13 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView title, desc, incomplete;
+        TextView title, desc, owner;
 
         public MyViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.todolist_title);
             desc = itemView.findViewById(R.id.todolist_desc);
-            incomplete = itemView.findViewById(R.id.todolist_incomplete);
+            owner = itemView.findViewById(R.id.todolist_owner);
         }
     }
 }

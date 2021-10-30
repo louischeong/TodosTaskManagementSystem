@@ -8,6 +8,8 @@
     android:id="@+id/rootLayout"
     android:focusableInTouchMode="true">
 
+
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
@@ -30,12 +32,14 @@
         android:layout_marginLeft="12dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/white_bg"
+        android:maxLines="1"
+        android:inputType="text"
         android:hint="Search..."
         android:paddingLeft="15dp"
         android:searchIcon="@drawable/searchicon"
         android:textColor="@color/primary_blue"
         android:textColorHint="@color/gray_text"
-        app:layout_constraintBottom_toTopOf="@+id/whiteRectangle"
+        app:layout_constraintBottom_toTopOf="@+id/swiperefresh"
         app:layout_constraintEnd_toStartOf="@+id/btn_search"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -47,10 +51,16 @@
         android:layout_marginRight="10dp"
         android:layout_marginBottom="13dp"
         android:background="@drawable/searchicon_round"
-        app:layout_constraintBottom_toTopOf="@+id/whiteRectangle"
+        app:layout_constraintBottom_toTopOf="@+id/swiperefresh"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/search_bar"></Button>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
+        android:id="@+id/swiperefresh"
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/whiteRectangle"
         android:layout_width="match_parent"
@@ -58,6 +68,39 @@
         android:background="@drawable/white_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" >
+
+        <TextView
+            android:id="@+id/empty_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="3dp"
+            android:gravity="center_horizontal"
+            android:text="Your To-do Lists is currently empty."
+            android:textAlignment="center"
+            android:textColor="@color/hint_color"
+            android:textSize="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/recycle_todolists"
+            app:layout_constraintEnd_toEndOf="@+id/recycle_todolists"
+            app:layout_constraintStart_toStartOf="@+id/recycle_todolists"
+
+            app:layout_constraintTop_toTopOf="@+id/recycle_todolists"
+            app:layout_constraintVertical_bias="0.35"></TextView>
+
+        <RelativeLayout
+            android:id="@+id/loadingPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:indeterminateTint="@color/primary_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+        </RelativeLayout>
 
         <Button
             android:id="@+id/button_create_new"
@@ -86,7 +129,7 @@
 
         </androidx.recyclerview.widget.RecyclerView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

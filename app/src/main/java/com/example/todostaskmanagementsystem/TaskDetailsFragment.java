@@ -5,8 +5,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,20 +38,13 @@ public class TaskDetailsFragment extends Fragment {
     private String todoTasksID;
     private String sectionName;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    private Button saveBtn;
     private TextView txtSectionName;
     private CheckBox checkBox;
     private EditText editTaskName, editDesc, editDueDate;
 
     public TaskDetailsFragment() {
         // Required empty public constructor
-    }
-
-    public static TaskDetailsFragment newInstance(String param1, String param2) {
-        TaskDetailsFragment fragment = new TaskDetailsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -76,6 +72,8 @@ public class TaskDetailsFragment extends Fragment {
         editDesc = view.findViewById(R.id.task_desc);
         editDueDate = view.findViewById(R.id.task_duedate);
 
+        editDueDate.setKeyListener(null);
+
         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -86,10 +84,12 @@ public class TaskDetailsFragment extends Fragment {
                 editTaskName.setText(todoTask.getName());
                 editDesc.setText(todoTask.getDesc());
                 editDueDate.setText(todoTask.getDueDate());
-
+                view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                editTaskName.addTextChangedListener(new TextChanged());
+                editDesc.addTextChangedListener(new TextChanged());
+                editDueDate.addTextChangedListener(new TextChanged());
             }
         });
-
 
         editDueDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,22 +108,43 @@ public class TaskDetailsFragment extends Fragment {
         mDateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String due = dayOfMonth + "/" + month + "/" + year;
+                String due = dayOfMonth + "/" + (month + 1) + "/" + year;
                 editDueDate.setText(due);
             }
         };
 
-        Button btn = view.findViewById(R.id.saveChangesBtn);
-        btn.setOnClickListener(new View.OnClickListener() {
+        saveBtn = view.findViewById(R.id.saveChangesBtn);
+        saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TodoTask todoTask = new TodoTask(todoTasksID, editTaskName.getText().toString(), editDesc.getText().toString(), editDueDate.getText().toString(), checkBox.isChecked(), "");
                 db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).set(todoTask);
-                Toast.makeText(getActivity(),"Task Updated Successfully",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Task Updated Successfully", Toast.LENGTH_SHORT).show();
                 getActivity().onBackPressed();
             }
         });
 
         return view;
     }
+
+    private class TextChanged implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            saveBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.primary_blue));
+            saveBtn.setEnabled(true);
+            saveBtn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.lightblue_bg));
+        }
+    }
+
 }

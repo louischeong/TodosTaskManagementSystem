@@ -13,7 +13,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="10dp"
-        android:text="Todolist Title"
+        android:text=""
         android:textColor="@color/white"
         android:textSize="25dp"
         android:textStyle="bold"
@@ -26,36 +26,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginBottom="6dp"
-        android:text="A Todolist description"
-        android:textColor="@color/gray_text"
-        android:textSize="13dp"
-        app:layout_constraintBottom_toTopOf="@+id/todolist_incomplete"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/todolist_incomplete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
         android:layout_marginBottom="20dp"
-        android:text="Incomplete Tasks: "
+        android:text=""
         android:textColor="@color/gray_text"
         android:textSize="13dp"
         app:layout_constraintBottom_toTopOf="@+id/swiperefresh"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/todolist_incomplete_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="2"
-        android:textColor="@color/gray_text"
-        android:textSize="13dp"
-        app:layout_constraintBottom_toTopOf="@+id/swiperefresh"
-        app:layout_constraintStart_toEndOf="@+id/todolist_incomplete" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
@@ -71,6 +47,20 @@
             android:layout_height="550dp"
             android:background="@drawable/white_bg">
 
+            <RelativeLayout
+                android:id="@+id/loadingPanel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ProgressBar
+                    android:indeterminateTint="@color/primary_blue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true" />
+            </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycle_sections"
@@ -123,6 +113,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/hint_color"
                 android:textSize="16dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/recycle_sections"
                 app:layout_constraintEnd_toEndOf="@+id/recycle_sections"
                 app:layout_constraintStart_toStartOf="parent"

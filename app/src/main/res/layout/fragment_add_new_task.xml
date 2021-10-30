@@ -123,6 +123,7 @@
             android:background="@drawable/textbox"
             android:inputType="none"
             android:paddingLeft="10dp"
+            android:text="--/--/--"
             android:textColor="@color/primary_blue"
             android:textColorHint="@color/hint_color"
             android:textSize="15dp"

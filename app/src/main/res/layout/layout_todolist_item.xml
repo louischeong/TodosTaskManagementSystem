@@ -43,20 +43,20 @@
         android:layout_marginStart="25dp"
         android:layout_marginLeft="25dp"
         android:layout_marginBottom="15dp"
-        android:text="Incomplete Tasks: "
+        android:text="Created by: "
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/todolist_desc" />
 
     <TextView
-        android:id="@+id/todolist_incomplete"
+        android:id="@+id/todolist_owner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginBottom="15dp"
-        android:text="0"
+        android:text=""
         android:textSize="17dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"

@@ -51,7 +51,7 @@ public class AddNewTaskFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_new_task, container, false);
-
+        dueDate.setKeyListener(null);
         dueDate = view.findViewById(R.id.datepicker_duedate);
         dueDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +70,7 @@ public class AddNewTaskFragment extends Fragment {
         mDateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String due = dayOfMonth + "/" + month + "/" + year;
+                String due = dayOfMonth + "/" + (month + 1) + "/" + year;
                 dueDate.setText(due);
             }
         };

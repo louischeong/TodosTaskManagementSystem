@@ -10,14 +10,19 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.adapter.TodolistAdapter;
@@ -42,6 +47,9 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     private EditText searchBar;
     private View rootView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ArrayList<Todolist> todolists = new ArrayList();
+    private ArrayList<String> todolistIDs = new ArrayList();
+    private TodolistAdapter todolistAdapter;
 
     public MyTodolistsFragment() {
         // Required empty public constructor
@@ -65,34 +73,41 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
 
         //Setup search view
         searchBar = view.findViewById(R.id.search_bar);
-
-        db.collection("Todolists").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        searchBar.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                ArrayList<Todolist> todolists = new ArrayList();
-                ArrayList<String> todolistIDs = new ArrayList();
-                for(QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots){
-                    Todolist todolist = documentSnapshot.toObject(Todolist.class);
-                    todolists.add(todolist);
-                    todolistIDs.add(documentSnapshot.getId());
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    closeKeyboard();
                 }
-                RecyclerView recyclerView = view.findViewById(R.id.recycle_todolists);
-
-                TodolistAdapter adapter = new TodolistAdapter(todolists);
-                adapter.setOnItemClickedListener(new OnItemClicked() {
-                    @Override
-                    public void onItemClicked(int position) {
-                        String todolistID = todolistIDs.get(position);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("todolistID", todolistID);
-                        NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_myTodolistsFragment_to_todoListDetailsFragment, bundle);
-                        closeKeyboard();
-                    }
-                });
-                recyclerView.setAdapter(adapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
         });
+        searchBar.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() != KeyEvent.ACTION_DOWN)
+                    return true;
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    searchTodolist();
+                    closeKeyboard();
+                }
+                return true;
+            }
+        });
+        loadData(view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycle_todolists);
+        todolistAdapter = new TodolistAdapter(todolists);
+        todolistAdapter.setOnItemClickedListener(new OnItemClicked() {
+            @Override
+            public void onItemClicked(int position) {
+                String todolistID = todolistIDs.get(position);
+                Bundle bundle = new Bundle();
+                bundle.putString("todolistID", todolistID);
+                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_myTodolistsFragment_to_todoListDetailsFragment, bundle);
+                closeKeyboard();
+            }
+        });
+        recyclerView.setAdapter(todolistAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
     }
@@ -100,7 +115,14 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        final SwipeRefreshLayout pullToRefresh = getView().findViewById(R.id.swiperefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadData(getView());
+                pullToRefresh.setRefreshing(false);
+            }
+        });
     }
 
     @Override
@@ -108,6 +130,9 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.button_create_new:
                 NavHostFragment.findNavController(getParentFragment()).navigate(MyTodolistsFragmentDirections.actionMyTodolistsFragmentToCreateTodoList());
+                break;
+            case R.id.btn_search:
+                searchTodolist();
                 break;
             default:
         }
@@ -122,11 +147,56 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
         closeKeyboard();
     }
 
-    public void closeKeyboard(){
+    public void closeKeyboard() {
         View view = getActivity().getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private void updateRecycleView() {
+
+        TextView txt = getView().findViewById(R.id.empty_hint);
+        if (todolists.isEmpty()) {
+            txt.setVisibility(View.VISIBLE);
+        } else {
+            txt.setVisibility(View.INVISIBLE);
+        }
+        todolistAdapter.notifyDataSetChanged();
+    }
+
+    private void loadData(View view) {
+        todolists.clear();
+        db.collection("Todolists").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    Todolist todolist = documentSnapshot.toObject(Todolist.class);
+                    todolists.add(todolist);
+                    todolistIDs.add(documentSnapshot.getId());
+                }
+                updateRecycleView();
+                view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void searchTodolist() {
+        String keyword = searchBar.getText().toString();
+        todolists.clear();
+        db.collection("Todolists").whereGreaterThanOrEqualTo("name", keyword).whereLessThan("name", keyword + '\uf8ff').get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    Todolist todolist = documentSnapshot.toObject(Todolist.class);
+                    todolists.add(todolist);
+                    todolistIDs.add(documentSnapshot.getId());
+                }
+                updateRecycleView();
+            }
+        });
+
     }
 }

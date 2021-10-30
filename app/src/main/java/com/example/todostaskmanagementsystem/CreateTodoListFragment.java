@@ -41,6 +41,11 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     private AddMemberAdapter addMemberAdapter;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
+    private EditText dialogEmail;
+    private Button dialogAddBtn, dialogCancelBtn;
+
     public CreateTodoListFragment() {
         // Required empty public constructor
     }
@@ -89,37 +94,38 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_addMemberEmail:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT);
-                builder.setTitle("Enter new email");
-
-                final EditText input = new EditText(getActivity());
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-
-                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        emails.add(input.getText().toString());
-                        updateRecycleView();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-
-                    }
-                });
-
-                builder.show();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT);
+//                builder.setTitle("Enter new email");
+//
+//                final EditText input = new EditText(getActivity());
+//                input.setInputType(InputType.TYPE_CLASS_TEXT);
+//                builder.setView(input);
+//
+//                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        emails.add(input.getText().toString());
+//                        updateRecycleView();
+//                    }
+//                });
+//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//
+//                    }
+//                });
+//
+//                builder.show();
+                createAddMemberEmailDialog();
                 break;
             case R.id.btn_createNewTodolist:
                 EditText editTextTitle = getView().findViewById(R.id.todolist_title);
                 String todolistTitle = editTextTitle.getText().toString();
                 EditText editTextDesc = getView().findViewById(R.id.todolist_desc);
                 String todolistDesc = editTextDesc.getText().toString();
-
-                Todolist todolist = new Todolist(todolistTitle, todolistDesc);
+                String ownerName = "TobeChange"; //change to owner name
+                Todolist todolist = new Todolist(todolistTitle, todolistDesc, ownerName);
 
                 DocumentReference docRef = db.collection("Data").document("todolistID");
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -162,5 +168,34 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
             colRef.document(emails.get(i)).set(member);
         }
 
+    }
+
+    private void createAddMemberEmailDialog(){
+        dialogBuilder = new AlertDialog.Builder(getContext());
+        final View addEmailView = getLayoutInflater().inflate(R.layout.dialog_add_email,null);
+        dialogEmail = addEmailView.findViewById(R.id.email);
+        dialogAddBtn = addEmailView.findViewById(R.id.btnConfirm);
+        dialogCancelBtn = addEmailView.findViewById(R.id.btnCancel);
+
+        dialogBuilder.setView(addEmailView);
+        dialog = dialogBuilder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.show();
+
+        dialogAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emails.add(dialogEmail.getText().toString());
+                updateRecycleView();
+                dialog.dismiss();
+            }
+        });
+
+        dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 }
