@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_myTodolistsFragment"
             app:destination="@id/myTodolistsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <fragment
@@ -61,5 +64,19 @@
         android:name="com.example.todostaskmanagementsystem.TaskDetailsFragment"
         android:label="fragment_task_details"
         tools:layout="@layout/fragment_task_details" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.todostaskmanagementsystem.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.todostaskmanagementsystem.EditProfileFragment"
+        android:label="fragment_edit_profile"
+        tools:layout="@layout/fragment_edit_profile" />
 
 </navigation>

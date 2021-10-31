@@ -1,6 +1,8 @@
 package com.example.todostaskmanagementsystem;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 public class LoginFormFragment extends Fragment {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     public LoginFormFragment() {
         // Required empty public constructor
@@ -64,12 +67,16 @@ public class LoginFormFragment extends Fragment {
                     return;
                 }
 
-                db.collection("Users").document(editText.getText().toString()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                db.collection("Users").document(loginEmail).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
                         String pass = user.getPassword(); // user password from database
                         if (pass.equals(loginPass)){
+                            SharedPreferences prefs = getActivity().getSharedPreferences("user_details",Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("pref_email", loginEmail);
+                            editor.commit();
                             Intent myIntent = new Intent(getActivity(), MainActivity.class);
                             startActivity(myIntent);
                             getActivity().finish();
