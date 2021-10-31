@@ -10,8 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.todostaskmanagementsystem.model.Role;
+import com.example.todostaskmanagementsystem.model.User;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class CreateRoleFragment extends Fragment {
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public CreateRoleFragment() {
         // Required empty public constructor
@@ -29,7 +36,6 @@ public class CreateRoleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_create_role, container, false);
         Button btn = view.findViewById(R.id.btn_createRole);
         btn.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View view) {
                 EditText newName = getView().findViewById(R.id.txt_roleName);
@@ -53,7 +59,11 @@ public class CreateRoleFragment extends Fragment {
                     newAccess.setError("Please select which section can this role edit!");
                     return;
                 }
-
+                DocumentReference docRef = db.collection("Role").document(roleName);
+                Role role = new Role(roleName, desc);
+                docRef.set(role);
+                Toast.makeText(getActivity(), "Successfully added!", Toast.LENGTH_SHORT).show();
+                getParentFragmentManager().popBackStack();
             }
         });
         return view;
