@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_createRoleFragment"
+            app:destination="@id/createRoleFragment" />
     </fragment>
 
     <fragment
@@ -78,5 +81,10 @@
         android:name="com.example.todostaskmanagementsystem.EditProfileFragment"
         android:label="fragment_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
+    <fragment
+        android:id="@+id/createRoleFragment"
+        android:name="com.example.todostaskmanagementsystem.CreateRoleFragment"
+        android:label="fragment_create_role"
+        tools:layout="@layout/fragment_create_role" />
 
 </navigation>

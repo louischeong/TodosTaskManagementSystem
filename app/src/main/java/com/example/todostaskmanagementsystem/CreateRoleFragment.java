@@ -42,8 +42,8 @@ public class CreateRoleFragment extends Fragment {
                 String roleName = newName.getText().toString();
                 EditText newDesc = getView().findViewById(R.id.txt_description);
                 String desc = newDesc.getText().toString();
-                EditText newAccess = getView().findViewById(R.id.recycle_emails);
-                String access = newAccess.getText().toString();
+                //EditText newAccess = getView().findViewById(R.id.recycle_emails);
+                //String access = newAccess.getText().toString();
 
                 if(TextUtils.isEmpty(roleName)){
                     newName.setError("Role Name is required!");
@@ -55,10 +55,10 @@ public class CreateRoleFragment extends Fragment {
                     return;
                 }
 
-                if(TextUtils.isEmpty(access)){
-                    newAccess.setError("Please select which section can this role edit!");
-                    return;
-                }
+                //if(TextUtils.isEmpty(access)){
+                //    newAccess.setError("Please select which section can this role edit!");
+                //    return;
+                //}
                 DocumentReference docRef = db.collection("Role").document(roleName);
                 Role role = new Role(roleName, desc);
                 docRef.set(role);
