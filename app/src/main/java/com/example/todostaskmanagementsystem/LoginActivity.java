@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         if (prefs.contains("pref_email") && prefs.contains("pref_rememberMe")) {
+            Log.d("MYDEBUG", prefs.getString("pref_email", "empty"));
             Intent myIntent = new Intent(this, MainActivity.class);
             startActivity(myIntent);
             this.finish();

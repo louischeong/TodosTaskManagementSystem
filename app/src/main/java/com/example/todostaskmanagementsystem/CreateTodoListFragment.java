@@ -36,11 +36,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CreateTodoListFragment extends Fragment implements View.OnClickListener {
 
-    private ArrayList<String> emails = new ArrayList<>();
+    private List<String> emails = new ArrayList<>();
     private AddMemberAdapter addMemberAdapter;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -116,7 +117,8 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 EditText editTextDesc = getView().findViewById(R.id.todolist_desc);
                 String todolistDesc = editTextDesc.getText().toString();
                 String ownerName = userName;
-                Todolist todolist = new Todolist(todolistTitle, todolistDesc, ownerName);
+                emails.add(userEmail);
+                Todolist todolist = new Todolist(todolistTitle, todolistDesc, ownerName, emails);
 
                 DocumentReference docRef = db.collection("Data").document("todolistID");
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -155,7 +157,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     private void setMemberCollection(int todolistID) {
         CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Members"));
         for (int i = 0; i < emails.size(); i++) {
-            Member member = new Member();
+            Member member = new Member(emails.get(i));
             colRef.document(emails.get(i)).set(member);
         }
 

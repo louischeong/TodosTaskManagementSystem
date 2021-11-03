@@ -11,7 +11,11 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -72,5 +76,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.logout:
+                SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.commit();
+                Intent myIntent = new Intent(this, LoginActivity.class);
+                startActivity(myIntent);
+                this.finish();
+            default:
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 }

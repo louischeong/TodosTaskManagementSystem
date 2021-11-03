@@ -16,14 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddMemberAdapter extends RecyclerView.Adapter<AddMemberAdapter.MyViewHolder> {
 
 
-    private ArrayList<String> emails;
+    private List<String> emails;
     OnItemClicked listener;
 
-    public AddMemberAdapter(ArrayList<String> emails) {
+    public AddMemberAdapter(List<String> emails) {
 
         this.emails = emails;
 

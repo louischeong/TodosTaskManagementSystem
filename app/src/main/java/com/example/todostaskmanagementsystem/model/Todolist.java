@@ -1,14 +1,18 @@
 package com.example.todostaskmanagementsystem.model;
 
+import java.util.List;
+
 public class Todolist {
     private String name, desc, owner;
     private int incomplete;
+    private List<String> membersEmail;
 
-    public Todolist(String name, String desc, String owner) {
+    public Todolist(String name, String desc, String owner, List<String> membersEmail) {
         this.name = name;
         this.desc = desc;
         this.owner = owner;
         this.incomplete = 0;
+        this.membersEmail = membersEmail;
     }
 
     public Todolist(String name, String desc, String owner, int incomplete) {
@@ -23,6 +27,7 @@ public class Todolist {
         this.desc = null;
         this.owner = null;
         this.incomplete = 0;
+        this.membersEmail = null;
     }
 
     public String getName() {
@@ -55,5 +60,13 @@ public class Todolist {
 
     public void setIncomplete(int incomplete) {
         this.incomplete = incomplete;
+    }
+
+    public List<String> getMembersEmail() {
+        return membersEmail;
+    }
+
+    public void setMembersEmail(List<String> membersEmail) {
+        this.membersEmail = membersEmail;
     }
 }

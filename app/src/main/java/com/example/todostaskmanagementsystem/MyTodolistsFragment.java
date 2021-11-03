@@ -1,6 +1,7 @@
 package com.example.todostaskmanagementsystem;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -52,6 +53,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     private ArrayList<Todolist> todolists = new ArrayList();
     private ArrayList<String> todolistIDs = new ArrayList();
     private TodolistAdapter todolistAdapter;
+    private String userEmail;
 
     public MyTodolistsFragment() {
         // Required empty public constructor
@@ -60,7 +62,8 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        userEmail = prefs.getString("pref_email", null);
     }
 
     @Override
@@ -171,7 +174,8 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
 
     private void loadData(View view) {
         todolists.clear();
-        db.collection("Todolists").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        todolistIDs.clear();
+        db.collection("Todolists").whereArrayContains("membersEmail", userEmail).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 

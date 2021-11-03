@@ -85,14 +85,15 @@ public class LoginFormFragment extends Fragment {
                             startActivity(myIntent);
                             getActivity().finish();
                         }
-                        //proceed to homepage if password correct
-                        // else prompt login fail
+                        else{
+                            Toast.makeText(getActivity(), "Email or Password incorrect, please try again...", Toast.LENGTH_SHORT).show();//prompt login fail
+                        }
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull @NotNull Exception e) {
-                        Toast.makeText(getActivity(), "Failed to log in due to incorrect password.", Toast.LENGTH_SHORT).show();//prompt login fail
+                        Toast.makeText(getActivity(), "Somethings went wrong. Please try again later.", Toast.LENGTH_SHORT).show();
 
                     }
                 });

@@ -68,7 +68,7 @@ public class TodoListDetailsFragment extends Fragment {
         if (bundle != null) {
             todolistID = bundle.getString("todolistID");
         }
-
+        Log.d("MYDEBUG",todolistID);
     }
 
     @Override
@@ -85,7 +85,6 @@ public class TodoListDetailsFragment extends Fragment {
                 createAddSectionDialog();
             }
         });
-
 
         RecyclerView recyclerView = view.findViewById(R.id.recycle_sections);
         sectionAdapter = new SectionAdapter(sections);
