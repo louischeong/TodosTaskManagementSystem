@@ -25,7 +25,7 @@ public class ManageMemberFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_manage_member, container, false);
-        Button btn = view.findViewById(R.id.btn_memberSave);
+        Button btn = view.findViewById(R.id.btn_setMember);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

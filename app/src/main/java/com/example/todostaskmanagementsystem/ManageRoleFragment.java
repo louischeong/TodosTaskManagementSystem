@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-public class SetMemberFragment extends Fragment {
+public class ManageRoleFragment extends Fragment {
 
-    public SetMemberFragment() {
+    public ManageRoleFragment() {
         // Required empty public constructor
     }
 
@@ -24,8 +24,8 @@ public class SetMemberFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_set_member, container, false);
-        Button btn = view.findViewById(R.id.btn_setMember);
+        View view = inflater.inflate(R.layout.fragment_manage_role, container, false);
+        Button btn = view.findViewById(R.id.btn_memberSave);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

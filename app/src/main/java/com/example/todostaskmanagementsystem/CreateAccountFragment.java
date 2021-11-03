@@ -19,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class CreateAccountFragment extends Fragment {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     public CreateAccountFragment() {
         // Required empty public constructor
@@ -32,7 +33,6 @@ public class CreateAccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_create_account, container, false);
         Button btn = view.findViewById(R.id.btn_register);
@@ -56,7 +56,6 @@ public class CreateAccountFragment extends Fragment {
                 }
                 if(TextUtils.isEmpty(email)){
                     newEmail.setError("Email is required!");
-                    return;
                 }
                 if(TextUtils.isEmpty(contact)){
                     newContact.setError("Contact number is required!");
@@ -70,15 +69,20 @@ public class CreateAccountFragment extends Fragment {
                     newConPass.setError("Confirm Password is required!");
                     return;
                 }
-                if(pass.equals(conPass)){
-                    DocumentReference docRef = db.collection("Users").document(email);
-                    User user = new User(pass, name, contact, email);
-                    docRef.set(user);
-                    Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack();
+                if (email.matches(emailPattern) && android.util.Patterns.PHONE.matcher(contact).matches()) {
+                    if(pass.equals(conPass)){
+                        DocumentReference docRef = db.collection("Users").document(email);
+                        User user = new User(pass, name, contact, email);
+                        docRef.set(user);
+                        Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
+                        getParentFragmentManager().popBackStack();
+                    }else{
+                        Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
+                    }
                 }else{
-                    Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Please make sure that the email and contact number are correct.", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
         return view;
