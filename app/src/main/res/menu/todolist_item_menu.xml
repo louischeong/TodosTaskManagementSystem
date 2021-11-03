@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/edit_todolist" android:title="Edit Todolist"/>
+    <item android:id="@+id/manage_member" android:title="Manage Member"/>
+    <item android:id="@+id/manage_role" android:title="Manage Role"/>
+    <item android:id="@+id/view_changes" android:title="View Changes Log"></item>
+    <item android:id="@+id/delete_todolist" android:title="Delete Todolist"></item>
+</menu>

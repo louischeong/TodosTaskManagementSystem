@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -56,13 +57,14 @@ public class LoginFormFragment extends Fragment {
                 String loginEmail = editText.getText().toString();
                 EditText editText2 = getView().findViewById(R.id.txt_loginPassword);
                 String loginPass = editText2.getText().toString();
+                CheckBox cbRememberMe = getView().findViewById(R.id.checkBox_rememberMe);
 
-                if(TextUtils.isEmpty(loginEmail)){
+                if (TextUtils.isEmpty(loginEmail)) {
                     editText.setError("Email is required!");
                     return;
                 }
 
-                if(TextUtils.isEmpty(loginPass)){
+                if (TextUtils.isEmpty(loginPass)) {
                     editText2.setError("Password is required!");
                     return;
                 }
@@ -72,16 +74,18 @@ public class LoginFormFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
                         String pass = user.getPassword(); // user password from database
-                        if (pass.equals(loginPass)){
-                            SharedPreferences prefs = getActivity().getSharedPreferences("user_details",Context.MODE_PRIVATE);
+                        if (pass.equals(loginPass)) {
+                            SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putString("pref_email", loginEmail);
+                            if (cbRememberMe.isChecked())
+                                editor.putString("pref_rememberMe", "true");
                             editor.commit();
                             Intent myIntent = new Intent(getActivity(), MainActivity.class);
                             startActivity(myIntent);
                             getActivity().finish();
                         }
-                         //proceed to homepage if password correct
+                        //proceed to homepage if password correct
                         // else prompt login fail
 
                     }
@@ -94,8 +98,6 @@ public class LoginFormFragment extends Fragment {
                 });
             }
         });
-
-
 
 
         return view;

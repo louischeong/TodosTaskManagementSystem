@@ -15,6 +15,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -74,45 +76,12 @@ public class TodoListDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_todo_list_details, container, false);
-
+        setHasOptionsMenu(true);
         //Setup Add Section Button
         Button btnAdd = view.findViewById(R.id.btn_addSection);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT);
-//                builder.setTitle("Enter new section name");
-//
-//                final EditText input = new EditText(getActivity());
-//                input.setInputType(InputType.TYPE_CLASS_TEXT);
-//                builder.setView(input);
-//
-//                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        String sectionName = input.getText().toString();
-//                        db.collection("Todolists").document(todolistID).collection("Data").document("Data").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                            @Override
-//                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                                int currSectionID = Integer.parseInt(documentSnapshot.get("currSectionID").toString()) + 1;
-//                                String secID = "S" + currSectionID;
-//                                Section sec = new Section(secID, sectionName);
-//                                sections.add(sec);
-//                                db.collection("Todolists").document(todolistID).collection("Sections").document(secID).set(sec);
-//                                db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currSectionID", currSectionID);
-//                                updateRecycleView();
-//                            }
-//                        });
-//                    }
-//                });
-//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//
-//                    }
-//                });
-//                builder.show();
                 createAddSectionDialog();
             }
         });
@@ -233,4 +202,10 @@ public class TodoListDetailsFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull @NotNull Menu menu, @NonNull @NotNull MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.todolist_item_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 }

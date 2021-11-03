@@ -15,6 +15,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -65,6 +67,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_todolists, container, false);
+
         rootView = view.findViewById(R.id.rootLayout);
         rootView.requestFocus();
         //setup Button
@@ -199,4 +202,6 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
         });
 
     }
+
+
 }

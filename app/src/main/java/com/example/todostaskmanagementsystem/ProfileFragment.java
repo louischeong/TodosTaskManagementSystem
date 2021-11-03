@@ -48,7 +48,6 @@ public class ProfileFragment extends Fragment {
         Button btn = view.findViewById(R.id.btn_editProf);
         SharedPreferences prefs = getActivity().getSharedPreferences("user_details",Context.MODE_PRIVATE);
         email = prefs.getString("pref_email",null);
-        Log.d("myDebug", email);
         db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -57,7 +56,6 @@ public class ProfileFragment extends Fragment {
                 TextView txtEmail = view.findViewById(R.id.txt_userEmail);
                 TextView txtPhone = view.findViewById(R.id.txt_userPhone);
                 TextView txtPass = view.findViewById(R.id.txt_userPassword);
-                Log.d("myDebug", user.getName());
                 txtName.setText(user.getName());
                 txtEmail.setText(user.getEmail());
                 txtPhone.setText(user.getContact());

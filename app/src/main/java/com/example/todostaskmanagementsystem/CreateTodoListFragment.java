@@ -1,7 +1,9 @@
 package com.example.todostaskmanagementsystem;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,7 @@ import com.example.todostaskmanagementsystem.adapter.AddMemberAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.Member;
 import com.example.todostaskmanagementsystem.model.Todolist;
+import com.example.todostaskmanagementsystem.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -45,6 +48,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     private AlertDialog dialog;
     private EditText dialogEmail;
     private Button dialogAddBtn, dialogCancelBtn;
+    private String userEmail, userName;
 
     public CreateTodoListFragment() {
         // Required empty public constructor
@@ -58,6 +62,16 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        userEmail = prefs.getString("pref_email", null);
+
+        db.collection("Users").document(userEmail).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                userName = user.getName();
+            }
+        });
     }
 
     @Override
@@ -94,29 +108,6 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_addMemberEmail:
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT);
-//                builder.setTitle("Enter new email");
-//
-//                final EditText input = new EditText(getActivity());
-//                input.setInputType(InputType.TYPE_CLASS_TEXT);
-//                builder.setView(input);
-//
-//                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        emails.add(input.getText().toString());
-//                        updateRecycleView();
-//                    }
-//                });
-//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//
-//                    }
-//                });
-//
-//                builder.show();
                 createAddMemberEmailDialog();
                 break;
             case R.id.btn_createNewTodolist:
@@ -124,23 +115,23 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 String todolistTitle = editTextTitle.getText().toString();
                 EditText editTextDesc = getView().findViewById(R.id.todolist_desc);
                 String todolistDesc = editTextDesc.getText().toString();
-                String ownerName = "TobeChange"; //change to owner name
+                String ownerName = userName;
                 Todolist todolist = new Todolist(todolistTitle, todolistDesc, ownerName);
 
                 DocumentReference docRef = db.collection("Data").document("todolistID");
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        int currTodolistID  = Integer.parseInt(documentSnapshot.get("currTodolistID").toString());
+                        int currTodolistID = Integer.parseInt(documentSnapshot.get("currTodolistID").toString());
                         currTodolistID += 1;
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
                         setMemberCollection(currTodolistID);
                         Map<String, Object> docData = new HashMap<>();
-                        docData.put("currSectionID",0);
-                        docData.put("currTaskID",0);
+                        docData.put("currSectionID", 0);
+                        docData.put("currTaskID", 0);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("Data").document("Data").set(docData);
-                        db.collection("Data").document("todolistID").update("currTodolistID",currTodolistID);
-                        Toast.makeText(getActivity(),"Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
+                        db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
+                        Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
                         requireActivity().onBackPressed();
                     }
                 });
@@ -170,9 +161,9 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
 
     }
 
-    private void createAddMemberEmailDialog(){
+    private void createAddMemberEmailDialog() {
         dialogBuilder = new AlertDialog.Builder(getContext());
-        final View addEmailView = getLayoutInflater().inflate(R.layout.dialog_add_email,null);
+        final View addEmailView = getLayoutInflater().inflate(R.layout.dialog_add_email, null);
         dialogEmail = addEmailView.findViewById(R.id.email);
         dialogAddBtn = addEmailView.findViewById(R.id.btnConfirm);
         dialogCancelBtn = addEmailView.findViewById(R.id.btnCancel);
