@@ -45,9 +45,6 @@
         <action
             android:id="@+id/action_todoListDetailsFragment_to_manageMemberFragment"
             app:destination="@id/manageMemberFragment" />
-        <action
-            android:id="@+id/action_todoListDetailsFragment_to_manageRoleFragment"
-            app:destination="@id/manageRoleFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewTaskFragment"
@@ -90,6 +87,15 @@
         android:label="fragment_manage_member"
         tools:layout="@layout/fragment_manage_member" />
     <fragment
+        android:id="@+id/createRoleFragment"
+        android:name="com.example.todostaskmanagementsystem.CreateRoleFragment"
+        android:label="fragment_create_role"
+        tools:layout="@layout/fragment_create_role" >
+        <action
+            android:id="@+id/action_createRoleFragment_to_manageMemberFragment"
+            app:destination="@id/manageMemberFragment" />
+    </fragment>
+    <fragment
         android:id="@+id/manageRoleFragment"
         android:name="com.example.todostaskmanagementsystem.ManageRoleFragment"
         android:label="fragment_manage_role"
@@ -98,10 +104,5 @@
             android:id="@+id/action_manageRoleFragment_to_createRoleFragment"
             app:destination="@id/createRoleFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/createRoleFragment"
-        android:name="com.example.todostaskmanagementsystem.CreateRoleFragment"
-        android:label="fragment_create_role"
-        tools:layout="@layout/fragment_create_role" />
 
 </navigation>

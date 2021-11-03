@@ -13,7 +13,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginBottom="30dp"
-        android:text="Set Member"
+        android:text="Manage Member"
         android:textColor="@color/white"
         android:textSize="25dp"
         android:textStyle="bold"
