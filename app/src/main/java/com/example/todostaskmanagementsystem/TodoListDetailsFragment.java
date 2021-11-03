@@ -69,7 +69,7 @@ public class TodoListDetailsFragment extends Fragment {
         if (bundle != null) {
             todolistID = bundle.getString("todolistID");
         }
-        Log.d("MYDEBUG", todolistID);
+
     }
 
     @Override

@@ -131,6 +131,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                         Map<String, Object> docData = new HashMap<>();
                         docData.put("currSectionID", 0);
                         docData.put("currTaskID", 0);
+                        docData.put("currRoleID", 0);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("Data").document("Data").set(docData);
                         db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
                         Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();

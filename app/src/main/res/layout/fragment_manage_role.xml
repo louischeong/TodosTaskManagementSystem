@@ -53,6 +53,24 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/button_create_role"></androidx.recyclerview.widget.RecyclerView>
 
+        <TextView
+            android:id="@+id/empty_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:elevation="3dp"
+            android:gravity="center_horizontal"
+            android:text="Your Role List is currently empty."
+            android:textAlignment="center"
+            android:textColor="@color/hint_color"
+            android:textSize="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/recycle_roles"
+            app:layout_constraintEnd_toEndOf="@+id/recycle_roles"
+            app:layout_constraintStart_toStartOf="@+id/recycle_roles"
+            app:layout_constraintTop_toTopOf="@+id/recycle_roles"
+            app:layout_constraintVertical_bias="0.45"></TextView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

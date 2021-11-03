@@ -75,7 +75,7 @@ public class CreateAccountFragment extends Fragment {
                         User user = new User(pass, name, contact, email);
                         docRef.set(user);
                         Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
-                        getParentFragmentManager().popBackStack();
+                        requireActivity().onBackPressed();
                     }else{
                         Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
                     }

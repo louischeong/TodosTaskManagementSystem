@@ -14,11 +14,15 @@ import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.Role;
 import com.example.todostaskmanagementsystem.model.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class CreateRoleFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String todolistID;
 
     public CreateRoleFragment() {
         // Required empty public constructor
@@ -27,6 +31,10 @@ public class CreateRoleFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            todolistID = bundle.getString("todolistID");
+        }
     }
 
     @Override
@@ -35,7 +43,7 @@ public class CreateRoleFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_create_role, container, false);
         Button btn = view.findViewById(R.id.btn_createRole);
-        btn.setOnClickListener(new View.OnClickListener(){
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 EditText newName = getView().findViewById(R.id.txt_roleName);
@@ -45,12 +53,12 @@ public class CreateRoleFragment extends Fragment {
                 //EditText newAccess = getView().findViewById(R.id.recycle_emails);
                 //String access = newAccess.getText().toString();
 
-                if(TextUtils.isEmpty(roleName)){
+                if (TextUtils.isEmpty(roleName)) {
                     newName.setError("Role Name is required!");
                     return;
                 }
 
-                if(TextUtils.isEmpty(desc)){
+                if (TextUtils.isEmpty(desc)) {
                     newDesc.setError("Description is required!");
                     return;
                 }
@@ -59,11 +67,19 @@ public class CreateRoleFragment extends Fragment {
                 //    newAccess.setError("Please select which section can this role edit!");
                 //    return;
                 //}
-                DocumentReference docRef = db.collection("Role").document(roleName);
-                Role role = new Role(roleName, desc);
-                docRef.set(role);
-                Toast.makeText(getActivity(), "Successfully added!", Toast.LENGTH_SHORT).show();
-                getParentFragmentManager().popBackStack();
+
+                db.collection("Todolists").document(todolistID).collection("Data").document("Data").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        int currRoleID = Integer.parseInt(documentSnapshot.get("currRoleID").toString()) + 1;
+                        String strCurrRoleID = "R" + (currRoleID);
+                        Role role = new Role(roleName, desc, strCurrRoleID);
+                        db.collection("Todolists").document(todolistID).collection("Roles").document(strCurrRoleID).set(role);
+                        db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currRoleID", currRoleID);
+                        Toast.makeText(getActivity(), "Successfully added!", Toast.LENGTH_SHORT).show();
+                        requireActivity().onBackPressed();
+                    }
+                });
             }
         });
         return view;
