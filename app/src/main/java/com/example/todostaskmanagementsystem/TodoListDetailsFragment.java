@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -68,7 +69,7 @@ public class TodoListDetailsFragment extends Fragment {
         if (bundle != null) {
             todolistID = bundle.getString("todolistID");
         }
-        Log.d("MYDEBUG",todolistID);
+        Log.d("MYDEBUG", todolistID);
     }
 
     @Override
@@ -161,9 +162,9 @@ public class TodoListDetailsFragment extends Fragment {
         sectionAdapter.notifyDataSetChanged();
     }
 
-    private void createAddSectionDialog(){
+    private void createAddSectionDialog() {
         dialogBuilder = new AlertDialog.Builder(getContext());
-        final View addSectionView = getLayoutInflater().inflate(R.layout.dialog_add_section,null);
+        final View addSectionView = getLayoutInflater().inflate(R.layout.dialog_add_section, null);
         dialogSectionName = addSectionView.findViewById(R.id.section_name);
         dialogAddBtn = addSectionView.findViewById(R.id.btnConfirm);
         dialogCancelBtn = addSectionView.findViewById(R.id.btnCancel);
@@ -206,5 +207,32 @@ public class TodoListDetailsFragment extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.todolist_item_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull @NotNull MenuItem item) {
+        Bundle bundle = new Bundle();
+        bundle.putString("todolistID", todolistID);
+        switch (item.getItemId()) {
+            case R.id.edit_todolist:
+                //nav edit todolist
+                break;
+            case R.id.manage_member:
+                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_todoListDetailsFragment_to_manageMemberFragment, bundle);
+                break;
+            case R.id.manage_role:
+                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_todoListDetailsFragment_to_manageRoleFragment, bundle);
+                break;
+            case R.id.view_changes:
+                //nav to changes log
+                break;
+            case R.id.delete_todolist:
+                //delete todolist
+                break;
+            default:
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 }
