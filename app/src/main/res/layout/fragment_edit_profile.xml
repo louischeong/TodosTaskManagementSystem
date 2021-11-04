@@ -95,6 +95,7 @@
             android:background="@drawable/dark_grey_textbox"
             android:text="mayyan@gmail.com"
             android:textSize="15dp"
+            android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:textColor="@color/primary_blue"
             android:textColorHint="@color/hint_color"

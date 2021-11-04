@@ -51,7 +51,7 @@ public class AddNewTaskFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_new_task, container, false);
-        dueDate.setKeyListener(null);
+        //dueDate.setKeyListener(null);
         dueDate = view.findViewById(R.id.datepicker_duedate);
         dueDate.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -179,6 +179,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         dialogAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //validation email
                 emails.add(dialogEmail.getText().toString());
                 updateRecycleView();
                 dialog.dismiss();
