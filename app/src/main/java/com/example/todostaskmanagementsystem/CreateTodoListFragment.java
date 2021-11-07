@@ -44,11 +44,6 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     private List<String> emails = new ArrayList<>();
     private AddMemberAdapter addMemberAdapter;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
-    private EditText dialogEmail;
-    private Button dialogAddBtn, dialogCancelBtn;
     private String userEmail, userName;
 
     public CreateTodoListFragment() {
@@ -165,11 +160,20 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     }
 
     private void createAddMemberEmailDialog() {
+
+        AlertDialog.Builder dialogBuilder;
+        AlertDialog dialog;
+        EditText dialogEmail;
+        TextView dialogMsg;
+        Button dialogAddBtn, dialogCancelBtn;
+
         dialogBuilder = new AlertDialog.Builder(getContext());
-        final View addEmailView = getLayoutInflater().inflate(R.layout.dialog_add_email, null);
-        dialogEmail = addEmailView.findViewById(R.id.email);
-        dialogAddBtn = addEmailView.findViewById(R.id.btnConfirm);
-        dialogCancelBtn = addEmailView.findViewById(R.id.btnCancel);
+        final View addEmailView = getLayoutInflater().inflate(R.layout.dialog_single_input, null);
+        dialogEmail = addEmailView.findViewById(R.id.dialog_input_field);
+        dialogAddBtn = addEmailView.findViewById(R.id.dialog_btnConfirm);
+        dialogCancelBtn = addEmailView.findViewById(R.id.dialog_btnCancel);
+        dialogMsg = addEmailView.findViewById(R.id.dialog_msg);
+        dialogMsg.setText("Enter member email to add:");
 
         dialogBuilder.setView(addEmailView);
         dialog = dialogBuilder.create();
@@ -180,9 +184,15 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //validation email
-                emails.add(dialogEmail.getText().toString());
-                updateRecycleView();
-                dialog.dismiss();
+                String email = dialogEmail.getText().toString();
+                if (!emails.contains(email)) {
+                    emails.add(email);
+                    updateRecycleView();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(getActivity(), "Duplicated email are not allowed.", Toast.LENGTH_SHORT);
+                    dialogEmail.setText("");
+                }
             }
         });
 

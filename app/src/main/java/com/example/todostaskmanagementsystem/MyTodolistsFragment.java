@@ -99,7 +99,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
                 return true;
             }
         });
-        loadData(view);
+
         RecyclerView recyclerView = view.findViewById(R.id.recycle_todolists);
         todolistAdapter = new TodolistAdapter(todolists);
         todolistAdapter.setOnItemClickedListener(new OnItemClicked() {
@@ -121,6 +121,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        loadData(view);
         final SwipeRefreshLayout pullToRefresh = getView().findViewById(R.id.swiperefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

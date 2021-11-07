@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -20,6 +22,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Calendar;
 
 public class AddNewTaskFragment extends Fragment {
@@ -33,7 +37,6 @@ public class AddNewTaskFragment extends Fragment {
     public AddNewTaskFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +54,7 @@ public class AddNewTaskFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_new_task, container, false);
-        //dueDate.setKeyListener(null);
+
         dueDate = view.findViewById(R.id.datepicker_duedate);
         dueDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,32 +96,14 @@ public class AddNewTaskFragment extends Fragment {
                         requireActivity().onBackPressed();
                     }
                 });
-
-
-//                Query query = collectionRef.orderBy("id", Query.Direction.DESCENDING).limit(1);
-//                query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                        int taskID = 1;
-//                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-//                            todoTask todoTask = documentSnapshot.toObject(todoTask.class);
-//                            taskID = todoTask.getId() + 1;
-//                        }
-//                        EditText editTextName = view.findViewById(R.id.new_task_name);
-//                        EditText editTextDesc = view.findViewById(R.id.new_task_desc);
-//                        todoTask todoTask = new todoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString(), "1/1/1111",sectionID);
-//                        db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("Tasks").document(Integer.toString(taskID)).set(todoTask).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void unused) {
-//                                Toast.makeText(getContext(), "Successfully Created Task", Toast.LENGTH_SHORT);
-//                                requireActivity().onBackPressed();
-//                            }
-//                        });
-//                    }
-//                });
             }
         });
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        dueDate.setKeyListener(null);
+    }
 }

@@ -37,6 +37,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -52,10 +53,6 @@ public class TodoListDetailsFragment extends Fragment {
     private SectionAdapter sectionAdapter;
     private ArrayList<Section> sections = new ArrayList();
 
-    private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
-    private EditText dialogSectionName;
-    private Button dialogAddBtn, dialogCancelBtn;
 
     public TodoListDetailsFragment() {
         // Required empty public constructor
@@ -163,12 +160,18 @@ public class TodoListDetailsFragment extends Fragment {
     }
 
     private void createAddSectionDialog() {
+        AlertDialog.Builder dialogBuilder;
+        AlertDialog dialog;
+        TextView dialogMsg;
+        EditText dialogSectionName;
+        Button dialogAddBtn, dialogCancelBtn;
         dialogBuilder = new AlertDialog.Builder(getContext());
-        final View addSectionView = getLayoutInflater().inflate(R.layout.dialog_add_section, null);
-        dialogSectionName = addSectionView.findViewById(R.id.section_name);
-        dialogAddBtn = addSectionView.findViewById(R.id.btnConfirm);
-        dialogCancelBtn = addSectionView.findViewById(R.id.btnCancel);
-
+        final View addSectionView = getLayoutInflater().inflate(R.layout.dialog_single_input, null);
+        dialogSectionName = addSectionView.findViewById(R.id.dialog_input_field);
+        dialogAddBtn = addSectionView.findViewById(R.id.dialog_btnConfirm);
+        dialogCancelBtn = addSectionView.findViewById(R.id.dialog_btnCancel);
+        dialogMsg = addSectionView.findViewById(R.id.dialog_msg);
+        dialogMsg.setText("Enter new section name:");
         dialogBuilder.setView(addSectionView);
         dialog = dialogBuilder.create();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -191,6 +194,39 @@ public class TodoListDetailsFragment extends Fragment {
                         dialog.dismiss();
                     }
                 });
+            }
+        });
+
+        dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    private void createConfirmationDialog() {
+        AlertDialog.Builder dialogBuilder;
+        AlertDialog dialog;
+        TextView dialogConfirmMsg;
+        Button dialogConfirmBtn, dialogCancelBtn;
+        dialogBuilder = new AlertDialog.Builder(getContext());
+        final View confirmView = getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+        dialogConfirmMsg = confirmView.findViewById(R.id.confirm_msg);
+        dialogConfirmBtn = confirmView.findViewById(R.id.btnConfirm);
+        dialogCancelBtn = confirmView.findViewById(R.id.btnCancel);
+        dialogConfirmMsg.setText("Are you sure you want to delete this todolist?");
+        dialogBuilder.setView(confirmView);
+        dialog = dialogBuilder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.show();
+
+        dialogConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.collection("Todolists").document(todolistID).delete();
+                dialog.dismiss();
+                requireActivity().onBackPressed();
             }
         });
 
@@ -228,6 +264,7 @@ public class TodoListDetailsFragment extends Fragment {
                 break;
             case R.id.delete_todolist:
                 //delete todolist
+                createConfirmationDialog();
                 break;
             default:
         }

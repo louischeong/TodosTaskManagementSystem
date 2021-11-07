@@ -1,10 +1,13 @@
 package com.example.todostaskmanagementsystem;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -27,6 +30,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Calendar;
 
 
@@ -38,7 +43,7 @@ public class TaskDetailsFragment extends Fragment {
     private String todoTasksID;
     private String sectionName;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private Button saveBtn;
+    private Button saveBtn, deleteBtn;
     private TextView txtSectionName;
     private CheckBox checkBox;
     private EditText editTaskName, editDesc, editDueDate;
@@ -71,8 +76,9 @@ public class TaskDetailsFragment extends Fragment {
         editTaskName = view.findViewById(R.id.task_name);
         editDesc = view.findViewById(R.id.task_desc);
         editDueDate = view.findViewById(R.id.task_duedate);
+        deleteBtn = view.findViewById(R.id.btn_delete_task);
 
-        editDueDate.setKeyListener(null);
+
 
         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -124,7 +130,19 @@ public class TaskDetailsFragment extends Fragment {
             }
         });
 
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createConfirmationDialog();
+            }
+        });
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        editDueDate.setKeyListener(null);
     }
 
     private class TextChanged implements TextWatcher {
@@ -145,6 +163,39 @@ public class TaskDetailsFragment extends Fragment {
             saveBtn.setEnabled(true);
             saveBtn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.lightblue_bg));
         }
+    }
+
+    private void createConfirmationDialog() {
+        AlertDialog.Builder dialogBuilder;
+        AlertDialog dialog;
+        TextView dialogConfirmMsg;
+        Button dialogConfirmBtn, dialogCancelBtn;
+        dialogBuilder = new AlertDialog.Builder(getContext());
+        final View confirmView = getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+        dialogConfirmMsg = confirmView.findViewById(R.id.confirm_msg);
+        dialogConfirmBtn = confirmView.findViewById(R.id.btnConfirm);
+        dialogCancelBtn = confirmView.findViewById(R.id.btnCancel);
+        dialogConfirmMsg.setText("Are you sure you want to delete this task?");
+        dialogBuilder.setView(confirmView);
+        dialog = dialogBuilder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.show();
+
+        dialogConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).delete();
+                dialog.dismiss();
+                requireActivity().onBackPressed();
+            }
+        });
+
+        dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 
 }
