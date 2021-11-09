@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_todoListDetailsFragment"
+            app:destination="@id/todoListDetailsFragment" />
     </fragment>
 
     <fragment

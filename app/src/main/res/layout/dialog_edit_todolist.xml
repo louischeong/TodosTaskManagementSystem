@@ -17,7 +17,7 @@
         android:text="Description"
         android:textColor="@color/dark_gray_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/todolist_title"></TextView>
+        app:layout_constraintTop_toBottomOf="@+id/dialog_input_title"></TextView>
 
     <TextView
         android:id="@+id/textView7"
@@ -26,7 +26,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="15dp"
-        android:text="Edit Todolist"
+        android:text="Enter new todolist details:"
         android:textColor="@color/primary_blue"
         android:textSize="22dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView7"></TextView>
 
     <EditText
-        android:id="@+id/todolist_title"
+        android:id="@+id/dialog_input_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -63,7 +63,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView12"></EditText>
 
     <EditText
-        android:id="@+id/todolist_desc"
+        android:id="@+id/dialog_input_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -78,17 +78,17 @@
         app:layout_constraintTop_toBottomOf="@+id/textView13"></EditText>
 
     <Button
-        android:id="@+id/btnConfirm"
+        android:id="@+id/dialog_btnConfirm"
         android:layout_width="150dp"
         android:layout_height="35dp"
         android:background="@drawable/blue_btn"
         android:text="Confirm"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnCancel"
-        app:layout_constraintTop_toTopOf="@+id/btnCancel"></Button>
+        app:layout_constraintStart_toEndOf="@+id/dialog_btnCancel"
+        app:layout_constraintTop_toTopOf="@+id/dialog_btnCancel"></Button>
 
     <Button
-        android:id="@+id/btnCancel"
+        android:id="@+id/dialog_btnCancel"
         android:layout_width="150dp"
         android:layout_height="35dp"
         android:layout_marginTop="15dp"
@@ -96,7 +96,7 @@
         android:background="@drawable/blue_btn"
         android:text="Cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnConfirm"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_btnConfirm"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/todolist_desc"></Button>
+        app:layout_constraintTop_toBottomOf="@+id/dialog_input_desc"></Button>
 </androidx.constraintlayout.widget.ConstraintLayout>

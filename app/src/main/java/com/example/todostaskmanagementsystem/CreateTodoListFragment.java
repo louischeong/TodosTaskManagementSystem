@@ -113,7 +113,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 String todolistDesc = editTextDesc.getText().toString();
                 String ownerName = userName;
                 emails.add(userEmail);
-                Todolist todolist = new Todolist(todolistTitle, todolistDesc, ownerName, emails);
+
 
                 DocumentReference docRef = db.collection("Data").document("todolistID");
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -121,13 +121,15 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         int currTodolistID = Integer.parseInt(documentSnapshot.get("currTodolistID").toString());
                         currTodolistID += 1;
+                        String strCurrTodolistID = Integer.toString(currTodolistID);
+                        Todolist todolist = new Todolist(strCurrTodolistID, todolistTitle, todolistDesc, ownerName, emails);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
                         setMemberCollection(currTodolistID);
                         Map<String, Object> docData = new HashMap<>();
                         docData.put("currSectionID", 0);
                         docData.put("currTaskID", 0);
                         docData.put("currRoleID", 0);
-                        db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("Data").document("Data").set(docData);
+                        db.collection("Todolists").document(strCurrTodolistID).collection("Data").document("Data").set(docData);
                         db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
                         Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
                         requireActivity().onBackPressed();

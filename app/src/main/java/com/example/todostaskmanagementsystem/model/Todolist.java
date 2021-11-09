@@ -3,11 +3,12 @@ package com.example.todostaskmanagementsystem.model;
 import java.util.List;
 
 public class Todolist {
-    private String name, desc, owner;
+    private String id, name, desc, owner;
     private int incomplete;
     private List<String> membersEmail;
 
-    public Todolist(String name, String desc, String owner, List<String> membersEmail) {
+    public Todolist(String id, String name, String desc, String owner, List<String> membersEmail) {
+        this.id = id;
         this.name = name;
         this.desc = desc;
         this.owner = owner;
@@ -15,11 +16,13 @@ public class Todolist {
         this.membersEmail = membersEmail;
     }
 
-    public Todolist(String name, String desc, String owner, int incomplete) {
+    public Todolist(String id, String name) {
+        this.id = id;
         this.name = name;
-        this.desc = desc;
-        this.owner = owner;
-        this.incomplete = incomplete;
+        this.desc = null;
+        this.owner = null;
+        this.incomplete = 0;
+        this.membersEmail = null;
     }
 
     public Todolist() {
@@ -68,5 +71,13 @@ public class Todolist {
 
     public void setMembersEmail(List<String> membersEmail) {
         this.membersEmail = membersEmail;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
