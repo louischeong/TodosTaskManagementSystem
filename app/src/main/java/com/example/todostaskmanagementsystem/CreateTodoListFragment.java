@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,6 +115,16 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 String ownerName = userName;
                 emails.add(userEmail);
 
+
+                if(TextUtils.isEmpty(todolistTitle)){
+                    editTextTitle.setError("Title of a to-do list is required!");
+                    return;
+                }
+
+                if(TextUtils.isEmpty(todolistDesc)){
+                    editTextDesc.setError("Description is required!");
+                    return;
+                }
 
                 DocumentReference docRef = db.collection("Data").document("todolistID");
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
