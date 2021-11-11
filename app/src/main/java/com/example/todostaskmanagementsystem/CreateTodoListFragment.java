@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.todostaskmanagementsystem.adapter.AddMemberAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.Member;
+import com.example.todostaskmanagementsystem.model.Notification;
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.example.todostaskmanagementsystem.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,17 +33,22 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class CreateTodoListFragment extends Fragment implements View.OnClickListener {
 
-    private List<String> emails = new ArrayList<>();
+    private List<String> memberEmails = new ArrayList<>();
     private AddMemberAdapter addMemberAdapter;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String userEmail, userName;
@@ -87,11 +93,11 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         btn2.setOnClickListener(this);
 
 
-        addMemberAdapter = new AddMemberAdapter(emails);
+        addMemberAdapter = new AddMemberAdapter(memberEmails);
         addMemberAdapter.setOnItemClickedListener(new OnItemClicked() {
             @Override
             public void onItemClicked(int position) {
-                emails.remove(position);
+                memberEmails.remove(position);
                 updateRecycleView();
             }
         });
@@ -112,19 +118,17 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 String todolistTitle = editTextTitle.getText().toString();
                 EditText editTextDesc = getView().findViewById(R.id.todolist_desc);
                 String todolistDesc = editTextDesc.getText().toString();
-                String ownerName = userName;
-                emails.add(userEmail);
-
-
-                if(TextUtils.isEmpty(todolistTitle)){
+                if (TextUtils.isEmpty(todolistTitle)) {
                     editTextTitle.setError("Title of a to-do list is required!");
                     return;
                 }
 
-                if(TextUtils.isEmpty(todolistDesc)){
+                if (TextUtils.isEmpty(todolistDesc)) {
                     editTextDesc.setError("Description is required!");
                     return;
                 }
+
+                String ownerName = userName;
 
                 DocumentReference docRef = db.collection("Data").document("todolistID");
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -133,6 +137,8 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                         int currTodolistID = Integer.parseInt(documentSnapshot.get("currTodolistID").toString());
                         currTodolistID += 1;
                         String strCurrTodolistID = Integer.toString(currTodolistID);
+                        List<String> emails = new ArrayList<>();
+                        emails.add(userEmail);
                         Todolist todolist = new Todolist(strCurrTodolistID, todolistTitle, todolistDesc, ownerName, emails);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
                         setMemberCollection(currTodolistID);
@@ -143,6 +149,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                         db.collection("Todolists").document(strCurrTodolistID).collection("Data").document("Data").set(docData);
                         db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
                         Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
+                        sendTodolistInvitation(strCurrTodolistID, todolistTitle, ownerName);
                         requireActivity().onBackPressed();
                     }
                 });
@@ -155,7 +162,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
 
     private void updateRecycleView() {
         TextView txt = getView().findViewById(R.id.empty_hint);
-        if (emails.isEmpty()) {
+        if (memberEmails.isEmpty()) {
             txt.setVisibility(View.VISIBLE);
         } else {
             txt.setVisibility(View.INVISIBLE);
@@ -165,9 +172,9 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
 
     private void setMemberCollection(int todolistID) {
         CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Members"));
-        for (int i = 0; i < emails.size(); i++) {
-            Member member = new Member(emails.get(i));
-            colRef.document(emails.get(i)).set(member);
+        for (int i = 0; i < memberEmails.size(); i++) {
+            Member member = new Member(memberEmails.get(i));
+            colRef.document(memberEmails.get(i)).set(member);
         }
 
     }
@@ -198,12 +205,12 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
             public void onClick(View v) {
                 //validation email
                 String email = dialogEmail.getText().toString();
-                if (!emails.contains(email)) {
-                    emails.add(email);
+                if (!memberEmails.contains(email)) {
+                    memberEmails.add(email);
                     updateRecycleView();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(getActivity(), "Duplicated email are not allowed.", Toast.LENGTH_SHORT);
+                    Toast.makeText(getActivity(), "Duplicated email are not allowed.", Toast.LENGTH_SHORT).show();
                     dialogEmail.setText("");
                 }
             }
@@ -215,5 +222,14 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 dialog.dismiss();
             }
         });
+    }
+
+    private void sendTodolistInvitation(String todolistID, String todolistTitle, String ownerName) {
+        Date curDate = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String formattedDate = df.format(curDate);
+        Notification notification = new Notification(todolistID, todolistTitle, ownerName, formattedDate, memberEmails);
+
+        db.collection("Notifications").document(todolistID).set(notification);
     }
 }

@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -68,8 +71,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
         switch (item.getItemId()) {
-            //command
+            case R.id.nav_myTodolists:
+                navController.navigate(HomeFragmentDirections.actionHomeFragmentToMyTodolistsFragment());
+                break;
+            case R.id.nav_myInbox:
+                navController.navigate(HomeFragmentDirections.actionHomeFragmentToMyInboxFragment());
+                break;
+            case R.id.nav_myProfile:
+                navController.navigate(HomeFragmentDirections.actionHomeFragmentToProfileFragment());
+                break;
+            default:
+                return true;
         }
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawers();
         return true;
     }
 
@@ -80,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.logout:
                 SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();

@@ -107,6 +107,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         String todolistID = null;
+        String position = null;
         switch (v.getId()) {
             case R.id.btn_mytodolist:
                 NavHostFragment.findNavController(getParentFragment()).navigate(HomeFragmentDirections.actionHomeFragmentToMyTodolistsFragment());
@@ -116,12 +117,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.btn_recentAccessOne:
                 todolistID = recentOne;
+                position = "1";
                 break;
             case R.id.btn_recentAccessTwo:
                 todolistID = recentTwo;
+                position = "2";
                 break;
             case R.id.btn_recentAccessThree:
                 todolistID = recentThree;
+                position = "3";
                 break;
             default:
                 break;
@@ -129,6 +133,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if (todolistID != null) {
             Bundle bundle = new Bundle();
             bundle.putString("todolistID", todolistID);
+            bundle.putString("quickAccess_pos", position);
             NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_homeFragment_to_todoListDetailsFragment, bundle);
         }
 

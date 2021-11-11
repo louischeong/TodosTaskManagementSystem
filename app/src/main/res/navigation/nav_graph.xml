@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_todoListDetailsFragment"
             app:destination="@id/todoListDetailsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_myInboxFragment"
+            app:destination="@id/myInboxFragment" />
     </fragment>
 
     <fragment
@@ -114,5 +117,9 @@
         android:name="com.example.todostaskmanagementsystem.EditRoleFragment"
         android:label="fragment_edit_role"
         tools:layout="@layout/fragment_edit_role" />
+    <fragment
+        android:id="@+id/myInboxFragment"
+        android:name="com.example.todostaskmanagementsystem.MyInboxFragment"
+        android:label="MyInboxFragment" />
 
 </navigation>

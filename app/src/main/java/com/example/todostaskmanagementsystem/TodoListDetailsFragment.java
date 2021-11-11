@@ -54,6 +54,7 @@ public class TodoListDetailsFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String todolistID;
     private String todolistName;
+    private String quickAccessPos;
     private SectionAdapter sectionAdapter;
     private ArrayList<Section> sections = new ArrayList();
 
@@ -69,6 +70,7 @@ public class TodoListDetailsFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             todolistID = bundle.getString("todolistID");
+            quickAccessPos = bundle.getString("quickAccess_pos");
         }
 
     }
@@ -129,14 +131,32 @@ public class TodoListDetailsFragment extends Fragment {
         db.collection("Todolists").document(todolistID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Todolist todolist = documentSnapshot.toObject(Todolist.class);
-                TextView txtViewTitle = view.findViewById(R.id.todolist_title);
-                TextView txtViewDesc = view.findViewById(R.id.todolist_desc);
+                if (documentSnapshot.exists()) {
+                    Todolist todolist = documentSnapshot.toObject(Todolist.class);
+                    TextView txtViewTitle = view.findViewById(R.id.todolist_title);
+                    TextView txtViewDesc = view.findViewById(R.id.todolist_desc);
 
-                txtViewTitle.setText(todolist.getName());
-                todolistName = todolist.getName();
-                txtViewDesc.setText(todolist.getDesc());
-                updateRecentAccess();
+                    txtViewTitle.setText(todolist.getName());
+                    todolistName = todolist.getName();
+                    txtViewDesc.setText(todolist.getDesc());
+                    updateRecentAccess();
+                } else {
+                    SharedPreferences prefs = getActivity().getSharedPreferences("recent_accessed", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    switch(quickAccessPos){
+                        case "1":
+                            editor.putString("recentOne", null);break;
+                        case "2":
+                            editor.putString("recentTwo", null);break;
+                        case "3":
+                            editor.putString("recentThree", null);break;
+                        default:
+                    }
+                    editor.commit();
+                    Toast.makeText(getActivity(),"The requested todolist is no longer exists.",Toast.LENGTH_SHORT).show();
+                    requireActivity().onBackPressed();
+                    return;
+                }
             }
         });
         sections.clear();
@@ -377,7 +397,7 @@ public class TodoListDetailsFragment extends Fragment {
         stack.push(todolistOne);
         int index = -1;
         for (int i = 0; i < stack.size(); i++) {
-            if (stack.get(i).getId() != null){
+            if (stack.get(i).getId() != null) {
                 if (stack.get(i).getId().equals(todolistID)) {
                     index = i;
                 }

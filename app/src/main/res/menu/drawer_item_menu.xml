@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/nav_homeFragment" android:title="Home"/>
-    <item android:id="@+id/userProf" android:title="My Todolists"/>
-    <item android:id="@+id/searchUser" android:title="My Profile"/>
-    <item android:id="@+id/nav_addStaff" android:title="Log out"></item>
+    <item android:id="@+id/nav_myTodolists" android:title="My Todolists"/>
+    <item android:id="@+id/nav_myInbox" android:title="My Inbox"></item>
+    <item android:id="@+id/nav_myProfile" android:title="My Profile"/>
 </menu>
