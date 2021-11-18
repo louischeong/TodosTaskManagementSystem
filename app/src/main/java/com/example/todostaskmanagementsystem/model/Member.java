@@ -3,9 +3,9 @@ package com.example.todostaskmanagementsystem.model;
 public class Member {
     private String email;
     private String name;
-    private String role[];
+    private String role;
 
-    public Member(String email, String name, String[] role) {
+    public Member(String email, String name, String role) {
         this.email = email;
         this.name = name;
         this.role = role;
@@ -38,11 +38,11 @@ public class Member {
         this.name = name;
     }
 
-    public String[] getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(String[] role) {
+    public void setRole(String role) {
         this.role = role;
     }
 }
