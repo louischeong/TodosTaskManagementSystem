@@ -2,6 +2,7 @@ package com.example.todostaskmanagementsystem.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
 
@@ -59,6 +65,21 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.msg.setText(msg);
         String title = "Invitation: " + notifications.get(position).getTodolistTitle();
         holder.invitationTitle.setText(title);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String date = notifications.get(position).getDateTime();
+        Date curDate = Calendar.getInstance().getTime();
+        String date2 = sdf.format(curDate);
+
+        try {
+            if (sdf.parse(date).equals(sdf.parse(date2))) {
+                holder.dateTime.setText("Today");
+            } else {
+                holder.dateTime.setText(date.substring(0, date.length() - 5));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         if (isExpanded) {
             previousExpandedPosition = position;

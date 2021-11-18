@@ -63,7 +63,7 @@ public class MyInboxFragment extends Fragment {
                     db.collection("Todolists").document(notifications.get(position).getTodolistID()).update("membersEmail", FieldValue.arrayUnion(email)).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Toast.makeText(getActivity(), "Join \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT);
+                            Toast.makeText(getActivity(), "Join \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT).show();
                             deleteNotification(email, position);
                         }
                     });
@@ -74,10 +74,7 @@ public class MyInboxFragment extends Fragment {
         });
         recyclerView.setAdapter(notificationAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         loadData(view);
-
-
         return view;
     }
 
@@ -120,5 +117,6 @@ public class MyInboxFragment extends Fragment {
         db.collection("Notifications").document(notifications.get(position).getTodolistID()).update("recipientEmails", FieldValue.arrayRemove(email));
         notifications.remove(position);
         notificationAdapter.notifyDataSetChanged();
+        Toast.makeText(getActivity(), "Decline invitation to \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT).show();
     }
 }

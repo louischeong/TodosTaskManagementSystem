@@ -101,13 +101,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.clear();
                 editor.commit();
+                SharedPreferences prefsRecentAccess = getSharedPreferences("recent_accessed", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editorRecentAccess = prefsRecentAccess.edit();
+                editorRecentAccess.clear();
+                editorRecentAccess.commit();
                 Intent myIntent = new Intent(this, LoginActivity.class);
                 startActivity(myIntent);
                 this.finish();
             default:
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 }
