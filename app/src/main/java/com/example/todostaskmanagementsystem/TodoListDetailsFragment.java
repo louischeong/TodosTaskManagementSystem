@@ -364,7 +364,7 @@ public class TodoListDetailsFragment extends Fragment {
                 NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_todoListDetailsFragment_to_manageRoleFragment, bundle);
                 break;
             case R.id.view_changes:
-                //nav to changes log
+                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_todoListDetailsFragment_to_changesLogFragment, bundle);
                 break;
             case R.id.delete_todolist:
                 //delete todolist

@@ -54,6 +54,9 @@
         <action
             android:id="@+id/action_todoListDetailsFragment_to_manageRoleFragment"
             app:destination="@id/manageRoleFragment" />
+        <action
+            android:id="@+id/action_todoListDetailsFragment_to_changesLogFragment"
+            app:destination="@id/changesLogFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewTaskFragment"
@@ -121,5 +124,9 @@
         android:id="@+id/myInboxFragment"
         android:name="com.example.todostaskmanagementsystem.MyInboxFragment"
         android:label="MyInboxFragment" />
+    <fragment
+        android:id="@+id/changesLogFragment"
+        android:name="com.example.todostaskmanagementsystem.ChangesLogFragment"
+        android:label="ChangesLogFragment" />
 
 </navigation>

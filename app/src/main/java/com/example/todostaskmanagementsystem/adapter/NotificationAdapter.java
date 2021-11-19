@@ -39,7 +39,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     private ArrayList<Notification> notifications;
     private int mExpandedPosition = -1;
     private int previousExpandedPosition = -1;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private OnActionClicked listener;
     private Context context;
 
