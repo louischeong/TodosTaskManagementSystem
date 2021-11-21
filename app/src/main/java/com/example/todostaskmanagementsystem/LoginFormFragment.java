@@ -77,7 +77,8 @@ public class LoginFormFragment extends Fragment {
                         if (pass.equals(loginPass)) {
                             SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
-                            editor.putString("pref_email", loginEmail);
+                            editor.putString("pref_email", user.getEmail());
+                            editor.putString("pref_username", user.getName());
                             if (cbRememberMe.isChecked())
                                 editor.putString("pref_rememberMe", "true");
                             editor.commit();

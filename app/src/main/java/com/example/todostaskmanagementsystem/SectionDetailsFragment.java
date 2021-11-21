@@ -1,5 +1,8 @@
 package com.example.todostaskmanagementsystem;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,17 +14,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.adapter.SectionAdapter;
 import com.example.todostaskmanagementsystem.adapter.TaskAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
+import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.Section;
 import com.example.todostaskmanagementsystem.model.TodoTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -62,7 +72,7 @@ public class SectionDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_section_details, container, false);
-
+        setHasOptionsMenu(true);
         Button btnAdd = view.findViewById(R.id.btn_addNewTask);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,11 +80,12 @@ public class SectionDetailsFragment extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putString("todolistID", todolistID);
                 bundle.putString("sectionID", sectionID);
+                bundle.putString("sectionName", sectionName);
                 NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_sectionDetailsFragment_to_addNewTaskFragment, bundle);
             }
         });
 
-        taskAdapter = new TaskAdapter(todoTasks,todolistID,sectionID);
+        taskAdapter = new TaskAdapter(todoTasks, todolistID, sectionID, getActivity(), sectionName);
         taskAdapter.setOnItemClickedListener(new OnItemClicked() {
             @Override
             public void onItemClicked(int position) {
@@ -83,7 +94,7 @@ public class SectionDetailsFragment extends Fragment {
                 bundle.putString("todolistID", todolistID);
                 bundle.putString("sectionID", sectionID);
                 bundle.putString("todoTasksID", todoTasksID);
-                bundle.putString("sectionName",sectionName);
+                bundle.putString("sectionName", sectionName);
                 NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_sectionDetailsFragment_to_taskDetailsFragment, bundle);
             }
         });
@@ -109,7 +120,7 @@ public class SectionDetailsFragment extends Fragment {
         });
     }
 
-    private void loadData(View view){
+    private void loadData(View view) {
         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -136,6 +147,7 @@ public class SectionDetailsFragment extends Fragment {
             }
         });
     }
+
     private void updateRecycleView() {
         TextView txt = getView().findViewById(R.id.empty_hint);
         if (todoTasks.isEmpty()) {
@@ -144,5 +156,132 @@ public class SectionDetailsFragment extends Fragment {
             txt.setVisibility(View.INVISIBLE);
         }
         taskAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull @NotNull Menu menu, @NonNull @NotNull MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.section_item_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull @NotNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_Section:
+                editSectionDialog();
+                break;
+            case R.id.delete_Section:
+                createDeleteConfirmationDialog();
+                break;
+            default:
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void createDeleteConfirmationDialog() {
+        //Declare variables
+        AlertDialog.Builder dialogBuilder;
+        AlertDialog dialog;
+        TextView dialogConfirmMsg;
+        Button dialogConfirmBtn, dialogCancelBtn;
+        dialogBuilder = new AlertDialog.Builder(getContext());
+
+        //inflate views to layout
+        final View confirmView = getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+        dialogConfirmMsg = confirmView.findViewById(R.id.confirm_msg);
+        dialogConfirmBtn = confirmView.findViewById(R.id.btnConfirm);
+        dialogCancelBtn = confirmView.findViewById(R.id.btnCancel);
+
+        //change dialog message
+        dialogConfirmMsg.setText("Are you sure you want to delete this section?");
+
+        //set view for dialog builder
+        dialogBuilder.setView(confirmView);
+
+        //create dialog
+        dialog = dialogBuilder.create();
+
+        //make dialog background transparent
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        //set button listeners
+        dialogConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).delete();
+                Toast.makeText(getActivity(), "Successfully deleted the section.", Toast.LENGTH_SHORT);
+                dialog.dismiss();
+                SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                String userName = prefs.getString("pref_username", null);
+                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "DeleteSection", sectionName);
+                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+                requireActivity().onBackPressed();
+            }
+        });
+
+        dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        //display dialog
+        dialog.show();
+    }
+
+    private void editSectionDialog() {
+        //Declare variables
+        AlertDialog.Builder dialogBuilder;
+        AlertDialog dialog;
+        TextView dialogMsg;
+        EditText dialogSectionName;
+        Button dialogAddBtn, dialogCancelBtn;
+        dialogBuilder = new AlertDialog.Builder(getContext());
+
+        //inflate views to layout
+        final View addSectionView = getLayoutInflater().inflate(R.layout.dialog_single_input, null);
+        dialogSectionName = addSectionView.findViewById(R.id.dialog_input_field);
+        dialogAddBtn = addSectionView.findViewById(R.id.dialog_btnConfirm);
+        dialogCancelBtn = addSectionView.findViewById(R.id.dialog_btnCancel);
+        dialogMsg = addSectionView.findViewById(R.id.dialog_msg);
+
+        //change dialog message
+        dialogMsg.setText("Edit section name:");
+
+        //set view for dialog builder
+        dialogBuilder.setView(addSectionView);
+
+        //create dialog
+        dialog = dialogBuilder.create();
+
+        //make dialog background transparent
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        //set button listeners
+        dialogAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newSectionName = dialogSectionName.getText().toString();
+                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).update("name", newSectionName);
+                SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                String userName = prefs.getString("pref_username", null);
+                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditSection", sectionName, newSectionName);
+                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+                loadData(getView());
+                dialog.dismiss();
+            }
+        });
+
+        dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        //display dialog
+        dialog.show();
     }
 }

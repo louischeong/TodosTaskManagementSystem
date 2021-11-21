@@ -24,11 +24,13 @@ import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.adapter.AddMemberAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
+import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.Member;
 import com.example.todostaskmanagementsystem.model.Notification;
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.example.todostaskmanagementsystem.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -67,14 +69,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         super.onCreate(savedInstanceState);
         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
         userEmail = prefs.getString("pref_email", null);
-
-        db.collection("Users").document(userEmail).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
-                userName = user.getName();
-            }
-        });
+        userName = prefs.getString("pref_username", null);
     }
 
     @Override
@@ -149,7 +144,10 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                         db.collection("Todolists").document(strCurrTodolistID).collection("Data").document("Data").set(docData);
                         db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
                         Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
-                        sendTodolistInvitation(strCurrTodolistID, todolistTitle, ownerName);
+                        if(!memberEmails.isEmpty())
+                            sendTodolistInvitation(strCurrTodolistID, todolistTitle, ownerName);
+                        ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTodolist", todolistTitle);
+                        db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("ChangesLog").add(changesLog);
                         requireActivity().onBackPressed();
                     }
                 });

@@ -2,6 +2,8 @@ package com.example.todostaskmanagementsystem;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -23,9 +25,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.Section;
 import com.example.todostaskmanagementsystem.model.TodoTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -78,8 +82,6 @@ public class TaskDetailsFragment extends Fragment {
         editDueDate = view.findViewById(R.id.task_duedate);
         deleteBtn = view.findViewById(R.id.btn_delete_task);
 
-
-
         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -126,6 +128,10 @@ public class TaskDetailsFragment extends Fragment {
                 TodoTask todoTask = new TodoTask(todoTasksID, editTaskName.getText().toString(), editDesc.getText().toString(), editDueDate.getText().toString(), checkBox.isChecked(), "");
                 db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).set(todoTask);
                 Toast.makeText(getActivity(), "Task Updated Successfully", Toast.LENGTH_SHORT).show();
+                SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                String userName = prefs.getString("pref_username", null);
+                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditTask", sectionName, editTaskName.getText().toString());
+                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
                 getActivity().onBackPressed();
             }
         });
@@ -186,6 +192,10 @@ public class TaskDetailsFragment extends Fragment {
             public void onClick(View v) {
                 db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).delete();
                 dialog.dismiss();
+                SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                String userName = prefs.getString("pref_username", null);
+                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "DeleteTask", sectionName, editTaskName.getText().toString());
+                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
                 requireActivity().onBackPressed();
             }
         });

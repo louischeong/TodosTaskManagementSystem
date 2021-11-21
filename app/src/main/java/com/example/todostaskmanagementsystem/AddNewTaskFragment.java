@@ -1,6 +1,8 @@
 package com.example.todostaskmanagementsystem;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -17,8 +19,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.TodoTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -30,6 +34,7 @@ public class AddNewTaskFragment extends Fragment {
 
     private String todolistID;
     private String sectionID;
+    private String sectionName;
     private EditText dueDate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -45,6 +50,7 @@ public class AddNewTaskFragment extends Fragment {
         if (bundle != null) {
             todolistID = bundle.getString("todolistID");
             sectionID = bundle.getString("sectionID");
+            sectionName = bundle.getString("sectionName");
         }
 
     }
@@ -93,6 +99,10 @@ public class AddNewTaskFragment extends Fragment {
                         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
                         db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
                         Toast.makeText(getContext(), "Successfully Created Task", Toast.LENGTH_SHORT);
+                        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                        String userName = prefs.getString("pref_username", null);
+                        ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTask", sectionName, editTextName.getText().toString());
+                        db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
                         requireActivity().onBackPressed();
                     }
                 });

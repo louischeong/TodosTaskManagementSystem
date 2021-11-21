@@ -1,25 +1,45 @@
 package com.example.todostaskmanagementsystem.model;
 
+import com.google.firebase.Timestamp;
+
 public class ChangesLog {
-    private String dateTime;
+    private Timestamp dateTime;
     private String username;
     private String changesType;
+    private String parentName;
+    private String childName;
 
-    public ChangesLog(){
+    public ChangesLog() {
 
     }
 
-    public ChangesLog(String dateTime, String username, String changesType) {
+
+    public ChangesLog(Timestamp dateTime, String username, String changesType) {
         this.dateTime = dateTime;
         this.username = username;
         this.changesType = changesType;
     }
 
-    public String getDateTime() {
+    public ChangesLog(Timestamp dateTime, String username, String changesType, String parentName) {
+        this.dateTime = dateTime;
+        this.username = username;
+        this.changesType = changesType;
+        this.parentName = parentName;
+    }
+
+    public ChangesLog(Timestamp dateTime, String username, String changesType, String parentName, String childName) {
+        this.dateTime = dateTime;
+        this.username = username;
+        this.changesType = changesType;
+        this.parentName = parentName;
+        this.childName = childName;
+    }
+
+    public Timestamp getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(String dateTime) {
+    public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -37,5 +57,21 @@ public class ChangesLog {
 
     public void setChangesType(String changesType) {
         this.changesType = changesType;
+    }
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
+    public String getChildName() {
+        return childName;
+    }
+
+    public void setChildName(String childName) {
+        this.childName = childName;
     }
 }

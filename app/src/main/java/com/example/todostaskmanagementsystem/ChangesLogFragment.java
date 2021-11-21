@@ -18,6 +18,7 @@ import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,7 @@ public class ChangesLogFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_changes_log, container, false);
-        changesLogAdapter = new ChangesLogAdapter(changesLogs);
+        changesLogAdapter = new ChangesLogAdapter(changesLogs, getActivity());
         RecyclerView recyclerView = view.findViewById(R.id.recycle_changeslog);
         recyclerView.setAdapter(changesLogAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -73,7 +74,7 @@ public class ChangesLogFragment extends Fragment {
 
     private void loadData(View view) {
         changesLogs.clear();
-        db.collection("Todolists").document(todolistID).collection("ChangesLog").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("Todolists").document(todolistID).collection("ChangesLog").orderBy("dateTime", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {

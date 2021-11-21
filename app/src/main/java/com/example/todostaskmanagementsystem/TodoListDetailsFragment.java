@@ -29,11 +29,13 @@ import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.adapter.SectionAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
+import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.Section;
 import com.example.todostaskmanagementsystem.model.TodoTask;
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -143,34 +145,38 @@ public class TodoListDetailsFragment extends Fragment {
                 } else {
                     SharedPreferences prefs = getActivity().getSharedPreferences("recent_accessed", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
-                    switch(quickAccessPos){
+                    switch (quickAccessPos) {
                         case "1":
-                            editor.putString("recentOne", null);break;
+                            editor.putString("recentOne", null);
+                            break;
                         case "2":
-                            editor.putString("recentTwo", null);break;
+                            editor.putString("recentTwo", null);
+                            break;
                         case "3":
-                            editor.putString("recentThree", null);break;
+                            editor.putString("recentThree", null);
+                            break;
                         default:
                     }
                     editor.commit();
-                    Toast.makeText(getActivity(),"The requested todolist is no longer exists.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "The requested todolist is no longer exists.", Toast.LENGTH_SHORT).show();
                     requireActivity().onBackPressed();
                     return;
                 }
+                sections.clear();
+                db.collection("Todolists").document(todolistID).collection("Sections").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Section section = documentSnapshot.toObject(Section.class);
+                            sections.add(section);
+                        }
+                        updateRecycleView();
+                        view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                    }
+                });
             }
         });
-        sections.clear();
-        db.collection("Todolists").document(todolistID).collection("Sections").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    Section section = documentSnapshot.toObject(Section.class);
-                    sections.add(section);
-                }
-                updateRecycleView();
-                view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-            }
-        });
+
     }
 
     private void updateRecycleView() {
@@ -227,6 +233,10 @@ public class TodoListDetailsFragment extends Fragment {
                         db.collection("Todolists").document(todolistID).collection("Sections").document(secID).set(sec);
                         db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currSectionID", currSectionID);
                         updateRecycleView();
+                        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                        String userName = prefs.getString("pref_username", null);
+                        ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateSection", sectionName);
+                        db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
                         dialog.dismiss();
                     }
                 });
@@ -276,6 +286,7 @@ public class TodoListDetailsFragment extends Fragment {
             public void onClick(View v) {
                 db.collection("Todolists").document(todolistID).delete();
                 dialog.dismiss();
+                Toast.makeText(getActivity(), "Successfully deleted the todolist.", Toast.LENGTH_SHORT);
                 requireActivity().onBackPressed();
             }
         });
@@ -295,7 +306,6 @@ public class TodoListDetailsFragment extends Fragment {
         //Declare variables
         AlertDialog.Builder dialogBuilder;
         AlertDialog dialog;
-        TextView dialogMsg;
         EditText dialogEditName;
         EditText dialogEditDesc;
         Button dialogConfirmBtn, dialogCancelBtn;
@@ -326,6 +336,10 @@ public class TodoListDetailsFragment extends Fragment {
                 data.put("desc", editDesc);
                 db.collection("Todolists").document(todolistID).update(data);
                 Toast.makeText(getActivity(), "Update successfully", Toast.LENGTH_SHORT);
+                SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                String userName = prefs.getString("pref_username", null);
+                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditTodolist", todolistName);
+                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
                 dialog.dismiss();
                 loadData(getView());
             }

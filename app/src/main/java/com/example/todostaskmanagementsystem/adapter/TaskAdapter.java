@@ -1,5 +1,7 @@
 package com.example.todostaskmanagementsystem.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todostaskmanagementsystem.R;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
+import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.TodoTask;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +30,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
     private OnItemClicked listener;
     private String todolistID, sectionID;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Context context;
+    private String sectionName;
 
-    public TaskAdapter(ArrayList<TodoTask> todoTasks, String todolistID, String sectionID) {
+    public TaskAdapter(ArrayList<TodoTask> todoTasks, String todolistID, String sectionID, Context context, String sectionName) {
         this.todoTasks = todoTasks;
         this.todolistID = todolistID;
         this.sectionID = sectionID;
+        this.context = context;
+        this.sectionName = sectionName;
     }
 
     @NonNull
@@ -51,6 +59,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
             @Override
             public void onClick(View v) {
                 db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasks.get(position).getId()).update("complete", holder.complete.isChecked());
+                String isMark = holder.complete.isChecked() ? "MarkTask" : "UnmarkTask";
+                SharedPreferences prefs = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                String userName = prefs.getString("pref_username", null);
+                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, isMark, todoTasks.get(position).getName(), sectionName);
+                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
