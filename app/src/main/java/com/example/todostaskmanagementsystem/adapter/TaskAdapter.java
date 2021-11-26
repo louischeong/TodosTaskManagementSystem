@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todostaskmanagementsystem.R;
+import com.example.todostaskmanagementsystem.interfaces.OnActionClicked;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.TodoTask;
@@ -27,18 +28,13 @@ import java.util.Map;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> {
 
     private ArrayList<TodoTask> todoTasks;
-    private OnItemClicked listener;
-    private String todolistID, sectionID;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private Context context;
-    private String sectionName;
+    private Boolean isMarkAllowed;
+    private OnActionClicked listener;
 
-    public TaskAdapter(ArrayList<TodoTask> todoTasks, String todolistID, String sectionID, Context context, String sectionName) {
+
+    public TaskAdapter(ArrayList<TodoTask> todoTasks, Boolean isMarkAllowed) {
         this.todoTasks = todoTasks;
-        this.todolistID = todolistID;
-        this.sectionID = sectionID;
-        this.context = context;
-        this.sectionName = sectionName;
+        this.isMarkAllowed = isMarkAllowed;
     }
 
     @NonNull
@@ -58,19 +54,25 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
         holder.complete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasks.get(position).getId()).update("complete", holder.complete.isChecked());
-                String isMark = holder.complete.isChecked() ? "MarkTask" : "UnmarkTask";
-                SharedPreferences prefs = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
-                String userName = prefs.getString("pref_username", null);
-                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, isMark, todoTasks.get(position).getName(), sectionName);
-                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+                if(listener != null){
+                    if(!isMarkAllowed){
+                        holder.complete.setChecked(!holder.complete.isChecked());
+                        listener.onActionClicked(position,"notAllowed");
+                    }else{
+                        if(holder.complete.isChecked()){
+                            listener.onActionClicked(position,"mark");
+                        }else{
+                            listener.onActionClicked(position,"unmark");
+                        }
+                    }
+                }
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onItemClicked(position);
+                    listener.onActionClicked(position,"navigate");
                 }
             }
         });
@@ -81,7 +83,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
         return todoTasks.size();
     }
 
-    public void setOnItemClickedListener(OnItemClicked listener) {
+    public void setOnItemClickedListener(OnActionClicked listener) {
         this.listener = listener;
     }
 

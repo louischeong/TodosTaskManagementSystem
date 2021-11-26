@@ -24,12 +24,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.todostaskmanagementsystem.adapter.RoleCheckAdapter;
 import com.example.todostaskmanagementsystem.adapter.SectionAdapter;
+import com.example.todostaskmanagementsystem.interfaces.OnActionClicked;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.ChangesLog;
+import com.example.todostaskmanagementsystem.model.Role;
 import com.example.todostaskmanagementsystem.model.Section;
 import com.example.todostaskmanagementsystem.model.TodoTask;
 import com.example.todostaskmanagementsystem.model.Todolist;
@@ -59,12 +63,14 @@ public class TodoListDetailsFragment extends Fragment {
     private String quickAccessPos;
     private SectionAdapter sectionAdapter;
     private ArrayList<Section> sections = new ArrayList();
-
+    private List<String> checkedEditRole = new ArrayList();
+    private List<String> checkedMarkRole = new ArrayList();
+    private List<String> roles = new ArrayList();
+    private boolean owner = false;
 
     public TodoListDetailsFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,7 +94,17 @@ public class TodoListDetailsFragment extends Fragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createAddSectionDialog();
+
+                db.collection("Todolists").document(todolistID).collection("Roles").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Role role = documentSnapshot.toObject(Role.class);
+                            roles.add(role.getRoleName());
+                        }
+                        createAddSectionDialog(view);
+                    }
+                });
             }
         });
 
@@ -103,6 +119,7 @@ public class TodoListDetailsFragment extends Fragment {
                 bundle.putString("sectionID", sectionID);
                 bundle.putString("sectionName", sections.get(position).getName());
                 bundle.putString("todolistName", todolistName);
+                bundle.putBoolean("owner", owner);
 
                 NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_todoListDetailsFragment_to_sectionDetailsFragment, bundle);
             }
@@ -135,6 +152,11 @@ public class TodoListDetailsFragment extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     Todolist todolist = documentSnapshot.toObject(Todolist.class);
+                    SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                    String email = prefs.getString("pref_email", null);
+                    owner = todolist.getMembersEmail().get(0).equals(email);
+                    getActivity().invalidateOptionsMenu();
+
                     TextView txtViewTitle = view.findViewById(R.id.todolist_title);
                     TextView txtViewDesc = view.findViewById(R.id.todolist_desc);
 
@@ -170,7 +192,7 @@ public class TodoListDetailsFragment extends Fragment {
                             Section section = documentSnapshot.toObject(Section.class);
                             sections.add(section);
                         }
-                        updateRecycleView();
+                        updateRecycleView(view);
                         view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                     }
                 });
@@ -179,9 +201,9 @@ public class TodoListDetailsFragment extends Fragment {
 
     }
 
-    private void updateRecycleView() {
+    private void updateRecycleView(View view) {
 
-        TextView txt = getView().findViewById(R.id.empty_hint);
+        TextView txt = view.findViewById(R.id.empty_hint);
         if (sections.isEmpty()) {
             txt.setVisibility(View.VISIBLE);
         } else {
@@ -190,27 +212,54 @@ public class TodoListDetailsFragment extends Fragment {
         sectionAdapter.notifyDataSetChanged();
     }
 
-    private void createAddSectionDialog() {
+    private void createAddSectionDialog(View view) {
         //Declare variables
         AlertDialog.Builder dialogBuilder;
         AlertDialog dialog;
-        TextView dialogMsg;
         EditText dialogSectionName;
         Button dialogAddBtn, dialogCancelBtn;
+        RecyclerView dialogRecyclerViewEdit, dialogRecyclerViewMark;
         dialogBuilder = new AlertDialog.Builder(getContext());
 
         //inflate views to layout
-        final View addSectionView = getLayoutInflater().inflate(R.layout.dialog_single_input, null);
-        dialogSectionName = addSectionView.findViewById(R.id.dialog_input_field);
-        dialogAddBtn = addSectionView.findViewById(R.id.dialog_btnConfirm);
-        dialogCancelBtn = addSectionView.findViewById(R.id.dialog_btnCancel);
-        dialogMsg = addSectionView.findViewById(R.id.dialog_msg);
+        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_section, null);
+        dialogSectionName = dialogView.findViewById(R.id.dialog_input_field);
+        dialogAddBtn = dialogView.findViewById(R.id.dialog_btnConfirm);
+        dialogCancelBtn = dialogView.findViewById(R.id.dialog_btnCancel);
+        dialogRecyclerViewEdit = dialogView.findViewById(R.id.recycler_roleListEdit);
+        dialogRecyclerViewMark = dialogView.findViewById(R.id.recycler_roleListMark);
 
-        //change dialog message
-        dialogMsg.setText("Enter new section name:");
+        //Link Adapter
+        checkedEditRole.add("Default");
+        checkedMarkRole.add("Default");
+        RoleCheckAdapter roleCheckEditAdapter = new RoleCheckAdapter(roles, checkedEditRole);
+        roleCheckEditAdapter.setOnActionClickedListener(new OnActionClicked() {
+            @Override
+            public void onActionClicked(int position, String action) {
+                if (action == "true")
+                    checkedEditRole.add(roles.get(position));
+                else
+                    checkedEditRole.remove(roles.get(position));
+            }
+        });
+        dialogRecyclerViewEdit.setAdapter(roleCheckEditAdapter);
+        dialogRecyclerViewEdit.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        RoleCheckAdapter roleCheckMarkAdapter = new RoleCheckAdapter(roles, checkedMarkRole);
+        roleCheckMarkAdapter.setOnActionClickedListener(new OnActionClicked() {
+            @Override
+            public void onActionClicked(int position, String action) {
+                if (action == "true")
+                    checkedMarkRole.add(roles.get(position));
+                else
+                    checkedMarkRole.remove(roles.get(position));
+            }
+        });
+        dialogRecyclerViewMark.setAdapter(roleCheckMarkAdapter);
+        dialogRecyclerViewMark.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         //set view for dialog builder
-        dialogBuilder.setView(addSectionView);
+        dialogBuilder.setView(dialogView);
 
         //create dialog
         dialog = dialogBuilder.create();
@@ -228,11 +277,11 @@ public class TodoListDetailsFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         int currSectionID = Integer.parseInt(documentSnapshot.get("currSectionID").toString()) + 1;
                         String secID = "S" + currSectionID;
-                        Section sec = new Section(secID, sectionName);
+                        Section sec = new Section(secID, sectionName, checkedEditRole, checkedMarkRole);
                         sections.add(sec);
                         db.collection("Todolists").document(todolistID).collection("Sections").document(secID).set(sec);
                         db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currSectionID", currSectionID);
-                        updateRecycleView();
+                        updateRecycleView(view);
                         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                         String userName = prefs.getString("pref_username", null);
                         ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateSection", sectionName);
@@ -286,7 +335,7 @@ public class TodoListDetailsFragment extends Fragment {
             public void onClick(View v) {
                 db.collection("Todolists").document(todolistID).delete();
                 dialog.dismiss();
-                Toast.makeText(getActivity(), "Successfully deleted the todolist.", Toast.LENGTH_SHORT);
+                Toast.makeText(getActivity(), "Successfully deleted the todolist.", Toast.LENGTH_SHORT).show();
                 requireActivity().onBackPressed();
             }
         });
@@ -335,7 +384,7 @@ public class TodoListDetailsFragment extends Fragment {
                 data.put("name", editName);
                 data.put("desc", editDesc);
                 db.collection("Todolists").document(todolistID).update(data);
-                Toast.makeText(getActivity(), "Update successfully", Toast.LENGTH_SHORT);
+                Toast.makeText(getActivity(), "Update successfully", Toast.LENGTH_SHORT).show();
                 SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                 String userName = prefs.getString("pref_username", null);
                 ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditTodolist", todolistName);
@@ -354,6 +403,19 @@ public class TodoListDetailsFragment extends Fragment {
 
         //display dialog
         dialog.show();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull @NotNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (owner) {
+            menu.removeItem(R.id.leave_todolist);
+        } else {
+            menu.removeItem(R.id.edit_todolist);
+            menu.removeItem(R.id.manage_member);
+            menu.removeItem(R.id.manage_role);
+            menu.removeItem(R.id.delete_todolist);
+        }
     }
 
     @Override

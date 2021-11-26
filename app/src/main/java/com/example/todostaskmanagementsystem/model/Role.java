@@ -1,18 +1,35 @@
 package com.example.todostaskmanagementsystem.model;
 
-public class Role {
-    private String roleName, desc, id;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Role(String roleName, String desc, String id) {
-        this.roleName = roleName;
-        this.desc = desc;
-        this.id = id;
-    }
+public class Role {
+    private String id, roleName, desc;
+    private List<String> members;
 
     public Role(){
-        this.roleName = "";
-        this.desc = "";
-        this.id = "";
+
+    }
+
+    public Role(String id, String roleName, String desc) {
+        this.id = id;
+        this.roleName = roleName;
+        this.desc = desc;
+    }
+
+    public Role(String id, String roleName, String desc, List<String> members) {
+        this.id = id;
+        this.roleName = roleName;
+        this.desc = desc;
+        this.members = members;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getRoleName() {
@@ -31,11 +48,11 @@ public class Role {
         this.desc = desc;
     }
 
-    public String getId() {
-        return id;
+    public List<String> getMembers() {
+        return members;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMembers(List<String> members) {
+        this.members = members;
     }
 }

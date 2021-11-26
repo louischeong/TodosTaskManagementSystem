@@ -98,7 +98,7 @@ public class AddNewTaskFragment extends Fragment {
                         TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString(), "1/1/1111");
                         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
                         db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
-                        Toast.makeText(getContext(), "Successfully Created Task", Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(), "Successfully Created Task", Toast.LENGTH_SHORT).show();
                         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                         String userName = prefs.getString("pref_username", null);
                         ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTask", sectionName, editTextName.getText().toString());

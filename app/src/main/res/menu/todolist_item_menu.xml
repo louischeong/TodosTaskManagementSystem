@@ -4,5 +4,6 @@
     <item android:id="@+id/manage_member" android:title="Manage Member"/>
     <item android:id="@+id/manage_role" android:title="Manage Role"/>
     <item android:id="@+id/view_changes" android:title="View Changes Log"></item>
+    <item android:id="@+id/leave_todolist" android:title="Leave Todolist"></item>
     <item android:id="@+id/delete_todolist" android:title="Delete Todolist"></item>
 </menu>

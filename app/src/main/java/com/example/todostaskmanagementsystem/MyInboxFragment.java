@@ -25,11 +25,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyInboxFragment extends Fragment {
 
@@ -60,6 +63,8 @@ public class MyInboxFragment extends Fragment {
                 SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                 String email = prefs.getString("pref_email", null);
                 if (joinOrIgnore.equals("join")) {
+
+                    db.collection("Todolists").document(notifications.get(position).getTodolistID()).collection("Roles").document("Default").update("members",FieldValue.arrayUnion(email));
                     db.collection("Todolists").document(notifications.get(position).getTodolistID()).update("membersEmail", FieldValue.arrayUnion(email)).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
@@ -69,6 +74,7 @@ public class MyInboxFragment extends Fragment {
                     });
                 } else {
                     deleteNotification(email, position);
+                    Toast.makeText(getActivity(), "Decline invitation to \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -96,27 +102,32 @@ public class MyInboxFragment extends Fragment {
         notifications.clear();
         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
         String email = prefs.getString("pref_email", null);
-        db.collection("Notifications").whereArrayContains("recipientEmails", email).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("Notifications").whereArrayContains("recipientEmails", email).orderBy("dateTime", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     Notification notification = documentSnapshot.toObject(Notification.class);
                     notifications.add(notification);
                 }
-                notificationAdapter.notifyDataSetChanged();
-                if (notifications.isEmpty())
-                    view.findViewById(R.id.empty_hint).setVisibility(View.VISIBLE);
-                else
-                    view.findViewById(R.id.empty_hint).setVisibility(View.GONE);
+                updateRecycleView();
                 view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
             }
         });
     }
 
+    private void updateRecycleView() {
+        TextView txt = getView().findViewById(R.id.empty_hint);
+        if (notifications.isEmpty()) {
+            txt.setVisibility(View.VISIBLE);
+        } else {
+            txt.setVisibility(View.INVISIBLE);
+        }
+        notificationAdapter.notifyDataSetChanged();
+    }
+
     private void deleteNotification(String email, int position) {
         db.collection("Notifications").document(notifications.get(position).getTodolistID()).update("recipientEmails", FieldValue.arrayRemove(email));
+        updateRecycleView();
         notifications.remove(position);
-        notificationAdapter.notifyDataSetChanged();
-        Toast.makeText(getActivity(), "Decline invitation to \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT).show();
     }
 }

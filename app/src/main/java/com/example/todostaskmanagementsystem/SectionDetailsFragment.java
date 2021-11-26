@@ -20,14 +20,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.todostaskmanagementsystem.adapter.RoleCheckAdapter;
 import com.example.todostaskmanagementsystem.adapter.SectionAdapter;
 import com.example.todostaskmanagementsystem.adapter.TaskAdapter;
+import com.example.todostaskmanagementsystem.interfaces.OnActionClicked;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.ChangesLog;
+import com.example.todostaskmanagementsystem.model.Role;
 import com.example.todostaskmanagementsystem.model.Section;
 import com.example.todostaskmanagementsystem.model.TodoTask;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +44,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SectionDetailsFragment extends Fragment {
 
@@ -50,6 +55,17 @@ public class SectionDetailsFragment extends Fragment {
     private String todolistName;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TaskAdapter taskAdapter;
+    private List<String> checkedEditRole = new ArrayList();
+    private List<String> checkedMarkRole = new ArrayList();
+    private List<String> roles = new ArrayList();
+    private RoleCheckAdapter roleCheckEditAdapter;
+    private RoleCheckAdapter roleCheckMarkAdapter;
+    private List<String> allowedEdit = new ArrayList<>();
+    private List<String> allowedMark = new ArrayList<>();
+    private String userEmail;
+    private String userRoleName;
+    private boolean isOwner;
+    private boolean isMarkAllowed;
 
     public SectionDetailsFragment() {
         // Required empty public constructor
@@ -63,7 +79,10 @@ public class SectionDetailsFragment extends Fragment {
             todolistID = bundle.getString("todolistID");
             sectionID = bundle.getString("sectionID");
             todolistName = bundle.getString("todolistName");
+            isOwner = bundle.getBoolean("owner");
         }
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        userEmail = prefs.getString("pref_email", null);
     }
 
     @Override
@@ -77,6 +96,10 @@ public class SectionDetailsFragment extends Fragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!allowedEdit.contains(userRoleName)) {
+                    Toast.makeText(getActivity(), "You do not have permission to add new task in this section.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Bundle bundle = new Bundle();
                 bundle.putString("todolistID", todolistID);
                 bundle.putString("sectionID", sectionID);
@@ -85,17 +108,29 @@ public class SectionDetailsFragment extends Fragment {
             }
         });
 
-        taskAdapter = new TaskAdapter(todoTasks, todolistID, sectionID, getActivity(), sectionName);
-        taskAdapter.setOnItemClickedListener(new OnItemClicked() {
+        taskAdapter = new TaskAdapter(todoTasks, isMarkAllowed);
+        taskAdapter.setOnItemClickedListener(new OnActionClicked() {
             @Override
-            public void onItemClicked(int position) {
-                String todoTasksID = todoTasks.get(position).getId();
-                Bundle bundle = new Bundle();
-                bundle.putString("todolistID", todolistID);
-                bundle.putString("sectionID", sectionID);
-                bundle.putString("todoTasksID", todoTasksID);
-                bundle.putString("sectionName", sectionName);
-                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_sectionDetailsFragment_to_taskDetailsFragment, bundle);
+            public void onActionClicked(int position, String action) {
+                if (action.equals("notAllowed")) {
+                    Toast.makeText(getActivity(), "You do not have permission to mark tasks as completed in this section", Toast.LENGTH_SHORT).show();
+                }
+                if (action.equals("navigate")) {
+                    String todoTasksID = todoTasks.get(position).getId();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("todolistID", todolistID);
+                    bundle.putString("sectionID", sectionID);
+                    bundle.putString("todoTasksID", todoTasksID);
+                    bundle.putString("sectionName", sectionName);
+                    NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_sectionDetailsFragment_to_taskDetailsFragment, bundle);
+                } else {
+                    boolean isMark = action.equals("mark");
+                    db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasks.get(position).getId()).update("complete", isMark);
+                    String strIsMark = isMark ? "MarkTask" : "UnmarkTask";
+                    ChangesLog changesLog = new ChangesLog(Timestamp.now(), userEmail, strIsMark, todoTasks.get(position).getName(), sectionName);
+                    db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+                }
+
             }
         });
         RecyclerView recyclerView = view.findViewById(R.id.recycle_todoTasks);
@@ -121,15 +156,34 @@ public class SectionDetailsFragment extends Fragment {
     }
 
     private void loadData(View view) {
+        allowedMark.clear();
+        allowedEdit.clear();
+
         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Section sec = documentSnapshot.toObject(Section.class);
+                allowedMark.addAll(sec.getAllowedMark());
+                allowedEdit.addAll(sec.getAllowedEdit());
+                db.collection("Todolists").document(todolistID).collection("Roles").whereArrayContains("members", userEmail).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Role role = documentSnapshot.toObject(Role.class);
+                            userRoleName = role.getRoleName();
+                        }
+                        isMarkAllowed = allowedMark.contains(userRoleName);
+                        getActivity().invalidateOptionsMenu();
+                    }
+                });
+
+
                 TextView txtSecTitle = view.findViewById(R.id.section_title);
                 TextView txtTodolistName = view.findViewById(R.id.todolist_title);
                 sectionName = sec.getName();
                 txtSecTitle.setText(sectionName);
                 txtTodolistName.setText(todolistName);
+
             }
         });
 
@@ -146,6 +200,7 @@ public class SectionDetailsFragment extends Fragment {
                 view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
             }
         });
+
     }
 
     private void updateRecycleView() {
@@ -159,6 +214,13 @@ public class SectionDetailsFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(@NonNull @NotNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (!allowedEdit.contains(userRoleName) && !isOwner)
+            menu.clear();
+    }
+
+    @Override
     public void onCreateOptionsMenu(@NonNull @NotNull Menu menu, @NonNull @NotNull MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.section_item_menu, menu);
@@ -169,7 +231,31 @@ public class SectionDetailsFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull @NotNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit_Section:
-                editSectionDialog();
+                checkedEditRole.clear();
+                checkedMarkRole.clear();
+                roles.clear();
+                db.collection("Todolists").document(todolistID).collection("Roles").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Role role = documentSnapshot.toObject(Role.class);
+                            roles.add(role.getRoleName());
+                        }
+                        db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                createEditSectionDialog();
+                                Section section = documentSnapshot.toObject(Section.class);
+                                //if (!section.getAllowedEdit().isEmpty())
+                                checkedEditRole.addAll(section.getAllowedEdit());
+                                //if (!section.getAllowedMark().isEmpty())
+                                checkedMarkRole.addAll(section.getAllowedMark());
+                                roleCheckEditAdapter.notifyDataSetChanged();
+                                roleCheckMarkAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                });
                 break;
             case R.id.delete_Section:
                 createDeleteConfirmationDialog();
@@ -193,6 +279,7 @@ public class SectionDetailsFragment extends Fragment {
         dialogConfirmBtn = confirmView.findViewById(R.id.btnConfirm);
         dialogCancelBtn = confirmView.findViewById(R.id.btnCancel);
 
+
         //change dialog message
         dialogConfirmMsg.setText("Are you sure you want to delete this section?");
 
@@ -210,7 +297,7 @@ public class SectionDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).delete();
-                Toast.makeText(getActivity(), "Successfully deleted the section.", Toast.LENGTH_SHORT);
+                Toast.makeText(getActivity(), "Successfully deleted the section.", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                 String userName = prefs.getString("pref_username", null);
@@ -231,27 +318,56 @@ public class SectionDetailsFragment extends Fragment {
         dialog.show();
     }
 
-    private void editSectionDialog() {
+    private void createEditSectionDialog() {
         //Declare variables
         AlertDialog.Builder dialogBuilder;
         AlertDialog dialog;
         TextView dialogMsg;
         EditText dialogSectionName;
         Button dialogAddBtn, dialogCancelBtn;
+        RecyclerView dialogRecyclerViewEdit, dialogRecyclerViewMark;
         dialogBuilder = new AlertDialog.Builder(getContext());
 
         //inflate views to layout
-        final View addSectionView = getLayoutInflater().inflate(R.layout.dialog_single_input, null);
-        dialogSectionName = addSectionView.findViewById(R.id.dialog_input_field);
-        dialogAddBtn = addSectionView.findViewById(R.id.dialog_btnConfirm);
-        dialogCancelBtn = addSectionView.findViewById(R.id.dialog_btnCancel);
-        dialogMsg = addSectionView.findViewById(R.id.dialog_msg);
+        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_section, null);
+        dialogSectionName = dialogView.findViewById(R.id.dialog_input_field);
+        dialogAddBtn = dialogView.findViewById(R.id.dialog_btnConfirm);
+        dialogCancelBtn = dialogView.findViewById(R.id.dialog_btnCancel);
+        dialogRecyclerViewEdit = dialogView.findViewById(R.id.recycler_roleListEdit);
+        dialogRecyclerViewMark = dialogView.findViewById(R.id.recycler_roleListMark);
+        dialogMsg = dialogView.findViewById(R.id.dialog_msg);
 
-        //change dialog message
-        dialogMsg.setText("Edit section name:");
+        dialogSectionName.setText(sectionName);
+        dialogMsg.setText("Edit Section");
+        //Link Adapter
+        roleCheckEditAdapter = new RoleCheckAdapter(roles, checkedEditRole);
+        roleCheckEditAdapter.setOnActionClickedListener(new OnActionClicked() {
+            @Override
+            public void onActionClicked(int position, String action) {
+                if (action == "true")
+                    checkedEditRole.add(roles.get(position));
+                else
+                    checkedEditRole.remove(roles.get(position));
+            }
+        });
+        dialogRecyclerViewEdit.setAdapter(roleCheckEditAdapter);
+        dialogRecyclerViewEdit.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        roleCheckMarkAdapter = new RoleCheckAdapter(roles, checkedMarkRole);
+        roleCheckMarkAdapter.setOnActionClickedListener(new OnActionClicked() {
+            @Override
+            public void onActionClicked(int position, String action) {
+                if (action == "true")
+                    checkedMarkRole.add(roles.get(position));
+                else
+                    checkedMarkRole.remove(roles.get(position));
+            }
+        });
+        dialogRecyclerViewMark.setAdapter(roleCheckMarkAdapter);
+        dialogRecyclerViewMark.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         //set view for dialog builder
-        dialogBuilder.setView(addSectionView);
+        dialogBuilder.setView(dialogView);
 
         //create dialog
         dialog = dialogBuilder.create();
@@ -263,14 +379,15 @@ public class SectionDetailsFragment extends Fragment {
         dialogAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newSectionName = dialogSectionName.getText().toString();
-                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).update("name", newSectionName);
-                SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
-                String userName = prefs.getString("pref_username", null);
-                ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditSection", sectionName, newSectionName);
-                db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
-                loadData(getView());
-                dialog.dismiss();
+                String sectionName = dialogSectionName.getText().toString();
+                Section sec = new Section(sectionID, sectionName, checkedEditRole, checkedMarkRole);
+                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).set(sec).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(getActivity(), "Successfully update section details.", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                });
             }
         });
 

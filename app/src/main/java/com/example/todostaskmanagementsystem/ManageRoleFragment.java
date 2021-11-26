@@ -1,5 +1,8 @@
 package com.example.todostaskmanagementsystem;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,19 +14,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.adapter.RoleAdapter;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
+import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.Role;
 import com.example.todostaskmanagementsystem.model.Section;
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ManageRoleFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -63,11 +73,7 @@ public class ManageRoleFragment extends Fragment {
         roleAdapter.setOnItemClickedListener(new OnItemClicked() {
             @Override
             public void onItemClicked(int position) {
-                String roleID = roles.get(position).getId();
-                Bundle bundle = new Bundle();
-                bundle.putString("todolistID", todolistID);
-                bundle.putString("roleID", roleID);
-                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_manageRoleFragment_to_editRoleFragment, bundle);
+                createEditRoleDialog(position);
             }
         });
         recyclerView.setAdapter(roleAdapter);
@@ -99,5 +105,64 @@ public class ManageRoleFragment extends Fragment {
             txt.setVisibility(View.INVISIBLE);
         }
         roleAdapter.notifyDataSetChanged();
+    }
+
+    private void createEditRoleDialog(int position) {
+        //Declare variables
+        AlertDialog.Builder dialogBuilder;
+        AlertDialog dialog;
+        EditText dialogEditName;
+        EditText dialogEditDesc;
+        Button dialogConfirmBtn, dialogCancelBtn;
+        dialogBuilder = new AlertDialog.Builder(getContext());
+
+        //inflate views to layout
+        final View editView = getLayoutInflater().inflate(R.layout.dialog_edit_role, null);
+        dialogEditName = editView.findViewById(R.id.dialog_input_title);
+        dialogEditDesc = editView.findViewById(R.id.dialog_input_desc);
+        dialogConfirmBtn = editView.findViewById(R.id.dialog_btnConfirm);
+        dialogCancelBtn = editView.findViewById(R.id.dialog_btnCancel);
+
+        dialogEditName.setText(roles.get(position).getRoleName());
+        dialogEditDesc.setText(roles.get(position).getDesc());
+
+        //set view for dialog builder
+        dialogBuilder.setView(editView);
+        //create dialog
+        dialog = dialogBuilder.create();
+        //make dialog background transparent
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        //set button listeners
+        dialogConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String editName = dialogEditName.getText().toString();
+                String editDesc = dialogEditDesc.getText().toString();
+                Role role = new Role(roles.get(position).getId(),editName, editDesc);
+                Map<String, Object> docData = new HashMap<>();
+                docData.put("roleName", editName);
+                docData.put("desc", editDesc);
+
+                db.collection("Todolists").document(todolistID).collection("Roles").document(roles.get(position).getId()).update(docData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(getActivity(), "Update successfully", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        loadData(getView());
+                    }
+                });
+            }
+        });
+
+        dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        //display dialog
+        dialog.show();
     }
 }

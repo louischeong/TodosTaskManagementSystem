@@ -8,7 +8,7 @@ public class Notification {
     private String todolistID;
     private String todolistTitle;
     private String owner;
-    private String dateTime;
+    private Timestamp dateTime;
     private List<String> recipientEmails;
 
     public Notification() {
@@ -19,7 +19,7 @@ public class Notification {
         this.recipientEmails = null;
     }
 
-    public Notification(String todolistID, String todolistTitle, String owner, String dateTime, List<String> recipientEmails) {
+    public Notification(String todolistID, String todolistTitle, String owner, Timestamp dateTime, List<String> recipientEmails) {
         this.todolistID = todolistID;
         this.todolistTitle = todolistTitle;
         this.owner = owner;
@@ -51,11 +51,11 @@ public class Notification {
         this.owner = owner;
     }
 
-    public String getDateTime() {
+    public Timestamp getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(String dateTime) {
+    public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }
 

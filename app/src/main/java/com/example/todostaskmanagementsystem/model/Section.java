@@ -1,18 +1,23 @@
 package com.example.todostaskmanagementsystem.model;
 
 
+import java.util.List;
+
 public class Section {
     private String id;
     private String name;
-
-    public Section(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    private List<String> allowedEdit;
+    private List<String> allowedMark;
 
     public Section() {
-        this.id = "S1";
-        this.name = "New Section";
+
+    }
+
+    public Section(String id, String name, List<String> allowedEdit, List<String> allowedMark) {
+        this.id = id;
+        this.name = name;
+        this.allowedEdit = allowedEdit;
+        this.allowedMark = allowedMark;
     }
 
     public String getId() {
@@ -38,5 +43,19 @@ public class Section {
                 '}';
     }
 
+    public List<String> getAllowedEdit() {
+        return allowedEdit;
+    }
 
+    public void setAllowedEdit(List<String> allowedEdit) {
+        this.allowedEdit = allowedEdit;
+    }
+
+    public List<String> getAllowedMark() {
+        return allowedMark;
+    }
+
+    public void setAllowedMark(List<String> allowedMark) {
+        this.allowedMark = allowedMark;
+    }
 }

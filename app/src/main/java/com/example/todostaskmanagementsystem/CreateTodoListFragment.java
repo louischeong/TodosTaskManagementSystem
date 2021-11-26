@@ -27,6 +27,7 @@ import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.ChangesLog;
 import com.example.todostaskmanagementsystem.model.Member;
 import com.example.todostaskmanagementsystem.model.Notification;
+import com.example.todostaskmanagementsystem.model.Role;
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.example.todostaskmanagementsystem.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -132,20 +133,30 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                         int currTodolistID = Integer.parseInt(documentSnapshot.get("currTodolistID").toString());
                         currTodolistID += 1;
                         String strCurrTodolistID = Integer.toString(currTodolistID);
+
                         List<String> emails = new ArrayList<>();
                         emails.add(userEmail);
                         Todolist todolist = new Todolist(strCurrTodolistID, todolistTitle, todolistDesc, ownerName, emails);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
-                        setMemberCollection(currTodolistID);
+
+                        //Create Role Default
+                        Role role = new Role("R1","Default","This is the dafault role of the todolist",emails);
+                        db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("Roles").document("R1").set(role);
+
+                        //setMemberCollection(currTodolistID);
                         Map<String, Object> docData = new HashMap<>();
                         docData.put("currSectionID", 0);
                         docData.put("currTaskID", 0);
-                        docData.put("currRoleID", 0);
+                        docData.put("currRoleID", 1);
                         db.collection("Todolists").document(strCurrTodolistID).collection("Data").document("Data").set(docData);
                         db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
                         Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
-                        if(!memberEmails.isEmpty())
-                            sendTodolistInvitation(strCurrTodolistID, todolistTitle, ownerName);
+
+                        //Create Invitation
+                        Notification notification = new Notification(strCurrTodolistID, todolistTitle, ownerName, Timestamp.now(), memberEmails);
+                        db.collection("Notifications").document(strCurrTodolistID).set(notification);
+
+                        //update ChangesLog
                         ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTodolist", todolistTitle);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("ChangesLog").add(changesLog);
                         requireActivity().onBackPressed();
@@ -168,14 +179,14 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         addMemberAdapter.notifyDataSetChanged();
     }
 
-    private void setMemberCollection(int todolistID) {
-        CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Members"));
-        for (int i = 0; i < memberEmails.size(); i++) {
-            Member member = new Member(memberEmails.get(i));
-            colRef.document(memberEmails.get(i)).set(member);
-        }
-
-    }
+//    private void setMemberCollection(int todolistID) {
+//        CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Members"));
+//        for (int i = 0; i < memberEmails.size(); i++) {
+//            Member member = new Member(memberEmails.get(i));
+//            colRef.document(memberEmails.get(i)).set(member);
+//        }
+//
+//    }
 
     private void createAddMemberEmailDialog() {
 
@@ -191,7 +202,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         dialogAddBtn = addEmailView.findViewById(R.id.dialog_btnConfirm);
         dialogCancelBtn = addEmailView.findViewById(R.id.dialog_btnCancel);
         dialogMsg = addEmailView.findViewById(R.id.dialog_msg);
-        dialogMsg.setText("Enter member email to add:");
+        dialogMsg.setText("Enter member email to invite:");
 
         dialogBuilder.setView(addEmailView);
         dialog = dialogBuilder.create();
@@ -222,12 +233,4 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         });
     }
 
-    private void sendTodolistInvitation(String todolistID, String todolistTitle, String ownerName) {
-        Date curDate = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        String formattedDate = df.format(curDate);
-        Notification notification = new Notification(todolistID, todolistTitle, ownerName, formattedDate, memberEmails);
-
-        db.collection("Notifications").document(todolistID).set(notification);
-    }
 }

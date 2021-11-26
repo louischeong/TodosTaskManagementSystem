@@ -22,7 +22,7 @@ public class AddMemberAdapter extends RecyclerView.Adapter<AddMemberAdapter.MyVi
 
 
     private List<String> emails;
-    OnItemClicked listener;
+    private OnItemClicked listener;
 
     public AddMemberAdapter(List<String> emails) {
 

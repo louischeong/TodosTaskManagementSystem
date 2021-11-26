@@ -1,6 +1,7 @@
 package com.example.todostaskmanagementsystem.model;
 
 import java.util.List;
+import java.util.Map;
 
 public class Todolist {
     private String id, name, desc, owner;
@@ -19,10 +20,6 @@ public class Todolist {
     public Todolist(String id, String name) {
         this.id = id;
         this.name = name;
-        this.desc = null;
-        this.owner = null;
-        this.incomplete = 0;
-        this.membersEmail = null;
     }
 
     public Todolist() {
@@ -31,6 +28,14 @@ public class Todolist {
         this.owner = null;
         this.incomplete = 0;
         this.membersEmail = null;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -73,11 +78,4 @@ public class Todolist {
         this.membersEmail = membersEmail;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 }

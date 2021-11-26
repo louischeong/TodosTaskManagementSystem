@@ -65,20 +65,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         String title = "Invitation: " + notifications.get(position).getTodolistTitle();
         holder.invitationTitle.setText(title);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        String date = notifications.get(position).getDateTime();
+        Date date = notifications.get(position).getDateTime().toDate();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM");
+        String strDate = simpleDateFormat.format(date);
         Date curDate = Calendar.getInstance().getTime();
-        String date2 = sdf.format(curDate);
-
-        try {
-            if (sdf.parse(date).equals(sdf.parse(date2))) {
-                holder.dateTime.setText("Today");
-            } else {
-                holder.dateTime.setText(date.substring(0, date.length() - 5));
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        String strCurDate = simpleDateFormat.format(curDate);
+        if (strCurDate.equals(strDate)) {
+            holder.dateTime.setText("Today");
         }
+        holder.dateTime.setText(strDate);
 
         if (isExpanded) {
             previousExpandedPosition = position;
