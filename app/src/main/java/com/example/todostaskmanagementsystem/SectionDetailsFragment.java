@@ -216,7 +216,7 @@ public class SectionDetailsFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(@NonNull @NotNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (!allowedEdit.contains(userRoleName) && !isOwner)
+        if (!isOwner)
             menu.clear();
     }
 
