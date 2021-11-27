@@ -21,8 +21,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         setNavigationViewListener();
+
+        //getFCMToken();
+        SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        String token = prefs.getString("pref_token", null);
+        if (token != null) {
+            String email = prefs.getString("pref_email", null);
+            db.collection("Users").document(email).update("token", token).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Log.d("MYDEBUG", "Firestore: Updated Token");
+                }
+            });
+        }
 
     }
 
@@ -97,14 +117,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
+
                 SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
+                db.collection("Users").document(prefs.getString("pref_email", null)).update("token", null);
                 editor.clear();
                 editor.commit();
                 SharedPreferences prefsRecentAccess = getSharedPreferences("recent_accessed", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editorRecentAccess = prefsRecentAccess.edit();
                 editorRecentAccess.clear();
                 editorRecentAccess.commit();
+
                 Intent myIntent = new Intent(this, LoginActivity.class);
                 startActivity(myIntent);
                 this.finish();
@@ -112,4 +135,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

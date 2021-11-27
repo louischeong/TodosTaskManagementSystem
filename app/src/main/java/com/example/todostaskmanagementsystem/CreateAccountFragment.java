@@ -3,6 +3,7 @@ package com.example.todostaskmanagementsystem;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -75,7 +76,7 @@ public class CreateAccountFragment extends Fragment {
                         User user = new User(pass, name, contact, email);
                         docRef.set(user);
                         Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
-                        requireActivity().onBackPressed();
+                        NavHostFragment.findNavController(getParentFragment()).navigate(CreateAccountFragmentDirections.actionCreateAccountToStartPageFragment());
                     }else{
                         Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
                     }

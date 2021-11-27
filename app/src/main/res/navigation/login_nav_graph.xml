@@ -29,7 +29,11 @@
         android:id="@+id/createAccount"
         android:name="com.example.todostaskmanagementsystem.CreateAccountFragment"
         android:label="fragment_create_account"
-        tools:layout="@layout/fragment_create_account" />
+        tools:layout="@layout/fragment_create_account" >
+        <action
+            android:id="@+id/action_createAccount_to_startPageFragment"
+            app:destination="@id/startPageFragment" />
+    </fragment>
     <fragment
         android:id="@+id/resetPasswordFragment"
         android:name="com.example.todostaskmanagementsystem.ResetPasswordFragment"

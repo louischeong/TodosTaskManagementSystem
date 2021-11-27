@@ -1,7 +1,15 @@
 package com.example.todostaskmanagementsystem.model;
 
 public class User {
-    private String password, name, contact, email;
+    private String password;
+    private String name;
+    private String contact;
+    private String email;
+    private String token;
+
+    public User(){
+
+    }
 
     public User(String password, String name, String contact, String email) {
         this.password = password;
@@ -10,12 +18,6 @@ public class User {
         this.email = email;
     }
 
-    public User(){
-        this.password = "";
-        this.name = "";
-        this.contact = "";
-        this.email = "";
-    }
 
     public String getPassword() {
         return password;
@@ -47,5 +49,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

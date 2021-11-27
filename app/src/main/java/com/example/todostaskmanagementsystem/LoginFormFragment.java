@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +21,13 @@ import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.Todolist;
 import com.example.todostaskmanagementsystem.model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -72,24 +76,29 @@ public class LoginFormFragment extends Fragment {
                 db.collection("Users").document(loginEmail).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User user = documentSnapshot.toObject(User.class);
-                        String pass = user.getPassword(); // user password from database
-                        if (pass.equals(loginPass)) {
-                            SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putString("pref_email", user.getEmail());
-                            editor.putString("pref_username", user.getName());
-                            if (cbRememberMe.isChecked())
-                                editor.putString("pref_rememberMe", "true");
-                            editor.commit();
-                            Intent myIntent = new Intent(getActivity(), MainActivity.class);
-                            startActivity(myIntent);
-                            getActivity().finish();
-                        }
-                        else{
+                        if (documentSnapshot.exists()) {
+                            User user = documentSnapshot.toObject(User.class);
+                            String pass = user.getPassword(); // user password from database
+                            if (pass.equals(loginPass)) {
+                                SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("pref_email", user.getEmail());
+                                editor.putString("pref_username", user.getName());
+                                if (user.getToken() == null) {
+                                    getFCMToken(loginEmail);
+                                }
+                                if (cbRememberMe.isChecked())
+                                    editor.putString("pref_rememberMe", "true");
+                                editor.commit();
+                                Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                                startActivity(myIntent);
+                                getActivity().finish();
+                            } else {
+                                Toast.makeText(getActivity(), "Email or Password incorrect, please try again...", Toast.LENGTH_SHORT).show();//prompt login fail
+                            }
+                        } else {
                             Toast.makeText(getActivity(), "Email or Password incorrect, please try again...", Toast.LENGTH_SHORT).show();//prompt login fail
                         }
-
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -103,5 +112,32 @@ public class LoginFormFragment extends Fragment {
 
 
         return view;
+    }
+
+    public void getFCMToken(String email) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.d("MYDEBUG", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        // Log and toast
+                        String msg = "Token: " + token;
+                        Log.d("MYDEBUG", msg);
+
+                        db.collection("Users").document(email).update("token", task.getResult()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d("MYDEBUG", "Saved Token to database");
+                            }
+                        });
+                    }
+                });
     }
 }
