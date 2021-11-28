@@ -2,6 +2,7 @@ package com.example.todostaskmanagementsystem.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 
@@ -43,10 +49,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
     public MyViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view;
-        if(viewType == 0){
+        if (viewType == 0) {
             view = inflater.inflate(R.layout.layout_task_item, parent, false);
-        }else {
+        } else if (viewType == 1) {
             view = inflater.inflate(R.layout.layout_task_item_checked, parent, false);
+        } else {
+            view = inflater.inflate(R.layout.layout_task_item_overdue, parent, false);
         }
 
         return new MyViewHolder(view);
@@ -108,6 +116,21 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        return todoTasks.get(position).getComplete() ? 1 : 0;
+        int i = 0;
+        if (todoTasks.get(position).getComplete()) {
+            i = 1;
+        } else {
+            String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+            String dueDate = todoTasks.get(position).getDueDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                if (sdf.parse(date).after(sdf.parse(dueDate))) {
+                    i = 2;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return i;
     }
 }

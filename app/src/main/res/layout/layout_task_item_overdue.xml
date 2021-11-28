@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
-    android:background="@drawable/white_bg"
+    android:background="@drawable/red_bg"
     android:elevation="2dp">
 
     <TextView
@@ -17,7 +17,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:text="Task Name"
-        android:textColor="@color/primary_blue"
+        android:textColor="#660000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></TextView>
@@ -29,7 +29,7 @@
         android:layout_marginEnd="25dp"
         android:layout_marginRight="25dp"
         android:text="31/12/2021"
-        android:textColor="@color/primary_blue"
+        android:textColor="#660000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/task_complete"
         app:layout_constraintTop_toTopOf="parent"></TextView>
@@ -41,7 +41,7 @@
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
         android:text="CheckBox"
-        android:buttonTint="@color/gray_text"
+        android:buttonTint="#660000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -139,7 +139,6 @@ public class ManageRoleFragment extends Fragment {
             public void onClick(View v) {
                 String editName = dialogEditName.getText().toString();
                 String editDesc = dialogEditDesc.getText().toString();
-                Role role = new Role(roles.get(position).getId(),editName, editDesc);
                 Map<String, Object> docData = new HashMap<>();
                 docData.put("roleName", editName);
                 docData.put("desc", editDesc);
