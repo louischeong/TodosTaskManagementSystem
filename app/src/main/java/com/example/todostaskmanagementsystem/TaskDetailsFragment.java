@@ -221,7 +221,7 @@ public class TaskDetailsFragment extends Fragment {
                                             Toast.makeText(getActivity(), "The remind me days should be in between 1 to 3 only", Toast.LENGTH_SHORT).show();
                                             return;
                                         }
-                                        Reminder reminder = new Reminder(reminderID, todolistID, sectionID, todoTasksID, days, editDueDate.getText().toString());
+                                        Reminder reminder = new Reminder(reminderID, todolistID, sectionID, todoTasksID, days);
                                         db.collection("Reminders").document(String.valueOf(reminderID)).set(reminder);
                                     } else {
                                         db.collection("Reminders").document(String.valueOf(reminderID)).delete();

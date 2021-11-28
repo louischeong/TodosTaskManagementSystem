@@ -18,6 +18,13 @@ public class User {
         this.email = email;
     }
 
+    public User(String password, String name, String contact, String email, String token) {
+        this.password = password;
+        this.name = name;
+        this.contact = contact;
+        this.email = email;
+        this.token = token;
+    }
 
     public String getPassword() {
         return password;

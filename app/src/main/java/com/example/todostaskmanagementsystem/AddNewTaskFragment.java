@@ -149,7 +149,7 @@ public class AddNewTaskFragment extends Fragment {
                                     String id = documentSnapshot.get("currReminderID").toString();
                                     int currID = Integer.parseInt(id) + 1;
                                     int days = Integer.parseInt(remindMeDays.getText().toString());
-                                    Reminder reminder = new Reminder(currID, todolistID, sectionID, taskID, days, dueDate.getText().toString());
+                                    Reminder reminder = new Reminder(currID, todolistID, sectionID, taskID, days);
                                     db.collection("Data").document("ReminderID").update("currReminderID", currID);
                                     db.collection("Reminders").document(String.valueOf(currID)).set(reminder);
                                     TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString(), currID);

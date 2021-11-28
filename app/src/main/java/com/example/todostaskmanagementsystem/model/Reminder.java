@@ -6,18 +6,16 @@ public class Reminder {
     private String sectionID;
     private String taskID;
     private int daysRepeat;
-    private String dueDate;
 
     public Reminder() {
     }
 
-    public Reminder(int id, String todolistID, String sectionID, String taskID, int daysRepeat, String dueDate) {
+    public Reminder(int id, String todolistID, String sectionID, String taskID, int daysRepeat) {
         this.id = id;
         this.todolistID = todolistID;
         this.sectionID = sectionID;
         this.taskID = taskID;
         this.daysRepeat = daysRepeat;
-        this.dueDate = dueDate;
     }
 
     public int getId() {
@@ -60,11 +58,4 @@ public class Reminder {
         this.daysRepeat = daysRepeat;
     }
 
-    public String getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
-    }
 }

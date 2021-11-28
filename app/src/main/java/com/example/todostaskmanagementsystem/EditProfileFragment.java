@@ -188,7 +188,7 @@ public class EditProfileFragment extends Fragment {
                         String pass = user.getPassword();
                         if(password.equals(pass)){
                             DocumentReference docRef = db.collection("Users").document(email);
-                            user = new User(pass, name, contact, email);
+                            user = new User(pass, name, contact, email, user.getToken());
                             docRef.set(user);
                             Toast.makeText(getActivity(), "Successfully updated profile!", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();

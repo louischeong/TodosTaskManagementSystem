@@ -136,6 +136,9 @@ public class SectionDetailsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Section sec = documentSnapshot.toObject(Section.class);
+
+
+
                 allowedMark.addAll(sec.getAllowedMark());
                 allowedEdit.addAll(sec.getAllowedEdit());
                 db.collection("Todolists").document(todolistID).collection("Roles").whereArrayContains("members", userEmail).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
