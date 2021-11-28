@@ -15,11 +15,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.ChangesLog;
+import com.example.todostaskmanagementsystem.model.Reminder;
 import com.example.todostaskmanagementsystem.model.TodoTask;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
@@ -27,6 +31,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
@@ -38,6 +43,7 @@ public class AddNewTaskFragment extends Fragment {
     private EditText dueDate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private NumberPicker picker;
 
     public AddNewTaskFragment() {
         // Required empty public constructor
@@ -60,6 +66,29 @@ public class AddNewTaskFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_new_task, container, false);
+
+        TextView txtReminder = view.findViewById(R.id.reminderText);
+        picker = view.findViewById(R.id.reminderDay_picker);
+
+        picker.setMinValue(0);
+        picker.setMaxValue(2);
+        //String[] items = new String[] {"1", "2", "3"};
+        //picker.setDisplayedValues(items);
+
+        CheckBox checkBox = view.findViewById(R.id.checkboxReminder);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()) {
+                    txtReminder.setVisibility(View.VISIBLE);
+                    picker.setVisibility(View.VISIBLE);
+                } else {
+                    picker.setVisibility(View.INVISIBLE);
+                    txtReminder.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
 
         dueDate = view.findViewById(R.id.datepicker_duedate);
         dueDate.setOnClickListener(new View.OnClickListener() {
@@ -99,6 +128,22 @@ public class AddNewTaskFragment extends Fragment {
                         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
                         db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
                         Toast.makeText(getContext(), "Successfully Created Task", Toast.LENGTH_SHORT).show();
+
+                        //Create reminders
+                        db.collection("Data").document("ReminderID").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                int id;
+                                id = (int) documentSnapshot.get("currReminderID") + 1;
+                                int days = picker.getValue();
+                                Reminder reminder = new Reminder(id, todolistID, sectionID, taskID, days, dueDate.getText().toString());
+                                db.collection("Data").document("ReminderID").update("currReminderID", id);
+                                db.collection("Reminders").document(String.valueOf(id)).set(reminder);
+                            }
+                        });
+
+
+                        //Create ChangesLog
                         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                         String userName = prefs.getString("pref_username", null);
                         ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTask", sectionName, editTextName.getText().toString());

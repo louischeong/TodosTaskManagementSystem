@@ -46,7 +46,6 @@ import java.util.HashMap;
 
 public class MyTodolistsFragment extends Fragment implements View.OnClickListener {
 
-
     private EditText searchBar;
     private View rootView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();

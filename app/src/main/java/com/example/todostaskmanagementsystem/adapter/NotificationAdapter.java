@@ -70,10 +70,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         String strDate = simpleDateFormat.format(date);
         Date curDate = Calendar.getInstance().getTime();
         String strCurDate = simpleDateFormat.format(curDate);
+
         if (strCurDate.equals(strDate)) {
             holder.dateTime.setText("Today");
+        }else{
+            holder.dateTime.setText(strDate);
         }
-        holder.dateTime.setText(strDate);
 
         if (isExpanded) {
             previousExpandedPosition = position;

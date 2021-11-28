@@ -42,7 +42,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.layout_task_item, parent, false);
+        View view;
+        if(viewType == 0){
+            view = inflater.inflate(R.layout.layout_task_item, parent, false);
+        }else {
+            view = inflater.inflate(R.layout.layout_task_item_checked, parent, false);
+        }
+
         return new MyViewHolder(view);
     }
 
@@ -54,15 +60,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
         holder.complete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener != null){
-                    if(!isMarkAllowed){
+                if (listener != null) {
+                    if (!isMarkAllowed) {
                         holder.complete.setChecked(!holder.complete.isChecked());
-                        listener.onActionClicked(position,"notAllowed");
-                    }else{
-                        if(holder.complete.isChecked()){
-                            listener.onActionClicked(position,"mark");
-                        }else{
-                            listener.onActionClicked(position,"unmark");
+                        listener.onActionClicked(position, "notAllowed");
+                    } else {
+                        if (holder.complete.isChecked()) {
+                            listener.onActionClicked(position, "mark");
+                        } else {
+                            listener.onActionClicked(position, "unmark");
                         }
                     }
                 }
@@ -72,7 +78,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onActionClicked(position,"navigate");
+                    listener.onActionClicked(position, "navigate");
                 }
             }
         });
@@ -98,5 +104,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
             complete = itemView.findViewById(R.id.task_complete);
 
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return todoTasks.get(position).getComplete() ? 1 : 0;
     }
 }

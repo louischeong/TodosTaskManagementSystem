@@ -1,19 +1,31 @@
 package com.example.todostaskmanagementsystem.model;
 
 public class Reminder {
+    private int id;
     private String todolistID;
     private String sectionID;
     private String taskID;
     private int daysRepeat;
+    private String dueDate;
 
     public Reminder() {
     }
 
-    public Reminder(String todolistID, String sectionID, String taskID, int daysRepeat) {
+    public Reminder(int id, String todolistID, String sectionID, String taskID, int daysRepeat, String dueDate) {
+        this.id = id;
         this.todolistID = todolistID;
         this.sectionID = sectionID;
         this.taskID = taskID;
         this.daysRepeat = daysRepeat;
+        this.dueDate = dueDate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTodolistID() {
@@ -46,5 +58,13 @@ public class Reminder {
 
     public void setDaysRepeat(int daysRepeat) {
         this.daysRepeat = daysRepeat;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = dueDate;
     }
 }

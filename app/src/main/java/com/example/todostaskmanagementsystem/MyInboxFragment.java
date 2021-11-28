@@ -64,7 +64,7 @@ public class MyInboxFragment extends Fragment {
                 String email = prefs.getString("pref_email", null);
                 if (joinOrIgnore.equals("join")) {
 
-                    db.collection("Todolists").document(notifications.get(position).getTodolistID()).collection("Roles").document("Default").update("members",FieldValue.arrayUnion(email));
+                    db.collection("Todolists").document(notifications.get(position).getTodolistID()).collection("Roles").document("R1").update("members",FieldValue.arrayUnion(email));
                     db.collection("Todolists").document(notifications.get(position).getTodolistID()).update("membersEmail", FieldValue.arrayUnion(email)).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {

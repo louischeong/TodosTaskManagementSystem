@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -108,34 +109,6 @@ public class SectionDetailsFragment extends Fragment {
             }
         });
 
-        taskAdapter = new TaskAdapter(todoTasks, isMarkAllowed);
-        taskAdapter.setOnItemClickedListener(new OnActionClicked() {
-            @Override
-            public void onActionClicked(int position, String action) {
-                if (action.equals("notAllowed")) {
-                    Toast.makeText(getActivity(), "You do not have permission to mark tasks as completed in this section", Toast.LENGTH_SHORT).show();
-                }
-                if (action.equals("navigate")) {
-                    String todoTasksID = todoTasks.get(position).getId();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("todolistID", todolistID);
-                    bundle.putString("sectionID", sectionID);
-                    bundle.putString("todoTasksID", todoTasksID);
-                    bundle.putString("sectionName", sectionName);
-                    NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_sectionDetailsFragment_to_taskDetailsFragment, bundle);
-                } else {
-                    boolean isMark = action.equals("mark");
-                    db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasks.get(position).getId()).update("complete", isMark);
-                    String strIsMark = isMark ? "MarkTask" : "UnmarkTask";
-                    ChangesLog changesLog = new ChangesLog(Timestamp.now(), userEmail, strIsMark, todoTasks.get(position).getName(), sectionName);
-                    db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
-                }
-
-            }
-        });
-        RecyclerView recyclerView = view.findViewById(R.id.recycle_todoTasks);
-        recyclerView.setAdapter(taskAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         loadData(view);
 
         return view;
@@ -174,6 +147,50 @@ public class SectionDetailsFragment extends Fragment {
                         }
                         isMarkAllowed = allowedMark.contains(userRoleName);
                         getActivity().invalidateOptionsMenu();
+                        taskAdapter = new TaskAdapter(todoTasks, isMarkAllowed);
+                        taskAdapter.setOnItemClickedListener(new OnActionClicked() {
+                            @Override
+                            public void onActionClicked(int position, String action) {
+                                if (action.equals("notAllowed")) {
+                                    Toast.makeText(getActivity(), "You do not have permission to mark tasks as completed in this section", Toast.LENGTH_SHORT).show();
+                                }
+                                if (action.equals("navigate")) {
+                                    String todoTasksID = todoTasks.get(position).getId();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("todolistID", todolistID);
+                                    bundle.putString("sectionID", sectionID);
+                                    bundle.putString("todoTasksID", todoTasksID);
+                                    bundle.putString("sectionName", sectionName);
+                                    NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_sectionDetailsFragment_to_taskDetailsFragment, bundle);
+                                } else {
+                                    boolean isMark = action.equals("mark");
+                                    todoTasks.get(position).setComplete(isMark);
+                                    taskAdapter.notifyDataSetChanged();
+                                    db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasks.get(position).getId()).update("complete", isMark);
+                                    String strIsMark = isMark ? "MarkTask" : "UnmarkTask";
+                                    ChangesLog changesLog = new ChangesLog(Timestamp.now(), userEmail, strIsMark, todoTasks.get(position).getName(), sectionName);
+                                    db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+                                }
+
+                            }
+                        });
+                        RecyclerView recyclerView = view.findViewById(R.id.recycle_todoTasks);
+                        recyclerView.setAdapter(taskAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+                        todoTasks.clear();
+                        db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    TodoTask task = documentSnapshot.toObject(TodoTask.class);
+                                    todoTasks.add(task);
+                                }
+
+                                updateRecycleView();
+                                view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                            }
+                        });
                     }
                 });
 
@@ -187,19 +204,7 @@ public class SectionDetailsFragment extends Fragment {
             }
         });
 
-        todoTasks.clear();
-        db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    TodoTask task = documentSnapshot.toObject(TodoTask.class);
-                    todoTasks.add(task);
-                }
 
-                updateRecycleView();
-                view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-            }
-        });
 
     }
 
