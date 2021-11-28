@@ -3,6 +3,7 @@ package com.example.todostaskmanagementsystem;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -21,15 +26,11 @@ public class PasswordRecoveryFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Button btnSendCode;
     private EditText editTextEmail;
+    private Button btnContinue;
+    private EditText editTextOTP;
 
     public PasswordRecoveryFragment() {
         // Required empty public constructor
-    }
-
-    public static PasswordRecoveryFragment newInstance(String param1, String param2) {
-        PasswordRecoveryFragment fragment = new PasswordRecoveryFragment();
-
-        return fragment;
     }
 
     @Override
@@ -46,29 +47,82 @@ public class PasswordRecoveryFragment extends Fragment {
 
         btnSendCode = view.findViewById(R.id.btn_sendCode);
         editTextEmail = view.findViewById(R.id.txt_recoveryEmail);
+        btnContinue = view.findViewById(R.id.btn_continue);
+        editTextOTP = view.findViewById(R.id.txt_OTP);
 
-        //String email = editTextEmail.getText().toString();
-        String email = "louischeong10500@gmail.com";
 
         btnSendCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String strRandomNum = getRandomNumberString();
-                Map<String, Object> docMap = new HashMap<>();
-                docMap.put("OTP", strRandomNum);
-                docMap.put("email", email);
 
-                db.collection("OTP").document(email).set(docMap);
 
-                try {
-                    GMailSender sender = new GMailSender("todostaskmanagement@gmail.com", "Todos@123");
-                    sender.sendMail("Todos Task Management System: Password Recovery",
-                            "Enter code below to reset your password.\nYour code: " + strRandomNum,
-                            "todostaskmanagement@gmail.com",
-                            email);
-                } catch (Exception e) {
-                    Log.d("MYDEBUG", e.getMessage(), e);
-                }
+                //TODO Validate email in the email TextField
+
+
+                String email = editTextEmail.getText().toString();
+                Log.d("MYDEBUG", "String: " + email);
+                db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+
+
+                            new Thread() {
+                                public void run() {
+                                    try {
+                                        String strRandomNum = getRandomNumberString();
+                                        GMailSender sender = new GMailSender("todostaskmanagement@gmail.com", "Todos@123");
+                                        sender.sendMail("Todos Task Management System: Password Recovery",
+                                                "Enter code below to reset your password.\nYour code: " + strRandomNum,
+                                                "TodosTaskManagementSupport",
+                                                email);
+
+                                        Map<String, Object> docMap = new HashMap<>();
+                                        docMap.put("OTP", strRandomNum);
+
+                                        db.collection("OTP").document(email).set(docMap);
+                                        Toast.makeText(getActivity(), "An email with OTP code has been sent to " + email, Toast.LENGTH_SHORT).show();
+                                    } catch (Exception e) {
+                                        Log.d("MYDEBUG", e.getMessage(), e);
+                                    }
+                                }
+                            }.start();
+                        } else {
+                            Toast.makeText(getActivity(), "The email is not exist. Please create an account.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+            }
+        });
+
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //TODO Validation For Email's EditText and OTP EditText
+
+
+                String email = editTextEmail.getText().toString();
+                db.collection("OTP").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            String OTP = (String) documentSnapshot.get("OTP");
+
+                            if (OTP.equals(editTextOTP.getText().toString())) {
+                                NavHostFragment.findNavController(getParentFragment()).navigate(PasswordRecoveryFragmentDirections.actionPasswordRecoveryFragmentToResetPasswordFragment());
+                                db.collection("OTP").document(email).delete();
+                            } else {
+                                Toast.makeText(getActivity(), "Wrong OTP, please try again or resend the code.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Wrong OTP, please try again or resend the code.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
             }
         });
 
