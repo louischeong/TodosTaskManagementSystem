@@ -39,6 +39,7 @@ public class MyInboxFragment extends Fragment {
     private ArrayList<Notification> notifications = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private NotificationAdapter notificationAdapter;
+    private View view;
 
     public MyInboxFragment() {
         // Required empty public constructor
@@ -54,7 +55,7 @@ public class MyInboxFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_inbox, container, false);
+        view = inflater.inflate(R.layout.fragment_my_inbox, container, false);
         notificationAdapter = new NotificationAdapter(notifications, getActivity());
         RecyclerView recyclerView = view.findViewById(R.id.recycle_notifications);
         notificationAdapter.setOnActionClickedListener(new OnActionClicked() {
@@ -80,25 +81,25 @@ public class MyInboxFragment extends Fragment {
         });
         recyclerView.setAdapter(notificationAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        loadData(view);
+        loadData();
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final SwipeRefreshLayout pullToRefresh = getView().findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.swiperefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadData(getView());
+                loadData();
                 pullToRefresh.setRefreshing(false);
             }
         });
 
     }
 
-    private void loadData(View view) {
+    private void loadData() {
         notifications.clear();
         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
         String email = prefs.getString("pref_email", null);
@@ -116,8 +117,9 @@ public class MyInboxFragment extends Fragment {
     }
 
     private void updateRecycleView() {
-        TextView txt = getView().findViewById(R.id.empty_hint);
+        TextView txt = view.findViewById(R.id.empty_hint);
         if (notifications.isEmpty()) {
+            txt.setVisibility(View.VISIBLE);
             txt.setVisibility(View.VISIBLE);
         } else {
             txt.setVisibility(View.INVISIBLE);

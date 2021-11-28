@@ -194,6 +194,8 @@ public class TaskDetailsFragment extends Fragment {
 
                                     DatePickerDialog dialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener, year, month, day);
                                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                    dialog.getDatePicker().setMinDate(cal.getTimeInMillis() - 1000);
+                                    dialog.setTitle("Select Date");
                                     dialog.show();
                                 }
                             });

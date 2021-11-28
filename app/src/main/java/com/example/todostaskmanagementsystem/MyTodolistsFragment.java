@@ -53,6 +53,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     private ArrayList<String> todolistIDs = new ArrayList();
     private TodolistAdapter todolistAdapter;
     private String userEmail;
+    private View view;
 
     public MyTodolistsFragment() {
         // Required empty public constructor
@@ -68,7 +69,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_todolists, container, false);
+        view = inflater.inflate(R.layout.fragment_my_todolists, container, false);
 
         rootView = view.findViewById(R.id.rootLayout);
         rootView.requestFocus();
@@ -120,12 +121,12 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadData(view);
-        final SwipeRefreshLayout pullToRefresh = getView().findViewById(R.id.swiperefresh);
+        loadData();
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.swiperefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadData(getView());
+                loadData();
                 pullToRefresh.setRefreshing(false);
             }
         });
@@ -163,7 +164,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
 
     private void updateRecycleView() {
 
-        TextView txt = getView().findViewById(R.id.empty_hint);
+        TextView txt = view.findViewById(R.id.empty_hint);
         if (todolists.isEmpty()) {
             txt.setVisibility(View.VISIBLE);
         } else {
@@ -172,7 +173,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
         todolistAdapter.notifyDataSetChanged();
     }
 
-    private void loadData(View view) {
+    private void loadData() {
         todolists.clear();
         todolistIDs.clear();
         db.collection("Todolists").whereArrayContains("membersEmail", userEmail).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

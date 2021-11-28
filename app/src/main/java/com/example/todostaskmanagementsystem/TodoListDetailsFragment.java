@@ -67,6 +67,7 @@ public class TodoListDetailsFragment extends Fragment {
     private List<String> checkedMarkRole = new ArrayList();
     private List<String> roles = new ArrayList();
     private boolean owner = false;
+    private View view;
 
     public TodoListDetailsFragment() {
         // Required empty public constructor
@@ -87,7 +88,7 @@ public class TodoListDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_todo_list_details, container, false);
+        view = inflater.inflate(R.layout.fragment_todo_list_details, container, false);
         setHasOptionsMenu(true);
         //Setup Add Section Button
         Button btnAdd = view.findViewById(R.id.btn_addSection);
@@ -127,25 +128,25 @@ public class TodoListDetailsFragment extends Fragment {
         recyclerView.setAdapter(sectionAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        loadData(view);
+        loadData();
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final SwipeRefreshLayout pullToRefresh = getView().findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.swiperefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadData(view);
+                loadData();
                 pullToRefresh.setRefreshing(false);
             }
         });
 
     }
 
-    private void loadData(View view) {
+    private void loadData() {
         //Get and Set Todolist Details
         db.collection("Todolists").document(todolistID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -192,7 +193,7 @@ public class TodoListDetailsFragment extends Fragment {
                             Section section = documentSnapshot.toObject(Section.class);
                             sections.add(section);
                         }
-                        updateRecycleView(view);
+                        updateRecycleView();
                         view.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                     }
                 });
@@ -201,7 +202,7 @@ public class TodoListDetailsFragment extends Fragment {
 
     }
 
-    private void updateRecycleView(View view) {
+    private void updateRecycleView() {
 
         TextView txt = view.findViewById(R.id.empty_hint);
         if (sections.isEmpty()) {
@@ -281,7 +282,7 @@ public class TodoListDetailsFragment extends Fragment {
                         sections.add(sec);
                         db.collection("Todolists").document(todolistID).collection("Sections").document(secID).set(sec);
                         db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currSectionID", currSectionID);
-                        updateRecycleView(view);
+                        updateRecycleView();
                         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                         String userName = prefs.getString("pref_username", null);
                         ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateSection", sectionName);
@@ -390,7 +391,7 @@ public class TodoListDetailsFragment extends Fragment {
                 ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditTodolist", todolistName);
                 db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
                 dialog.dismiss();
-                loadData(getView());
+                loadData();
             }
         });
 

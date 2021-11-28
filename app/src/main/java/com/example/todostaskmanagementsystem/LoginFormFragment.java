@@ -69,11 +69,11 @@ public class LoginFormFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                EditText editText = getView().findViewById(R.id.txt_loginEmail);
+                EditText editText = view.findViewById(R.id.txt_loginEmail);
                 String loginEmail = editText.getText().toString();
-                EditText editText2 = getView().findViewById(R.id.txt_loginPassword);
+                EditText editText2 = view.findViewById(R.id.txt_loginPassword);
                 String loginPass = editText2.getText().toString();
-                CheckBox cbRememberMe = getView().findViewById(R.id.checkBox_rememberMe);
+                CheckBox cbRememberMe = view.findViewById(R.id.checkBox_rememberMe);
 
                 if (TextUtils.isEmpty(loginEmail)) {
                     editText.setError("Email is required!");

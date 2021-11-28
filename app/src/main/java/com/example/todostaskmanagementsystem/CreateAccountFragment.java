@@ -40,15 +40,15 @@ public class CreateAccountFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText newName = getView().findViewById(R.id.txt_name);
+                EditText newName = view.findViewById(R.id.txt_name);
                 String name = newName.getText().toString();
-                EditText newEmail = getView().findViewById(R.id.txt_email);
+                EditText newEmail = view.findViewById(R.id.txt_email);
                 String email = newEmail.getText().toString();
-                EditText newContact = getView().findViewById(R.id.txt_phone);
+                EditText newContact = view.findViewById(R.id.txt_phone);
                 String contact = newContact.getText().toString();
-                EditText newPass = getView().findViewById(R.id.txt_pass);
+                EditText newPass = view.findViewById(R.id.txt_pass);
                 String pass = newPass.getText().toString();
-                EditText newConPass = getView().findViewById(R.id.txt_confirmPass);
+                EditText newConPass = view.findViewById(R.id.txt_confirmPass);
                 String conPass = newConPass.getText().toString();
 
                 if(TextUtils.isEmpty(name)){

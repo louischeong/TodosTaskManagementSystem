@@ -61,14 +61,14 @@ public class CreateRoleFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createConfirmationDialog();
+                createConfirmationDialog(view);
             }
         });
         return view;
     }
 
 
-    private void createConfirmationDialog() {
+    private void createConfirmationDialog(View view) {
         //Declare variables
         AlertDialog.Builder dialogBuilder;
         AlertDialog dialog;
@@ -98,9 +98,9 @@ public class CreateRoleFragment extends Fragment {
         dialogConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText newName = getView().findViewById(R.id.txt_roleName);
+                EditText newName = view.findViewById(R.id.txt_roleName);
                 String roleName = newName.getText().toString();
-                EditText newDesc = getView().findViewById(R.id.txt_description);
+                EditText newDesc = view.findViewById(R.id.txt_description);
                 String desc = newDesc.getText().toString();
 
                 if (TextUtils.isEmpty(roleName)) {

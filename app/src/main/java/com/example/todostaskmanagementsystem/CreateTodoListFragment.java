@@ -55,6 +55,8 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     private AddMemberAdapter addMemberAdapter;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String userEmail, userName;
+    private EditText editTextTitle, editTextDesc;
+    private View view;
 
     public CreateTodoListFragment() {
         // Required empty public constructor
@@ -77,12 +79,9 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create_todo_list, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        view = inflater.inflate(R.layout.fragment_create_todo_list, container, false);
+        editTextTitle = view.findViewById(R.id.todolist_title);
+        editTextDesc = view.findViewById(R.id.todolist_desc);
         Button btn = view.findViewById(R.id.btn_addMemberEmail);
         btn.setOnClickListener(this);
         Button btn2 = view.findViewById(R.id.btn_createNewTodolist);
@@ -101,6 +100,14 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         recyclerView.setAdapter(addMemberAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
     }
 
     @Override
@@ -110,9 +117,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 createAddMemberEmailDialog();
                 break;
             case R.id.btn_createNewTodolist:
-                EditText editTextTitle = getView().findViewById(R.id.todolist_title);
                 String todolistTitle = editTextTitle.getText().toString();
-                EditText editTextDesc = getView().findViewById(R.id.todolist_desc);
                 String todolistDesc = editTextDesc.getText().toString();
                 if (TextUtils.isEmpty(todolistTitle)) {
                     editTextTitle.setError("Title of a to-do list is required!");
@@ -140,7 +145,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
 
                         //Create Role Default
-                        Role role = new Role("R1","Default","This is the dafault role of the todolist",emails);
+                        Role role = new Role("R1", "Default", "This is the dafault role of the todolist", emails);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("Roles").document("R1").set(role);
 
                         //setMemberCollection(currTodolistID);
@@ -170,7 +175,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     }
 
     private void updateRecycleView() {
-        TextView txt = getView().findViewById(R.id.empty_hint);
+        TextView txt = view.findViewById(R.id.empty_hint);
         if (memberEmails.isEmpty()) {
             txt.setVisibility(View.VISIBLE);
         } else {
@@ -178,15 +183,6 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         }
         addMemberAdapter.notifyDataSetChanged();
     }
-
-//    private void setMemberCollection(int todolistID) {
-//        CollectionReference colRef = db.collection("Todolists").document(Integer.toString(todolistID)).collection(("Members"));
-//        for (int i = 0; i < memberEmails.size(); i++) {
-//            Member member = new Member(memberEmails.get(i));
-//            colRef.document(memberEmails.get(i)).set(member);
-//        }
-//
-//    }
 
     private void createAddMemberEmailDialog() {
 
