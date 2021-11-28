@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
 
 public class AddNewTaskFragment extends Fragment {
@@ -40,10 +43,9 @@ public class AddNewTaskFragment extends Fragment {
     private String todolistID;
     private String sectionID;
     private String sectionName;
-    private EditText dueDate;
+    private EditText dueDate, remindMeDays;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private NumberPicker picker;
 
     public AddNewTaskFragment() {
         // Required empty public constructor
@@ -68,12 +70,7 @@ public class AddNewTaskFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_new_task, container, false);
 
         TextView txtReminder = view.findViewById(R.id.reminderText);
-        picker = view.findViewById(R.id.reminderDay_picker);
-
-        picker.setMinValue(0);
-        picker.setMaxValue(2);
-        //String[] items = new String[] {"1", "2", "3"};
-        //picker.setDisplayedValues(items);
+        remindMeDays = view.findViewById(R.id.remindMe_days);
 
         CheckBox checkBox = view.findViewById(R.id.checkboxReminder);
         checkBox.setOnClickListener(new View.OnClickListener() {
@@ -81,9 +78,9 @@ public class AddNewTaskFragment extends Fragment {
             public void onClick(View v) {
                 if (checkBox.isChecked()) {
                     txtReminder.setVisibility(View.VISIBLE);
-                    picker.setVisibility(View.VISIBLE);
+                    remindMeDays.setVisibility(View.VISIBLE);
                 } else {
-                    picker.setVisibility(View.INVISIBLE);
+                    remindMeDays.setVisibility(View.INVISIBLE);
                     txtReminder.setVisibility(View.INVISIBLE);
                 }
             }
@@ -117,6 +114,24 @@ public class AddNewTaskFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (dueDate.getText().toString().equals("--/--/--")) {
+                    Toast.makeText(getActivity(), "Please set the due date for the task", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (checkBox.isChecked()) {
+                    if (remindMeDays.getText().toString() == null) {
+                        Toast.makeText(getActivity(), "Please set the reminder days.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    int days = Integer.parseInt(remindMeDays.getText().toString());
+                    if (!(days > 0 && days < 4)) {
+                        Toast.makeText(getActivity(), "The remind me days should be in between 1 to 3 only", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
                 db.collection("Todolists").document(todolistID).collection("Data").document("Data").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -124,31 +139,37 @@ public class AddNewTaskFragment extends Fragment {
                         String taskID = "T" + currTaskID;
                         EditText editTextName = view.findViewById(R.id.new_task_name);
                         EditText editTextDesc = view.findViewById(R.id.new_task_desc);
-                        TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString(), "1/1/1111");
-                        db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
-                        db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
-                        Toast.makeText(getContext(), "Successfully Created Task", Toast.LENGTH_SHORT).show();
+
 
                         //Create reminders
-                        db.collection("Data").document("ReminderID").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                int id;
-                                id = (int) documentSnapshot.get("currReminderID") + 1;
-                                int days = picker.getValue();
-                                Reminder reminder = new Reminder(id, todolistID, sectionID, taskID, days, dueDate.getText().toString());
-                                db.collection("Data").document("ReminderID").update("currReminderID", id);
-                                db.collection("Reminders").document(String.valueOf(id)).set(reminder);
-                            }
-                        });
+                        if (checkBox.isChecked()) {
+                            db.collection("Data").document("ReminderID").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    String id = documentSnapshot.get("currReminderID").toString();
+                                    int currID = Integer.parseInt(id) + 1;
+                                    int days = Integer.parseInt(remindMeDays.getText().toString());
+                                    Reminder reminder = new Reminder(currID, todolistID, sectionID, taskID, days, dueDate.getText().toString());
+                                    db.collection("Data").document("ReminderID").update("currReminderID", currID);
+                                    db.collection("Reminders").document(String.valueOf(currID)).set(reminder);
+                                    TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString(), currID);
+                                    db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
+                                    db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
+                                    Toast.makeText(getActivity(), "Successfully Created Task", Toast.LENGTH_SHORT).show();
+                                    addChangesLog(editTextName.getText().toString());
+                                    requireActivity().onBackPressed();
+                                }
+                            });
+                        } else {
+                            TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString());
+                            db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
+                            db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
+                            Toast.makeText(getActivity(), "Successfully Created Task", Toast.LENGTH_SHORT).show();
+                            addChangesLog(editTextName.getText().toString());
+                            requireActivity().onBackPressed();
+                        }
 
 
-                        //Create ChangesLog
-                        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
-                        String userName = prefs.getString("pref_username", null);
-                        ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTask", sectionName, editTextName.getText().toString());
-                        db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
-                        requireActivity().onBackPressed();
                     }
                 });
             }
@@ -161,4 +182,14 @@ public class AddNewTaskFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         dueDate.setKeyListener(null);
     }
+
+    public void addChangesLog(String editTextName) {
+        //Create ChangesLog
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        String userName = prefs.getString("pref_username", null);
+        ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTask", sectionName, editTextName);
+        db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+
+    }
+
 }

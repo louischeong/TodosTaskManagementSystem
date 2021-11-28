@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.ChangesLog;
+import com.example.todostaskmanagementsystem.model.Reminder;
 import com.example.todostaskmanagementsystem.model.Role;
 import com.example.todostaskmanagementsystem.model.Section;
 import com.example.todostaskmanagementsystem.model.TodoTask;
@@ -53,10 +54,13 @@ public class TaskDetailsFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Button saveBtn, deleteBtn;
     private TextView txtSectionName;
-    private CheckBox checkBox;
+    private CheckBox checkBoxComplete;
     private EditText editTaskName, editDesc, editDueDate;
     private String userEmail, userName;
     private boolean isMarkAllowed, isEditAllowed;
+    private int reminderID;
+    private CheckBox checkBoxRemindMe;
+    private EditText remindMeDays;
 
     public TaskDetailsFragment() {
         // Required empty public constructor
@@ -85,19 +89,54 @@ public class TaskDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_task_details, container, false);
 
         txtSectionName = view.findViewById(R.id.task_section_name);
-        checkBox = view.findViewById(R.id.chkBox_complete);
+        checkBoxComplete = view.findViewById(R.id.chkBox_complete);
         editTaskName = view.findViewById(R.id.task_name);
         editDesc = view.findViewById(R.id.task_desc);
         editDueDate = view.findViewById(R.id.task_duedate);
         deleteBtn = view.findViewById(R.id.btn_delete_task);
         saveBtn = view.findViewById(R.id.saveChangesBtn);
 
+
+        TextView txtReminder = view.findViewById(R.id.reminderText);
+        remindMeDays = view.findViewById(R.id.remindMe_days);
+        checkBoxRemindMe = view.findViewById(R.id.checkboxReminder);
+        checkBoxRemindMe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.primary_blue));
+                saveBtn.setEnabled(true);
+                saveBtn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.lightblue_bg));
+                if (checkBoxRemindMe.isChecked()) {
+                    txtReminder.setVisibility(View.VISIBLE);
+                    remindMeDays.setVisibility(View.VISIBLE);
+                } else {
+                    remindMeDays.setVisibility(View.INVISIBLE);
+                    txtReminder.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
         db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 TodoTask todoTask = documentSnapshot.toObject(TodoTask.class);
+                reminderID = todoTask.getReminder();
+                if (reminderID != 0) {
+                    db.collection("Reminders").document(String.valueOf(reminderID)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Reminder reminder = documentSnapshot.toObject(Reminder.class);
+                            remindMeDays.setText(String.valueOf(reminder.getDaysRepeat()));
+                            checkBoxRemindMe.setChecked(true);
+                            txtReminder.setVisibility(View.VISIBLE);
+                            remindMeDays.setVisibility(View.VISIBLE);
+                            remindMeDays.addTextChangedListener(new TextChanged());
+                        }
+                    });
+                }
 
-                checkBox.setChecked(todoTask.getComplete());
+                checkBoxComplete.setChecked(todoTask.getComplete());
                 txtSectionName.setText(sectionName);
                 editTaskName.setText(todoTask.getName());
                 editDesc.setText(todoTask.getDesc());
@@ -106,6 +145,8 @@ public class TaskDetailsFragment extends Fragment {
                 editTaskName.addTextChangedListener(new TextChanged());
                 editDesc.addTextChangedListener(new TextChanged());
                 editDueDate.addTextChangedListener(new TextChanged());
+
+
             }
         });
 
@@ -168,7 +209,24 @@ public class TaskDetailsFragment extends Fragment {
                             saveBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    TodoTask todoTask = new TodoTask(todoTasksID, editTaskName.getText().toString(), editDesc.getText().toString(), editDueDate.getText().toString(), checkBox.isChecked(), "");
+                                    if (checkBoxRemindMe.isChecked()) {
+                                        EditText remindMeDays = view.findViewById(R.id.remindMe_days);
+                                        if (remindMeDays.getText().toString() == null) {
+                                            Toast.makeText(getActivity(), "Please set the reminder days.", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+
+                                        int days = Integer.parseInt(remindMeDays.getText().toString());
+                                        if (!(days > 0 && days < 4)) {
+                                            Toast.makeText(getActivity(), "The remind me days should be in between 1 to 3 only", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                        Reminder reminder = new Reminder(reminderID, todolistID, sectionID, todoTasksID, days, editDueDate.getText().toString());
+                                        db.collection("Reminders").document(String.valueOf(reminderID)).set(reminder);
+                                    } else {
+                                        db.collection("Reminders").document(String.valueOf(reminderID)).delete();
+                                    }
+                                    TodoTask todoTask = new TodoTask(todoTasksID, editTaskName.getText().toString(), editDesc.getText().toString(), editDueDate.getText().toString(), checkBoxComplete.isChecked(), reminderID);
                                     db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).set(todoTask);
                                     Toast.makeText(getActivity(), "Task Updated Successfully", Toast.LENGTH_SHORT).show();
                                     ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditTask", sectionName, editTaskName.getText().toString());
@@ -186,15 +244,15 @@ public class TaskDetailsFragment extends Fragment {
 
                         }
 
-                        if (isMarkAllowed){
-                            checkBox.setOnClickListener(new View.OnClickListener() {
+                        if (isMarkAllowed) {
+                            checkBoxComplete.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     createMarkConfirmationDialog();
                                 }
                             });
-                        }else{
-                            checkBox.setOnClickListener(new View.OnClickListener() {
+                        } else {
+                            checkBoxComplete.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     Toast.makeText(getActivity(), "You do not have permission to mark task as completed in this section.", Toast.LENGTH_SHORT).show();
@@ -267,6 +325,7 @@ public class TaskDetailsFragment extends Fragment {
         dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 dialog.dismiss();
             }
         });
@@ -298,8 +357,8 @@ public class TaskDetailsFragment extends Fragment {
                     }
                 });
 
-                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).update("complete", checkBox.isChecked());
-                String isMark = checkBox.isChecked() ? "MarkTask" : "UnmarkTask";
+                db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).update("complete", checkBoxComplete.isChecked());
+                String isMark = checkBoxComplete.isChecked() ? "MarkTask" : "UnmarkTask";
                 ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, isMark, editTaskName.getText().toString(), sectionName);
                 db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
                 dialog.dismiss();
@@ -309,6 +368,7 @@ public class TaskDetailsFragment extends Fragment {
         dialogCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkBoxComplete.setChecked(!checkBoxComplete.isChecked());
                 dialog.dismiss();
             }
         });

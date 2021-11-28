@@ -7,18 +7,21 @@ public class TodoTask {
     private String desc;
     private String dueDate;
     private Boolean complete;
-    private String reminder;
+    private int reminder;
 
     public TodoTask() {
-        this.id = "1";
-        this.name = "";
-        this.desc = "";
-        this.dueDate = "";
-        this.complete = false;
-        this.reminder = "";
+
     }
 
-    public TodoTask(String id, String name, String desc, String dueDate, String reminder) {
+    public TodoTask(String id, String name, String desc, String dueDate) {
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
+        this.dueDate = dueDate;
+        this.complete = false;
+    }
+
+    public TodoTask(String id, String name, String desc, String dueDate, int reminder) {
         this.id = id;
         this.name = name;
         this.desc = desc;
@@ -27,7 +30,7 @@ public class TodoTask {
         this.reminder = reminder;
     }
 
-    public TodoTask(String id, String name, String desc, String dueDate, boolean complete ,String reminder) {
+    public TodoTask(String id, String name, String desc, String dueDate, boolean complete, int reminder) {
         this.id = id;
         this.name = name;
         this.desc = desc;
@@ -76,11 +79,11 @@ public class TodoTask {
         this.complete = complete;
     }
 
-    public String getReminder() {
+    public int getReminder() {
         return reminder;
     }
 
-    public void setReminder(String reminder) {
+    public void setReminder(int reminder) {
         this.reminder = reminder;
     }
 

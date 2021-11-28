@@ -192,7 +192,7 @@ public class EditProfileFragment extends Fragment {
                             docRef.set(user);
                             Toast.makeText(getActivity(), "Successfully updated profile!", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
-                            getParentFragmentManager().popBackStack();
+                            requireActivity().onBackPressed();
                         } else{
                             Toast.makeText(getActivity(), "Incorrect password!", Toast.LENGTH_SHORT).show();
                         }
