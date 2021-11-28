@@ -3,6 +3,7 @@ package com.example.todostaskmanagementsystem;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.Todolist;
@@ -30,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 public class LoginFormFragment extends Fragment {
 
@@ -51,6 +54,15 @@ public class LoginFormFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login_form, container, false);
+
+        TextView txtForgotPassword = view.findViewById(R.id.forgot_password);
+        txtForgotPassword.setPaintFlags(txtForgotPassword.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        txtForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment.findNavController(getParentFragment()).navigate(LoginFormFragmentDirections.actionLoginFormFragmentToPasswordRecoveryFragment());
+            }
+        });
 
         Button btn = view.findViewById(R.id.btn_login2);
         btn.setOnClickListener(new View.OnClickListener() {

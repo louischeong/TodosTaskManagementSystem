@@ -22,8 +22,8 @@
         android:label="fragment_login_form"
         tools:layout="@layout/fragment_login_form" >
         <action
-            android:id="@+id/action_loginFormFragment_to_resetPasswordFragment"
-            app:destination="@id/resetPasswordFragment" />
+            android:id="@+id/action_loginFormFragment_to_passwordRecoveryFragment"
+            app:destination="@id/passwordRecoveryFragment" />
     </fragment>
     <fragment
         android:id="@+id/createAccount"
@@ -39,4 +39,13 @@
         android:name="com.example.todostaskmanagementsystem.ResetPasswordFragment"
         android:label="fragment_reset_password"
         tools:layout="@layout/fragment_reset_password" />
+    <fragment
+        android:id="@+id/passwordRecoveryFragment"
+        android:name="com.example.todostaskmanagementsystem.PasswordRecoveryFragment"
+        android:label="fragment_password_recovery"
+        tools:layout="@layout/fragment_password_recovery" >
+        <action
+            android:id="@+id/action_passwordRecoveryFragment_to_resetPasswordFragment"
+            app:destination="@id/resetPasswordFragment" />
+    </fragment>
 </navigation>

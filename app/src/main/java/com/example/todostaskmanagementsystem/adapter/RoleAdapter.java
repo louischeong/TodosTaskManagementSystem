@@ -3,12 +3,14 @@ package com.example.todostaskmanagementsystem.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todostaskmanagementsystem.R;
+import com.example.todostaskmanagementsystem.interfaces.OnActionClicked;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.Role;
 
@@ -20,6 +22,7 @@ public class RoleAdapter extends RecyclerView.Adapter<RoleAdapter.MyViewHolder> 
 
     private ArrayList<Role> roles = new ArrayList<>();
     private OnItemClicked listener;
+    private OnActionClicked listenerAction;
 
     public RoleAdapter(ArrayList<Role> roles) {
         this.roles = roles;
@@ -39,18 +42,33 @@ public class RoleAdapter extends RecyclerView.Adapter<RoleAdapter.MyViewHolder> 
         Role role = roles.get(position);
         holder.roleName.setText(role.getRoleName());
 
+        if (role.getId().equals("R1"))
+            holder.delete.setVisibility(View.INVISIBLE);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener != null){
+                if (listener != null) {
                     listener.onItemClicked(position);
+                }
+            }
+        });
+        holder.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listenerAction != null) {
+                    listenerAction.onActionClicked(position, "delete");
                 }
             }
         });
     }
 
-    public void setOnItemClickedListener(OnItemClicked listener){
+    public void setOnItemClickedListener(OnItemClicked listener) {
         this.listener = listener;
+    }
+
+    public void setOnActionClickedListener(OnActionClicked listener) {
+        this.listenerAction = listener;
     }
 
     @Override
@@ -60,10 +78,12 @@ public class RoleAdapter extends RecyclerView.Adapter<RoleAdapter.MyViewHolder> 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView roleName;
+        private Button delete;
 
         public MyViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             roleName = itemView.findViewById(R.id.role_name);
+            delete = itemView.findViewById(R.id.btn_delete_role);
         }
     }
 }
