@@ -73,7 +73,7 @@ public class CreateAccountFragment extends Fragment {
                 if (email.matches(emailPattern) && android.util.Patterns.PHONE.matcher(contact).matches()) {
                     if(pass.equals(conPass)){
                         DocumentReference docRef = db.collection("Users").document(email);
-                        User user = new User(pass, name, contact, email);
+                        User user = new User(pass, name, contact, email, "");
                         docRef.set(user);
                         Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
                         NavHostFragment.findNavController(getParentFragment()).navigate(CreateAccountFragmentDirections.actionCreateAccountToStartPageFragment());

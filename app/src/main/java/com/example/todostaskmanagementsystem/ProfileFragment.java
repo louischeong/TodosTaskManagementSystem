@@ -3,12 +3,15 @@ package com.example.todostaskmanagementsystem;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +49,7 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         Button btn = view.findViewById(R.id.btn_editProf);
+        ImageView profPic = (ImageView) view.findViewById(R.id.profPic);
         SharedPreferences prefs = getActivity().getSharedPreferences("user_details",Context.MODE_PRIVATE);
         email = prefs.getString("pref_email",null);
         db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -60,6 +64,13 @@ public class ProfileFragment extends Fragment {
                 txtEmail.setText(user.getEmail());
                 txtPhone.setText(user.getContact());
                 txtPass.setText(user.getPassword());
+
+                if(user.getProfilePic() != null && user.getProfilePic() != ""){
+                    byte[] decodedString = Base64.decode(user.getProfilePic(), Base64.URL_SAFE);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    profPic.setImageBitmap(decodedByte);
+                }
+
             }
         });
 

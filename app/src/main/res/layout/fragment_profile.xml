@@ -132,12 +132,11 @@
 
     <ImageView
         android:id="@+id/profPic"
-        android:layout_width="104dp"
-        android:layout_height="99dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+        tools:src="@drawable/prof_pic" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
