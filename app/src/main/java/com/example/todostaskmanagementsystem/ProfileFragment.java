@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
@@ -33,6 +35,8 @@ import org.w3c.dom.Text;
 public class ProfileFragment extends Fragment {
     private String email;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -41,6 +45,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
     }
 
     @Override
@@ -65,11 +71,23 @@ public class ProfileFragment extends Fragment {
                 txtPhone.setText(user.getContact());
                 txtPass.setText(user.getPassword());
 
-                if(user.getProfilePic() != null && user.getProfilePic() != ""){
-                    byte[] decodedString = Base64.decode(user.getProfilePic(), Base64.URL_SAFE);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    profPic.setImageBitmap(decodedByte);
-                }
+                StorageReference imageRef = storageRef.child("profpic/" + email);
+
+                final long ONE_MEGABYTE = 1024 * 1024 * 5;
+                imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        profPic.setImageBitmap(bmp);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        Toast.makeText(getActivity(), "The file is too big, please reduce the size.", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             }
         });

@@ -66,10 +66,10 @@
             android:layout_marginTop="5dp"
             android:background="@drawable/textbox"
             android:paddingLeft="10dp"
+            android:singleLine="true"
             android:text=""
             android:textColor="@color/primary_blue"
             android:textSize="15dp"
-            android:singleLine="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView1"></EditText>
 
@@ -125,11 +125,11 @@
             android:layout_marginTop="5dp"
             android:background="@drawable/textbox"
             android:paddingLeft="10dp"
+            android:singleLine="true"
             android:text=""
             android:textColor="@color/primary_blue"
             android:textColorHint="@color/hint_color"
             android:textSize="15dp"
-            android:singleLine="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3"></EditText>
 
@@ -163,29 +163,15 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/edit_profPic"
         android:layout_width="104dp"
         android:layout_height="100dp"
-        android:layout_marginTop="20dp"
+        android:src="@drawable/prof_pic"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/prof_pic" />
-
-    <Button
-        android:id="@+id/btn_addProf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:backgroundTint="@color/white"
-        android:elevation="2dp"
-        android:text="Upload Image"
-        android:textColor="@color/primary_blue"
-        android:textSize="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"></de.hdodenhof.circleimageview.CircleImageView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

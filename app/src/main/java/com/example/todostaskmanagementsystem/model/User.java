@@ -6,27 +6,24 @@ public class User {
     private String contact;
     private String email;
     private String token;
-    private String profilePic;
 
     public User(){
 
     }
 
-    public User(String password, String name, String contact, String email, String profilePic) {
+    public User(String password, String name, String contact, String email) {
         this.password = password;
         this.name = name;
         this.contact = contact;
         this.email = email;
-        this.profilePic = profilePic;
     }
 
-    public User(String password, String name, String contact, String email, String token, String profilePic) {
+    public User(String password, String name, String contact, String email, String token) {
         this.password = password;
         this.name = name;
         this.contact = contact;
         this.email = email;
         this.token = token;
-        this.profilePic = profilePic;
     }
 
     public String getPassword() {
@@ -69,11 +66,4 @@ public class User {
         this.token = token;
     }
 
-    public String getProfilePic() {
-        return profilePic;
-    }
-
-    public void setProfilePic(String profilePic) {
-        this.profilePic = profilePic;
-    }
 }

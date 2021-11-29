@@ -91,6 +91,7 @@ public class LoginFormFragment extends Fragment {
                         if (documentSnapshot.exists()) {
                             User user = documentSnapshot.toObject(User.class);
                             String pass = AESCrypt.decrypt(user.getPassword()); // user password from database
+
                             if (pass.equals(loginPass)) {
                                 SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = prefs.edit();

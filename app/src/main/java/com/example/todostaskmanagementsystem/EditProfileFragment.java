@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -24,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,11 +36,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.User;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
@@ -51,7 +58,12 @@ public class EditProfileFragment extends Fragment {
     private String email = "";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private View view;
-    ImageView profPic;
+    private ImageView imgViewProfPic;
+    private int SELECT_PICTURE = 200;
+    private Uri returnUri;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -60,7 +72,9 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //profPic = view.findViewById(R.id.edit_profPic);
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+
     }
 
     @Override
@@ -70,11 +84,12 @@ public class EditProfileFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         Button btn = view.findViewById(R.id.btn_saveProf);
         Button btnChg = view.findViewById(R.id.btn_changePass);
-        Button uploadPic = view.findViewById(R.id.btn_addProf);
-        profPic = (ImageView) view.findViewById(R.id.edit_profPic);
-        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
-        email = prefs.getString("pref_email",null);
 
+        imgViewProfPic = view.findViewById(R.id.edit_profPic);
+        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        email = prefs.getString("pref_email", null);
+
+        //loadData
         db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -86,14 +101,27 @@ public class EditProfileFragment extends Fragment {
                 txtEmail.setText(user.getEmail());
                 txtPhone.setText(user.getContact());
 
-                if(user.getProfilePic() != null && user.getProfilePic() != ""){
-                    byte[] decodedString = Base64.decode(user.getProfilePic(), Base64.URL_SAFE);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    profPic.setImageBitmap(decodedByte);
-                }
+                StorageReference imageRef = storageRef.child("profpic/" + email);
+
+                final long ONE_MEGABYTE = 1024 * 1024 * 5;
+                imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        // Data for "images/island.jpg" is returns, use this as needed
+                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imgViewProfPic.setImageBitmap(bmp);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                        Toast.makeText(getActivity(), "The file is too big, please reduce the size.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
+        //save changes
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,39 +132,22 @@ public class EditProfileFragment extends Fragment {
                 EditText newContact = view.findViewById(R.id.txt_editPhone);
                 String contact = newContact.getText().toString().trim();
 
-                ImageView pic = view.findViewById(R.id.edit_profPic);
-                String imageFile = null;
-                if(pic != null){
-                    BitmapDrawable drawable = (BitmapDrawable) pic.getDrawable();
-                    if(drawable != null) {
-                        Bitmap bitmap = drawable.getBitmap();
 
-                        //Resize
-                        int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
-                        Bitmap resized = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
-
-                        ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
-                        resized.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
-                        resized.recycle();
-                        byte[] byteArray = bYtE.toByteArray();
-                        imageFile = Base64.encodeToString(byteArray, Base64.URL_SAFE);
-                    }
-                }
-
-                if(TextUtils.isEmpty(name)){
+                if (TextUtils.isEmpty(name)) {
                     newName.setError("Name is required!");
                     return;
                 }
-                if(TextUtils.isEmpty(contact)){
+                if (TextUtils.isEmpty(contact)) {
                     newContact.setError("Contact number is required!");
                     return;
                 }
 
-                createConfirmSaveDialog(name,contact,imageFile);
+                createConfirmSaveDialog(name, contact);
 
             }
         });
 
+        //create password dialog password changes
         btnChg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,32 +155,11 @@ public class EditProfileFragment extends Fragment {
             }
         });
 
-        /*uploadPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //open gallery
-                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(openGalleryIntent, 1000);
-            }
-        });*/
-
         // Open Gallery
-        uploadPic.setOnClickListener(new View.OnClickListener() {
+        imgViewProfPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //open gallery
-                //if(ActivityCompat.checkSelfPermission(getActivity(),
-                //        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                //{
-                //    System.out.println("#### No permission granted");
-                //    requestPermissions(
-                //            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                //            2000);
-                //}
-                //else {
-                    startGallery();
-                //}
+                imageChooser();
             }
         });
 
@@ -180,41 +170,24 @@ public class EditProfileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super method removed
         if (resultCode == RESULT_OK) {
-            if (requestCode == 1000) {
-                Uri returnUri = data.getData();
-                Bitmap bitmapImage = null;
-                try {
-                    bitmapImage = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), returnUri);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (requestCode == SELECT_PICTURE) {
+                returnUri = data.getData();
+                if (returnUri != null) {
+                    imgViewProfPic.setImageURI(returnUri);
                 }
-
-                if(bitmapImage != null) {
-                    profPic.setImageBitmap(bitmapImage);
-                }
-
             }
         }
     }
 
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1000){
-            Uri imageUri = data.getData();
-            profPic.setImageURI(imageUri);
-        }
-    }*/
-
-    private void startGallery() {
-        Intent cameraIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        cameraIntent.setType("image/*");
-        if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(cameraIntent, 1000);
-        }
+    private void imageChooser() {
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(i, "Select Picture"), SELECT_PICTURE);
     }
 
-    private void createChangePasswordDialog(){
+
+    private void createChangePasswordDialog() {
         AlertDialog.Builder dialogBuilder;
         AlertDialog dialog;
         EditText dialogOldPass;
@@ -250,12 +223,12 @@ public class EditProfileFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
                         String pass = AESCrypt.decrypt(user.getPassword());
-                        if(oldPass.equals(pass) && newPass.equals(conNewPass)){
+                        if (oldPass.equals(pass) && newPass.equals(conNewPass)) {
                             DocumentReference docRef = db.collection("Users").document(email);
                             docRef.update("password", AESCrypt.encrypt(newPass));
                             Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
-                        } else{
+                        } else {
                             Toast.makeText(getActivity(), "Incorrect password!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -275,7 +248,7 @@ public class EditProfileFragment extends Fragment {
         dialog.show();
     }
 
-    private void createConfirmSaveDialog(String name, String contact, String imageFile){
+    private void createConfirmSaveDialog(String name, String contact) {
         AlertDialog.Builder dialogBuilder;
         AlertDialog dialog;
         EditText dialogPassword;
@@ -305,16 +278,17 @@ public class EditProfileFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
                         String pass = AESCrypt.decrypt(user.getPassword());
-                        if(password.equals(pass)){
+                        if (password.equals(pass)) {
                             DocumentReference docRef = db.collection("Users").document(email);
 
-                            user = new User(AESCrypt.encrypt(pass), name, contact, email, user.getToken(), imageFile);
+                            user = new User(AESCrypt.encrypt(pass), name, contact, email, user.getToken());
 
                             docRef.set(user);
+                            uploadToFirebaseStorage();
                             Toast.makeText(getActivity(), "Successfully updated profile!", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                             requireActivity().onBackPressed();
-                        } else{
+                        } else {
                             Toast.makeText(getActivity(), "Incorrect password!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -333,4 +307,23 @@ public class EditProfileFragment extends Fragment {
         //display dialog
         dialog.show();
     }
+
+    public void uploadToFirebaseStorage() {
+        StorageReference imageRef = storageRef.child("profpic/" + email);
+        UploadTask uploadTask = imageRef.putFile(returnUri);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull @NotNull Exception e) {
+                Log.d("MYDEBUG", "Upload failed" + e);
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d("MYDEBUG", "Upload successfully");
+            }
+        });
+    }
+
 }
