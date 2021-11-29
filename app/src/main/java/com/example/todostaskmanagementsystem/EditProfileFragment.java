@@ -50,8 +50,8 @@ import java.util.Map;
 public class EditProfileFragment extends Fragment {
     private String email = "";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private View view;
     ImageView profPic;
-    int SELECT_PICTURE = 200;
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -67,7 +67,7 @@ public class EditProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         Button btn = view.findViewById(R.id.btn_saveProf);
         Button btnChg = view.findViewById(R.id.btn_changePass);
         Button uploadPic = view.findViewById(R.id.btn_addProf);
@@ -97,12 +97,12 @@ public class EditProfileFragment extends Fragment {
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                EditText newName = getView().findViewById(R.id.txt_editUserName);
+            public void onClick(View v) {
+                EditText newName = view.findViewById(R.id.txt_editUserName);
                 String name = newName.getText().toString();
-                TextView newEmail = getView().findViewById(R.id.txt_userEmail);
+                TextView newEmail = view.findViewById(R.id.txt_userEmail);
                 String email = newEmail.getText().toString();
-                EditText newContact = getView().findViewById(R.id.txt_editPhone);
+                EditText newContact = view.findViewById(R.id.txt_editPhone);
                 String contact = newContact.getText().toString();
 
                 ImageView pic = getView().findViewById(R.id.edit_profPic);

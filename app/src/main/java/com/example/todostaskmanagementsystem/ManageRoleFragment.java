@@ -44,6 +44,7 @@ public class ManageRoleFragment extends Fragment {
     private ArrayList<Role> roles = new ArrayList();
     private RoleAdapter roleAdapter;
     private String todolistID;
+    private View view;
 
     public ManageRoleFragment() {
         // Required empty public constructor
@@ -62,7 +63,7 @@ public class ManageRoleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_manage_role, container, false);
+        view = inflater.inflate(R.layout.fragment_manage_role, container, false);
         Button btn = view.findViewById(R.id.button_create_role);
         RecyclerView recyclerView = view.findViewById(R.id.recycle_roles);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -89,11 +90,11 @@ public class ManageRoleFragment extends Fragment {
         });
         recyclerView.setAdapter(roleAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        loadData(view);
+        loadData();
         return view;
     }
 
-    private void loadData(View view) {
+    private void loadData() {
         roles.clear();
         db.collection("Todolists").document(todolistID).collection("Roles").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -109,7 +110,7 @@ public class ManageRoleFragment extends Fragment {
 
     private void updateRecycleView() {
 
-        TextView txt = getView().findViewById(R.id.empty_hint);
+        TextView txt = view.findViewById(R.id.empty_hint);
         if (roles.isEmpty()) {
             txt.setVisibility(View.VISIBLE);
         } else {
@@ -159,7 +160,7 @@ public class ManageRoleFragment extends Fragment {
                     public void onSuccess(Void unused) {
                         Toast.makeText(getActivity(), "Update successfully", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
-                        loadData(getView());
+                        loadData();
                     }
                 });
             }
@@ -221,14 +222,14 @@ public class ManageRoleFragment extends Fragment {
                                     db.collection("Todolists").document(todolistID).collection("Roles").document("R1").update("members", FieldValue.arrayUnion(members));
                                     db.collection("Todolists").document(todolistID).collection("Roles").document(roles.get(position).getId()).delete();
                                     Toast.makeText(getActivity(), "Successfully deleted Role!", Toast.LENGTH_SHORT).show();
-                                    loadData(view);
+                                    loadData();
                                     dialog.dismiss();
                                 }
                             });
                         }else{
                             db.collection("Todolists").document(todolistID).collection("Roles").document(roles.get(position).getId()).delete();
                             Toast.makeText(getActivity(), "Successfully deleted Role!", Toast.LENGTH_SHORT).show();
-                            loadData(view);
+                            loadData();
                             dialog.dismiss();
                         }
                     }

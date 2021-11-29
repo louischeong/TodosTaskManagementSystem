@@ -31,6 +31,7 @@ public class ChangesLogFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String todolistID;
     private ArrayList<ChangesLog> changesLogs = new ArrayList<>();
+    private View view;
 
     public ChangesLogFragment() {
         // Required empty public constructor
@@ -49,30 +50,30 @@ public class ChangesLogFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_changes_log, container, false);
+        view = inflater.inflate(R.layout.fragment_changes_log, container, false);
         changesLogAdapter = new ChangesLogAdapter(changesLogs, getActivity());
         RecyclerView recyclerView = view.findViewById(R.id.recycle_changeslog);
         recyclerView.setAdapter(changesLogAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        loadData(view);
+        loadData();
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final SwipeRefreshLayout pullToRefresh = getView().findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.swiperefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadData(getView());
+                loadData();
                 pullToRefresh.setRefreshing(false);
             }
         });
     }
 
-    private void loadData(View view) {
+    private void loadData() {
         changesLogs.clear();
         db.collection("Todolists").document(todolistID).collection("ChangesLog").orderBy("dateTime", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override

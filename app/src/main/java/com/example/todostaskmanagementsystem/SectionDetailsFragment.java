@@ -67,6 +67,7 @@ public class SectionDetailsFragment extends Fragment {
     private String userRoleName;
     private boolean isOwner;
     private boolean isMarkAllowed;
+    private View view;
 
     public SectionDetailsFragment() {
         // Required empty public constructor
@@ -91,7 +92,7 @@ public class SectionDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_section_details, container, false);
+        view = inflater.inflate(R.layout.fragment_section_details, container, false);
         setHasOptionsMenu(true);
         Button btnAdd = view.findViewById(R.id.btn_addNewTask);
         btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +110,7 @@ public class SectionDetailsFragment extends Fragment {
             }
         });
 
-        loadData(view);
+        loadData();
 
         return view;
     }
@@ -118,17 +119,17 @@ public class SectionDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final SwipeRefreshLayout pullToRefresh = getView().findViewById(R.id.swiperefresh);
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.swiperefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadData(getView());
+                loadData();
                 pullToRefresh.setRefreshing(false);
             }
         });
     }
 
-    private void loadData(View view) {
+    private void loadData() {
         allowedMark.clear();
         allowedEdit.clear();
 
@@ -136,7 +137,6 @@ public class SectionDetailsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Section sec = documentSnapshot.toObject(Section.class);
-
 
 
                 allowedMark.addAll(sec.getAllowedMark());
@@ -208,11 +208,10 @@ public class SectionDetailsFragment extends Fragment {
         });
 
 
-
     }
 
     private void updateRecycleView() {
-        TextView txt = getView().findViewById(R.id.empty_hint);
+        TextView txt = view.findViewById(R.id.empty_hint);
         if (todoTasks.isEmpty()) {
             txt.setVisibility(View.VISIBLE);
         } else {

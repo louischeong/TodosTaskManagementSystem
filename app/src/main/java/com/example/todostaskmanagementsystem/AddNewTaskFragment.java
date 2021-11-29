@@ -72,6 +72,7 @@ public class AddNewTaskFragment extends Fragment {
         TextView txtReminder = view.findViewById(R.id.reminderText);
         remindMeDays = view.findViewById(R.id.remindMe_days);
 
+
         CheckBox checkBox = view.findViewById(R.id.checkboxReminder);
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +99,9 @@ public class AddNewTaskFragment extends Fragment {
 
                 DatePickerDialog dialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener, year, month, day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getDatePicker().setMinDate(cal.getTimeInMillis() - 1000);
+                dialog.setTitle("Select Date");
+
                 dialog.show();
             }
         });
