@@ -20,17 +20,22 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class ResetPasswordFragment extends Fragment {
-    private String email = "";
+    private String email;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public ResetPasswordFragment() {
         // Required empty public constructor
+
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            email = bundle.getString("email");
+        }
     }
 
     @Override
