@@ -87,7 +87,6 @@ public class EditProfileFragment extends Fragment {
                 txtPhone.setText(user.getContact());
 
                 if(user.getProfilePic() != null && user.getProfilePic() != ""){
-                    System.out.println("#### Image found @ firebase");
                     byte[] decodedString = Base64.decode(user.getProfilePic(), Base64.URL_SAFE);
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                     profPic.setImageBitmap(decodedByte);
@@ -122,12 +121,6 @@ public class EditProfileFragment extends Fragment {
                         byte[] byteArray = bYtE.toByteArray();
                         imageFile = Base64.encodeToString(byteArray, Base64.URL_SAFE);
                     }
-                }
-
-                if(imageFile != null && imageFile != ""){
-                    System.out.println("#### Got image");
-                }else{
-                    System.out.println("#### Image is null");
                 }
 
                 if(TextUtils.isEmpty(name)){
@@ -187,9 +180,7 @@ public class EditProfileFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super method removed
         if (resultCode == RESULT_OK) {
-            System.out.println("#### RESULT OK");
             if (requestCode == 1000) {
-                System.out.println("#### requestCode 1000");
                 Uri returnUri = data.getData();
                 Bitmap bitmapImage = null;
                 try {
@@ -199,20 +190,11 @@ public class EditProfileFragment extends Fragment {
                 }
 
                 if(bitmapImage != null) {
-                    System.out.println("#### bitmapImage not null");
                     profPic.setImageBitmap(bitmapImage);
-                } else {
-                    System.out.println("#### bitmapImage null");
                 }
 
-            } else {
-                System.out.println("#### requestCode not 1000");
             }
-        } else {
-            System.out.println("#### RESULT NOT OK");
         }
-        //Uri returnUri;
-        //returnUri = data.getData();
     }
 
     /*@Override
@@ -225,13 +207,10 @@ public class EditProfileFragment extends Fragment {
     }*/
 
     private void startGallery() {
-        System.out.println("#### Entered startGallery method");
         Intent cameraIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         cameraIntent.setType("image/*");
         if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(cameraIntent, 1000);
-        } else {
-            System.out.println("#### something wrong");
         }
     }
 
@@ -329,9 +308,7 @@ public class EditProfileFragment extends Fragment {
                         if(password.equals(pass)){
                             DocumentReference docRef = db.collection("Users").document(email);
 
-                            System.out.println("#### image before set: " + imageFile);
                             user = new User(pass, name, contact, email, user.getToken(), imageFile);
-                            System.out.println("#### image after set: " + user.getProfilePic());
 
                             docRef.set(user);
                             Toast.makeText(getActivity(), "Successfully updated profile!", Toast.LENGTH_SHORT).show();
