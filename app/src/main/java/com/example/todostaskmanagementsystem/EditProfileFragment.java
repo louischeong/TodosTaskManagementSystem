@@ -71,7 +71,6 @@ public class EditProfileFragment extends Fragment {
         Button btn = view.findViewById(R.id.btn_saveProf);
         Button btnChg = view.findViewById(R.id.btn_changePass);
         Button uploadPic = view.findViewById(R.id.btn_addProf);
-        //ImageView profPic = view.findViewById(R.id.edit_profPic);
         profPic = (ImageView) view.findViewById(R.id.edit_profPic);
         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
         email = prefs.getString("pref_email",null);
@@ -86,7 +85,9 @@ public class EditProfileFragment extends Fragment {
                 txtName.setText(user.getName());
                 txtEmail.setText(user.getEmail());
                 txtPhone.setText(user.getContact());
+
                 if(user.getProfilePic() != null && user.getProfilePic() != ""){
+                    System.out.println("#### Image found @ firebase");
                     byte[] decodedString = Base64.decode(user.getProfilePic(), Base64.URL_SAFE);
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                     profPic.setImageBitmap(decodedByte);
@@ -95,7 +96,6 @@ public class EditProfileFragment extends Fragment {
         });
 
         btn.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
                 EditText newName = getView().findViewById(R.id.txt_editUserName);
@@ -113,8 +113,8 @@ public class EditProfileFragment extends Fragment {
                         Bitmap bitmap = drawable.getBitmap();
 
                         //Resize
-                        int nh = (int) (bitmap.getHeight() * (1000.0 / bitmap.getWidth()));
-                        Bitmap resized = Bitmap.createScaledBitmap(bitmap, 1000, nh, true);
+                        int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
+                        Bitmap resized = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
 
                         ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
                         resized.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
@@ -124,7 +124,7 @@ public class EditProfileFragment extends Fragment {
                     }
                 }
 
-                if(imageFile != null){
+                if(imageFile != null && imageFile != ""){
                     System.out.println("#### Got image");
                 }else{
                     System.out.println("#### Image is null");
@@ -322,7 +322,6 @@ public class EditProfileFragment extends Fragment {
                 String password = dialogPassword.getText().toString();
 
                 db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
