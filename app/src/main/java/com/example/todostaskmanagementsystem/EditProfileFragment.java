@@ -104,7 +104,7 @@ public class EditProfileFragment extends Fragment {
                 EditText newContact = view.findViewById(R.id.txt_editPhone);
                 String contact = newContact.getText().toString();
 
-                ImageView pic = getView().findViewById(R.id.edit_profPic);
+                ImageView pic = view.findViewById(R.id.edit_profPic);
                 String imageFile = null;
                 if(pic != null){
                     BitmapDrawable drawable = (BitmapDrawable) pic.getDrawable();

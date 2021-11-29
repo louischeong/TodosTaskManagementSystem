@@ -194,7 +194,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     private void searchTodolist() {
         String keyword = searchBar.getText().toString();
         todolists.clear();
-        db.collection("Todolists").whereGreaterThanOrEqualTo("name", keyword).whereLessThan("name", keyword + '\uf8ff').get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("Todolists").whereArrayContains("membersEmail", userEmail).whereGreaterThanOrEqualTo("name", keyword).whereLessThan("name", keyword + '\uf8ff').get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {

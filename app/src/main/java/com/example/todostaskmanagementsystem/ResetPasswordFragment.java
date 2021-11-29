@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ResetPasswordFragment extends Fragment {
     private String email;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private View view;
 
     public ResetPasswordFragment() {
         // Required empty public constructor
@@ -42,15 +43,15 @@ public class ResetPasswordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_reset_password, container, false);
+        view = inflater.inflate(R.layout.fragment_reset_password, container, false);
         Button savePass = view.findViewById(R.id.btn_saveNewPass);
 
         savePass.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                EditText resetPass = getView().findViewById(R.id.txt_resetPass);
+            public void onClick(View v) {
+                EditText resetPass = view.findViewById(R.id.txt_resetPass);
                 String newPass = resetPass.getText().toString();
-                EditText conResetPass = getView().findViewById(R.id.txt_resetConPass);
+                EditText conResetPass = view.findViewById(R.id.txt_resetConPass);
                 String conPass = conResetPass.getText().toString();
 
                 if(TextUtils.isEmpty(newPass)){

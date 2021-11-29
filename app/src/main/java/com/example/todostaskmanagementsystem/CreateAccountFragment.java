@@ -20,7 +20,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class CreateAccountFragment extends Fragment {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+    private View view;
 
     public CreateAccountFragment() {
         // Required empty public constructor
@@ -35,52 +36,52 @@ public class CreateAccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_create_account, container, false);
+        view = inflater.inflate(R.layout.fragment_create_account, container, false);
         Button btn = view.findViewById(R.id.btn_register);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                EditText newName = getView().findViewById(R.id.txt_name);
+            public void onClick(View v) {
+                EditText newName = view.findViewById(R.id.txt_name);
                 String name = newName.getText().toString().trim();
-                EditText newEmail = getView().findViewById(R.id.txt_email);
+                EditText newEmail = view.findViewById(R.id.txt_email);
                 String email = newEmail.getText().toString().trim();
-                EditText newContact = getView().findViewById(R.id.txt_phone);
+                EditText newContact = view.findViewById(R.id.txt_phone);
                 String contact = newContact.getText().toString().trim();
-                EditText newPass = getView().findViewById(R.id.txt_pass);
+                EditText newPass = view.findViewById(R.id.txt_pass);
                 String pass = newPass.getText().toString().trim();
-                EditText newConPass = getView().findViewById(R.id.txt_confirmPass);
+                EditText newConPass = view.findViewById(R.id.txt_confirmPass);
                 String conPass = newConPass.getText().toString().trim();
 
-                if(TextUtils.isEmpty(name)){
+                if (TextUtils.isEmpty(name)) {
                     newName.setError("Name is required!");
                     return;
                 }
-                if(TextUtils.isEmpty(email)){
+                if (TextUtils.isEmpty(email)) {
                     newEmail.setError("Email is required!");
                 }
-                if(TextUtils.isEmpty(contact)){
+                if (TextUtils.isEmpty(contact)) {
                     newContact.setError("Contact number is required!");
                     return;
                 }
-                if(TextUtils.isEmpty(pass)){
+                if (TextUtils.isEmpty(pass)) {
                     newPass.setError("Password is required!");
                     return;
                 }
-                if(TextUtils.isEmpty(conPass)){
+                if (TextUtils.isEmpty(conPass)) {
                     newConPass.setError("Confirm Password is required!");
                     return;
                 }
                 if (email.matches(emailPattern) && android.util.Patterns.PHONE.matcher(contact).matches()) {
-                    if(pass.equals(conPass)){
+                    if (pass.equals(conPass)) {
                         DocumentReference docRef = db.collection("Users").document(email);
                         User user = new User(AESCrypt.encrypt(pass), name, contact, email, "");
                         docRef.set(user);
                         Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
                         NavHostFragment.findNavController(getParentFragment()).navigate(CreateAccountFragmentDirections.actionCreateAccountToStartPageFragment());
-                    }else{
+                    } else {
                         Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
                     }
-                }else{
+                } else {
                     Toast.makeText(getActivity(), "Please make sure that the email and contact number are correct.", Toast.LENGTH_SHORT).show();
                 }
 
