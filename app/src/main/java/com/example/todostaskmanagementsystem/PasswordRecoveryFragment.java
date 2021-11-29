@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ public class PasswordRecoveryFragment extends Fragment {
     private EditText editTextEmail;
     private Button btnContinue;
     private EditText editTextOTP;
+    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     public PasswordRecoveryFragment() {
         // Required empty public constructor
@@ -57,41 +59,49 @@ public class PasswordRecoveryFragment extends Fragment {
 
 
                 //TODO Validate email in the email TextField
-
-
                 String email = editTextEmail.getText().toString();
                 Log.d("MYDEBUG", "String: " + email);
-                db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
 
+                if(TextUtils.isEmpty(email)){
+                    editTextEmail.setError("Email is required!");
+                }
 
-                            new Thread() {
-                                public void run() {
-                                    try {
-                                        String strRandomNum = getRandomNumberString();
-                                        GMailSender sender = new GMailSender("todostaskmanagement@gmail.com", "Todos@123");
-                                        sender.sendMail("Todos Task Management System: Password Recovery",
-                                                "Enter code below to reset your password.\nYour code: " + strRandomNum,
-                                                "TodosTaskManagementSupport",
-                                                email);
+                if(email.matches(emailPattern)){
+                    db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
 
-                                        Map<String, Object> docMap = new HashMap<>();
-                                        docMap.put("OTP", strRandomNum);
+                                new Thread() {
+                                    public void run() {
+                                        try {
+                                            String strRandomNum = getRandomNumberString();
+                                            GMailSender sender = new GMailSender("todostaskmanagement@gmail.com", "Todos@123");
+                                            sender.sendMail("Todos Task Management System: Password Recovery",
+                                                    "Enter code below to reset your password.\nYour code: " + strRandomNum,
+                                                    "TodosTaskManagementSupport",
+                                                    email);
 
-                                        db.collection("OTP").document(email).set(docMap);
-                                        Toast.makeText(getActivity(), "An email with OTP code has been sent to " + email, Toast.LENGTH_SHORT).show();
-                                    } catch (Exception e) {
-                                        Log.d("MYDEBUG", e.getMessage(), e);
+                                            Map<String, Object> docMap = new HashMap<>();
+                                            docMap.put("OTP", strRandomNum);
+
+                                            db.collection("OTP").document(email).set(docMap);
+                                            Toast.makeText(getActivity(), "An email with OTP code has been sent to " + email, Toast.LENGTH_SHORT).show();
+                                        } catch (Exception e) {
+                                            Log.d("MYDEBUG", e.getMessage(), e);
+                                        }
                                     }
-                                }
-                            }.start();
-                        } else {
-                            Toast.makeText(getActivity(), "The email is not exist. Please create an account.", Toast.LENGTH_SHORT).show();
+                                }.start();
+                            } else {
+                                Toast.makeText(getActivity(), "The email is not exist. Please create an account.", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+                }else{
+                    Toast.makeText(getActivity(), "Please make sure that the email is in correct format.", Toast.LENGTH_SHORT).show();
+                }
+
+
 
 
             }
@@ -102,9 +112,12 @@ public class PasswordRecoveryFragment extends Fragment {
             public void onClick(View v) {
 
                 //TODO Validation For Email's EditText and OTP EditText
-
-
                 String email = editTextEmail.getText().toString();
+
+                if(TextUtils.isEmpty(email)){
+                    editTextEmail.setError("Email is required!");
+                }
+
                 db.collection("OTP").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {

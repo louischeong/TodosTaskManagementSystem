@@ -40,16 +40,16 @@ public class CreateAccountFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText newName = view.findViewById(R.id.txt_name);
-                String name = newName.getText().toString();
-                EditText newEmail = view.findViewById(R.id.txt_email);
-                String email = newEmail.getText().toString();
-                EditText newContact = view.findViewById(R.id.txt_phone);
-                String contact = newContact.getText().toString();
-                EditText newPass = view.findViewById(R.id.txt_pass);
-                String pass = newPass.getText().toString();
-                EditText newConPass = view.findViewById(R.id.txt_confirmPass);
-                String conPass = newConPass.getText().toString();
+                EditText newName = getView().findViewById(R.id.txt_name);
+                String name = newName.getText().toString().trim();
+                EditText newEmail = getView().findViewById(R.id.txt_email);
+                String email = newEmail.getText().toString().trim();
+                EditText newContact = getView().findViewById(R.id.txt_phone);
+                String contact = newContact.getText().toString().trim();
+                EditText newPass = getView().findViewById(R.id.txt_pass);
+                String pass = newPass.getText().toString().trim();
+                EditText newConPass = getView().findViewById(R.id.txt_confirmPass);
+                String conPass = newConPass.getText().toString().trim();
 
                 if(TextUtils.isEmpty(name)){
                     newName.setError("Name is required!");
@@ -73,7 +73,7 @@ public class CreateAccountFragment extends Fragment {
                 if (email.matches(emailPattern) && android.util.Patterns.PHONE.matcher(contact).matches()) {
                     if(pass.equals(conPass)){
                         DocumentReference docRef = db.collection("Users").document(email);
-                        User user = new User(pass, name, contact, email, "");
+                        User user = new User(AESCrypt.encrypt(pass), name, contact, email, "");
                         docRef.set(user);
                         Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
                         NavHostFragment.findNavController(getParentFragment()).navigate(CreateAccountFragmentDirections.actionCreateAccountToStartPageFragment());

@@ -60,6 +60,7 @@
         android:layout_marginRight="15dp"
         android:backgroundTint="@color/primary_blue"
         android:textColor="@color/primary_blue"
+        android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9"></EditText>

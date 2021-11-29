@@ -249,10 +249,10 @@ public class EditProfileFragment extends Fragment {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
-                        String pass = user.getPassword();
+                        String pass = AESCrypt.decrypt(user.getPassword());
                         if(oldPass.equals(pass) && newPass.equals(conNewPass)){
                             DocumentReference docRef = db.collection("Users").document(email);
-                            docRef.update("password", newPass);
+                            docRef.update("password", AESCrypt.encrypt(newPass));
                             Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         } else{
@@ -304,11 +304,11 @@ public class EditProfileFragment extends Fragment {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
-                        String pass = user.getPassword();
+                        String pass = AESCrypt.decrypt(user.getPassword());
                         if(password.equals(pass)){
                             DocumentReference docRef = db.collection("Users").document(email);
 
-                            user = new User(pass, name, contact, email, user.getToken(), imageFile);
+                            user = new User(AESCrypt.encrypt(pass), name, contact, email, user.getToken(), imageFile);
 
                             docRef.set(user);
                             Toast.makeText(getActivity(), "Successfully updated profile!", Toast.LENGTH_SHORT).show();

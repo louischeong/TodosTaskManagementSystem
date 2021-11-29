@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,10 +43,19 @@ public class ResetPasswordFragment extends Fragment {
         savePass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText resetPass = view.findViewById(R.id.txt_resetPass);
+                EditText resetPass = getView().findViewById(R.id.txt_resetPass);
                 String newPass = resetPass.getText().toString();
-                EditText conResetPass = view.findViewById(R.id.txt_resetConPass);
+                EditText conResetPass = getView().findViewById(R.id.txt_resetConPass);
                 String conPass = conResetPass.getText().toString();
+
+                if(TextUtils.isEmpty(newPass)){
+                    resetPass.setError("Password is required!");
+                    return;
+                }
+                if(TextUtils.isEmpty(conPass)){
+                    conResetPass.setError("Confirm Password is required!");
+                    return;
+                }
 
                 db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>(){
                     @Override
@@ -53,7 +63,7 @@ public class ResetPasswordFragment extends Fragment {
                         User user = documentSnapshot.toObject(User.class);
                         if(newPass.equals(conPass)){
                             DocumentReference docRef = db.collection("Users").document(email);
-                            docRef.update("password", newPass);
+                            docRef.update(AESCrypt.encrypt("password"), newPass);
                             Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
                         }
                     }
