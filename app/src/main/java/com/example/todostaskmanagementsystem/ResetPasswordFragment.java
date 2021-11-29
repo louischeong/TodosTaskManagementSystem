@@ -66,10 +66,9 @@ public class ResetPasswordFragment extends Fragment {
                 db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>(){
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User user = documentSnapshot.toObject(User.class);
                         if(newPass.equals(conPass)){
                             DocumentReference docRef = db.collection("Users").document(email);
-                            docRef.update(AESCrypt.encrypt("password"), newPass);
+                            docRef.update("password", AESCrypt.encrypt(newPass));
                             Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
                         }
                     }
