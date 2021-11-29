@@ -59,7 +59,7 @@ public class PasswordRecoveryFragment extends Fragment {
 
 
                 //TODO Validate email in the email TextField
-                String email = editTextEmail.getText().toString();
+                String email = editTextEmail.getText().toString().trim();
 
                 if(TextUtils.isEmpty(email)){
                     editTextEmail.setError("Email is required!");
@@ -111,7 +111,7 @@ public class PasswordRecoveryFragment extends Fragment {
             public void onClick(View v) {
 
                 //TODO Validation For Email's EditText and OTP EditText
-                String email = editTextEmail.getText().toString();
+                String email = editTextEmail.getText().toString().trim();
 
                 if(TextUtils.isEmpty(email)){
                     editTextEmail.setError("Email is required!");
@@ -123,7 +123,7 @@ public class PasswordRecoveryFragment extends Fragment {
                         if (documentSnapshot.exists()) {
                             String OTP = (String) documentSnapshot.get("OTP");
 
-                            if (OTP.equals(editTextOTP.getText().toString())) {
+                            if (OTP.equals(editTextOTP.getText().toString().trim())) {
                                 Bundle bundle = new Bundle();
                                 bundle.putString("email", email);
                                 NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_passwordRecoveryFragment_to_resetPasswordFragment, bundle);

@@ -98,11 +98,11 @@ public class EditProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 EditText newName = view.findViewById(R.id.txt_editUserName);
-                String name = newName.getText().toString();
+                String name = newName.getText().toString().trim();
                 TextView newEmail = view.findViewById(R.id.txt_userEmail);
-                String email = newEmail.getText().toString();
+                String email = newEmail.getText().toString().trim();
                 EditText newContact = view.findViewById(R.id.txt_editPhone);
-                String contact = newContact.getText().toString();
+                String contact = newContact.getText().toString().trim();
 
                 ImageView pic = view.findViewById(R.id.edit_profPic);
                 String imageFile = null;
@@ -241,9 +241,9 @@ public class EditProfileFragment extends Fragment {
         dialogConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String oldPass = dialogOldPass.getText().toString();
-                String newPass = dialogNewPass.getText().toString();
-                String conNewPass = dialogConNewPass.getText().toString();
+                String oldPass = dialogOldPass.getText().toString().trim();
+                String newPass = dialogNewPass.getText().toString().trim();
+                String conNewPass = dialogConNewPass.getText().toString().trim();
 
                 db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -298,7 +298,7 @@ public class EditProfileFragment extends Fragment {
         dialogConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String password = dialogPassword.getText().toString();
+                String password = dialogPassword.getText().toString().trim();
 
                 db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override

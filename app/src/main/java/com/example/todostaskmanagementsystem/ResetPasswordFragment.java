@@ -50,9 +50,9 @@ public class ResetPasswordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 EditText resetPass = view.findViewById(R.id.txt_resetPass);
-                String newPass = resetPass.getText().toString();
+                String newPass = resetPass.getText().toString().trim();
                 EditText conResetPass = view.findViewById(R.id.txt_resetConPass);
-                String conPass = conResetPass.getText().toString();
+                String conPass = conResetPass.getText().toString().trim();
 
                 if(TextUtils.isEmpty(newPass)){
                     resetPass.setError("Password is required!");
