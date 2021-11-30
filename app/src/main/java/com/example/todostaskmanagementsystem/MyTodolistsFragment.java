@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -96,7 +97,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
                     searchTodolist();
                     closeKeyboard();
                 }
-                return true;
+                return false;
             }
         });
 
@@ -145,6 +146,7 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
         }
         closeKeyboard();
     }
+
 
     @Override
     public void onResume() {
