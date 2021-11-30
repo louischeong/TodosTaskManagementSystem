@@ -60,6 +60,7 @@ public class ManageMemberFragment extends Fragment {
     private List<String> members = new ArrayList<>();
     private List<Role> roles = new ArrayList<>();
     private View view;
+    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     public ManageMemberFragment() {
         // Required empty public constructor
@@ -195,8 +196,8 @@ public class ManageMemberFragment extends Fragment {
             public void onClick(View v) {
                 //validation email
                 String email = dialogEmail.getText().toString().trim();
-                if (dialogEmail.getText().toString().isEmpty()) {
-                    Toast.makeText(getActivity(), "Please enter a email to add.", Toast.LENGTH_SHORT).show();
+                if (dialogEmail.getText().toString().isEmpty() || !email.matches(emailPattern)) {
+                    Toast.makeText(getActivity(), "Please enter an valid email.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (joinedMemberEmails.contains(email)) {
