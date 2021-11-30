@@ -14,7 +14,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class CreateAccountFragment extends Fragment {
@@ -52,8 +54,6 @@ public class CreateAccountFragment extends Fragment {
                 EditText newConPass = view.findViewById(R.id.txt_confirmPass);
                 String conPass = newConPass.getText().toString().trim();
 
-                DocumentReference docRef = db.collection("Users").document(email);
-
                 if (TextUtils.isEmpty(name)) {
                     newName.setError("Name is required!");
                     return;
@@ -73,24 +73,28 @@ public class CreateAccountFragment extends Fragment {
                     newConPass.setError("Confirm Password is required!");
                     return;
                 }
-                if(email.contains(email)){
-                    newEmail.setError("This email is used.");
-                    return;
-                }
-                if (email.matches(emailPattern) && android.util.Patterns.PHONE.matcher(contact).matches()) {
-                    if (pass.equals(conPass)) {
-                        //DocumentReference docRef = db.collection("Users").document(email);
-                        User user = new User(AESCrypt.encrypt(pass), name, contact, email, "");
-                        docRef.set(user);
-                        Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
-                        NavHostFragment.findNavController(getParentFragment()).navigate(CreateAccountFragmentDirections.actionCreateAccountToStartPageFragment());
-                    } else {
-                        Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
+                db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            //prompt email exists
+                        }else{
+                            if (email.matches(emailPattern) && android.util.Patterns.PHONE.matcher(contact).matches()) {
+                                if (pass.equals(conPass)) {
+                                    DocumentReference docRef = db.collection("Users").document(email);
+                                    User user = new User(AESCrypt.encrypt(pass), name, contact, email, "");
+                                    docRef.set(user);
+                                    Toast.makeText(getActivity(), "Successfully registered!", Toast.LENGTH_SHORT).show();
+                                    NavHostFragment.findNavController(getParentFragment()).navigate(CreateAccountFragmentDirections.actionCreateAccountToStartPageFragment());
+                                } else {
+                                    Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getActivity(), "Please make sure that the email and contact number are correct.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
-                } else {
-                    Toast.makeText(getActivity(), "Please make sure that the email and contact number are correct.", Toast.LENGTH_SHORT).show();
-                }
-
+                });
             }
         });
         return view;
