@@ -72,6 +72,8 @@ public class AddNewTaskFragment extends Fragment {
         TextView txtReminder = view.findViewById(R.id.reminderText);
         remindMeDays = view.findViewById(R.id.remindMe_days);
 
+        TextView txtSectionName = view.findViewById(R.id.section_title);
+        txtSectionName.setText(sectionName);
 
         CheckBox checkBox = view.findViewById(R.id.checkboxReminder);
         checkBox.setOnClickListener(new View.OnClickListener() {

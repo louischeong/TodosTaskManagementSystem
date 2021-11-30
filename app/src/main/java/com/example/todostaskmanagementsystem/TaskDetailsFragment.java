@@ -320,6 +320,7 @@ public class TaskDetailsFragment extends Fragment {
                 dialog.dismiss();
                 ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "DeleteTask", sectionName, editTaskName.getText().toString());
                 db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+                db.collection("Reminders").document(String.valueOf(reminderID)).delete();
                 requireActivity().onBackPressed();
             }
         });

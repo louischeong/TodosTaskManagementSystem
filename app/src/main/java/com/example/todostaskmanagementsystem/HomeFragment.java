@@ -26,7 +26,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -64,6 +67,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("E, dd MMMM yyyy ");
+
+        String welcomeMsg= formatter.format(new Date()) + "\n\nWelcome Back!";
+        TextView txtWelcome = view.findViewById(R.id.dateTimeText);
+        txtWelcome.setText(welcomeMsg);
+
 
         SharedPreferences prefs = getActivity().getSharedPreferences("recent_accessed", Context.MODE_PRIVATE);
 
