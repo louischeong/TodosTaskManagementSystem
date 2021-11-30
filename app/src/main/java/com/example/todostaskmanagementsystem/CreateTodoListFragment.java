@@ -142,7 +142,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
 
                         List<String> emails = new ArrayList<>();
                         emails.add(userEmail);
-                        Todolist todolist = new Todolist(strCurrTodolistID, todolistTitle, todolistDesc, ownerName, emails);
+                        Todolist todolist = new Todolist(strCurrTodolistID, todolistTitle, todolistDesc, userEmail, emails);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
 
                         //Create Role Default

@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todostaskmanagementsystem.R;
 import com.example.todostaskmanagementsystem.interfaces.OnItemClicked;
 import com.example.todostaskmanagementsystem.model.Todolist;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +24,7 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.MyView
 
     private ArrayList<Todolist> todolists;
     private OnItemClicked listener;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public TodolistAdapter(ArrayList<Todolist> todolists){
         this.todolists = todolists;
@@ -39,7 +43,15 @@ public class TodolistAdapter extends RecyclerView.Adapter<TodolistAdapter.MyView
     public void onBindViewHolder(@NonNull @NotNull TodolistAdapter.MyViewHolder holder, int position) {
         holder.title.setText(todolists.get(position).getName());
         holder.desc.setText(todolists.get(position).getDesc());
-        holder.owner.setText(todolists.get(position).getOwner());
+        db.collection("Users").document(todolists.get(position).getOwner()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    holder.owner.setText(documentSnapshot.get("name").toString());
+                }
+            }
+        });
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
