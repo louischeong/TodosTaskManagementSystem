@@ -98,9 +98,9 @@ public class CreateRoleFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 EditText newName = view.findViewById(R.id.txt_roleName);
-                String roleName = newName.getText().toString();
+                String roleName = newName.getText().toString().trim();
                 EditText newDesc = view.findViewById(R.id.txt_description);
-                String desc = newDesc.getText().toString();
+                String desc = newDesc.getText().toString().trim();
 
                 if (TextUtils.isEmpty(roleName)) {
                     newName.setError("Role Name is required!");
