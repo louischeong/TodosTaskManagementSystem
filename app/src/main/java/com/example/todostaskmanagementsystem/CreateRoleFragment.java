@@ -37,7 +37,6 @@ public class CreateRoleFragment extends Fragment {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String todolistID;
 
-
     public CreateRoleFragment() {
         // Required empty public constructor
     }
@@ -60,7 +59,7 @@ public class CreateRoleFragment extends Fragment {
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 createConfirmationDialog(view);
             }
         });
