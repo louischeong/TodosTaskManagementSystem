@@ -65,17 +65,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //getFCMToken();
 
-        SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
-        String token = prefs.getString("pref_token", null);
-        if (token != null) {
-            String email = prefs.getString("pref_email", null);
-            db.collection("Users").document(email).update("token", token).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    Log.d("MYDEBUG", "Firestore: Updated Token");
-                }
-            });
-        }
+//        SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
+//        String token = prefs.getString("pref_token", null);
+//        if (token != null) {
+//            String email = prefs.getString("pref_email", null);
+//            db.collection("Users").document(email).update("token", token).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                @Override
+//                public void onSuccess(Void unused) {
+//                    Log.d("MYDEBUG", "Firestore: Updated Token");
+//                }
+//            });
+//        }
 
     }
 
