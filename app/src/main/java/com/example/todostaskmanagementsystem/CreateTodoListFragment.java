@@ -57,6 +57,7 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
     private String userEmail, userName;
     private EditText editTextTitle, editTextDesc;
     private View view;
+    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     public CreateTodoListFragment() {
         // Required empty public constructor
@@ -117,8 +118,8 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 createAddMemberEmailDialog();
                 break;
             case R.id.btn_createNewTodolist:
-                String todolistTitle = editTextTitle.getText().toString();
-                String todolistDesc = editTextDesc.getText().toString();
+                String todolistTitle = editTextTitle.getText().toString().trim();
+                String todolistDesc = editTextDesc.getText().toString().trim();
                 if (TextUtils.isEmpty(todolistTitle)) {
                     editTextTitle.setError("Title of a to-do list is required!");
                     return;
@@ -209,7 +210,11 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //validation email
-                String email = dialogEmail.getText().toString();
+                String email = dialogEmail.getText().toString().trim();
+                if (TextUtils.isEmpty(email) || !email.matches(emailPattern)){
+                    dialogEmail.setError("Please enter an valid email.");
+                    return;
+                }
                 if (!memberEmails.contains(email)) {
                     memberEmails.add(email);
                     updateRecycleView();
