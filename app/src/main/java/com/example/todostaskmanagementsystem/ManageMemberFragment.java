@@ -194,7 +194,7 @@ public class ManageMemberFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //validation email
-                String email = dialogEmail.getText().toString();
+                String email = dialogEmail.getText().toString().trim();
                 if (dialogEmail.getText().toString().isEmpty()) {
                     Toast.makeText(getActivity(), "Please enter a email to add.", Toast.LENGTH_SHORT).show();
                     return;
