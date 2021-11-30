@@ -97,9 +97,27 @@ public class LoginFormFragment extends Fragment {
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putString("pref_email", user.getEmail());
                                 editor.putString("pref_username", user.getName());
-                                if (user.getToken() == null) {
-                                    getFCMToken(loginEmail);
-                                }
+
+                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<String> task) {
+                                        if (!task.isSuccessful()) {
+                                            Log.d("MYDEBUG", "Fetching FCM registration token failed", task.getException());
+
+                                        }
+                                        String token = task.getResult();
+                                        if (!token.equals(user.getToken())) {
+                                            db.collection("Users").document(loginEmail).update("token", token);
+                                        }
+                                        // Get new FCM registration token
+
+
+                                        // Log and toast
+                                        String msg = "Token: " + token;
+                                        Log.d("MYDEBUG", msg);
+
+                                    }
+                                });
                                 if (cbRememberMe.isChecked())
                                     editor.putString("pref_rememberMe", "true");
                                 editor.commit();
@@ -125,32 +143,5 @@ public class LoginFormFragment extends Fragment {
 
 
         return view;
-    }
-
-    public void getFCMToken(String email) {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.d("MYDEBUG", "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-                        String msg = "Token: " + token;
-                        Log.d("MYDEBUG", msg);
-
-                        db.collection("Users").document(email).update("token", task.getResult()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Log.d("MYDEBUG", "Saved Token to database");
-                            }
-                        });
-                    }
-                });
     }
 }

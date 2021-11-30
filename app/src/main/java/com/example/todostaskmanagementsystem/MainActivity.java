@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -39,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private int SELECT_PICTURE = 200;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setNavigationViewListener();
 
         //getFCMToken();
+
         SharedPreferences prefs = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         String token = prefs.getString("pref_token", null);
         if (token != null) {
