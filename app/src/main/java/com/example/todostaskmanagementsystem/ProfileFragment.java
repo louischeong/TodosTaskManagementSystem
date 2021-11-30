@@ -73,19 +73,20 @@ public class ProfileFragment extends Fragment {
 
                 StorageReference imageRef = storageRef.child("profpic/" + email);
 
-                final long ONE_MEGABYTE = 1024 * 1024 * 5;
+                final long ONE_MEGABYTE = 1024 * 1024 * 20;
                 imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
                         // Data for "images/island.jpg" is returns, use this as needed
                         Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         profPic.setImageBitmap(bmp);
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle any errors
-                        Toast.makeText(getActivity(), "The file is too big, please reduce the size.", Toast.LENGTH_SHORT).show();
+                        Log.d("MYDEBUG", "Error: " + exception);
                     }
                 });
 

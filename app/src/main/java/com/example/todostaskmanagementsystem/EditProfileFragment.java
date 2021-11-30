@@ -103,7 +103,7 @@ public class EditProfileFragment extends Fragment {
 
                 StorageReference imageRef = storageRef.child("profpic/" + email);
 
-                final long ONE_MEGABYTE = 1024 * 1024 * 5;
+                final long ONE_MEGABYTE = 1024 * 1024 * 20;
                 imageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
                     public void onSuccess(byte[] bytes) {
@@ -115,7 +115,7 @@ public class EditProfileFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle any errors
-                        Toast.makeText(getActivity(), "The file is too big, please reduce the size.", Toast.LENGTH_SHORT).show();
+                        Log.d("MYDEBUG", "Error: " + exception);
                     }
                 });
             }
@@ -226,8 +226,8 @@ public class EditProfileFragment extends Fragment {
                         if (oldPass.equals(pass) && newPass.equals(conNewPass)) {
                             DocumentReference docRef = db.collection("Users").document(email);
                             docRef.update("password", AESCrypt.encrypt(newPass));
-                            Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
+                            Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(getActivity(), "Incorrect password!", Toast.LENGTH_SHORT).show();
                         }
@@ -284,9 +284,10 @@ public class EditProfileFragment extends Fragment {
                             user = new User(AESCrypt.encrypt(pass), name, contact, email, user.getToken());
 
                             docRef.set(user);
-                            uploadToFirebaseStorage();
-                            Toast.makeText(getActivity(), "Successfully updated profile!", Toast.LENGTH_SHORT).show();
+                            if (returnUri != null)
+                                uploadToFirebaseStorage();
                             dialog.dismiss();
+                            Toast.makeText(getActivity(), "Successfully updated profile!", Toast.LENGTH_SHORT).show();
                             requireActivity().onBackPressed();
                         } else {
                             Toast.makeText(getActivity(), "Incorrect password!", Toast.LENGTH_SHORT).show();
