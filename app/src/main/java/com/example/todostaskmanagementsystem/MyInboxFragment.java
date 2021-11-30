@@ -132,9 +132,9 @@ public class MyInboxFragment extends Fragment {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(getActivity(), "Decline invitation to \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT).show();
+                updateRecycleView();
+                notifications.remove(position);
             }
         });
-        updateRecycleView();
-        notifications.remove(position);
     }
 }
