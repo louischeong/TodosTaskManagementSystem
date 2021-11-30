@@ -75,7 +75,7 @@ public class MyInboxFragment extends Fragment {
                     });
                 } else {
                     deleteNotification(email, position);
-                    Toast.makeText(getActivity(), "Decline invitation to \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
@@ -128,7 +128,12 @@ public class MyInboxFragment extends Fragment {
     }
 
     private void deleteNotification(String email, int position) {
-        db.collection("Notifications").document(notifications.get(position).getTodolistID()).update("recipientEmails", FieldValue.arrayRemove(email));
+        db.collection("Notifications").document(notifications.get(position).getTodolistID()).update("recipientEmails", FieldValue.arrayRemove(email)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(getActivity(), "Decline invitation to \"" + notifications.get(position).getTodolistTitle() + "\" successfully", Toast.LENGTH_SHORT).show();
+            }
+        });
         updateRecycleView();
         notifications.remove(position);
     }
