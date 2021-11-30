@@ -69,7 +69,7 @@ public class ProfileFragment extends Fragment {
                 txtName.setText(user.getName());
                 txtEmail.setText(user.getEmail());
                 txtPhone.setText(user.getContact());
-                txtPass.setText(user.getPassword());
+                //txtPass.setText(user.getPassword());
 
                 StorageReference imageRef = storageRef.child("profpic/" + email);
 

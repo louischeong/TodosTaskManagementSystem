@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.User;
@@ -40,6 +41,7 @@ public class CreateAccountFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_create_account, container, false);
         Button btn = view.findViewById(R.id.btn_register);
+        ImageButton back = view.findViewById(R.id.btn_back);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,6 +98,13 @@ public class CreateAccountFragment extends Fragment {
                         }
                     }
                 });
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(getParentFragment()).navigate(CreateAccountFragmentDirections.actionCreateAccountToStartPageFragment());
             }
         });
         return view;

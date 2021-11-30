@@ -123,6 +123,7 @@
             android:background="@drawable/textbox"
             android:padding="10dp"
             android:inputType="textPassword"
+            android:text="******"
             android:textColor="@color/primary_blue"
             android:textColorHint="@color/hint_color"
             android:textSize="15dp"

@@ -3,6 +3,7 @@ package com.example.todostaskmanagementsystem;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.todostaskmanagementsystem.model.User;
@@ -45,6 +47,7 @@ public class ResetPasswordFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_reset_password, container, false);
         Button savePass = view.findViewById(R.id.btn_saveNewPass);
+        ImageButton back = view.findViewById(R.id.btn_back);
 
         savePass.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,12 +73,19 @@ public class ResetPasswordFragment extends Fragment {
                             DocumentReference docRef = db.collection("Users").document(email);
                             docRef.update("password", AESCrypt.encrypt(newPass));
                             Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
+                            NavHostFragment.findNavController(getParentFragment()).navigate(ResetPasswordFragmentDirections.actionResetPasswordFragmentToStartPageFragment());
                         }
                     }
                 });
             }
         });
 
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(getParentFragment()).navigate(ResetPasswordFragmentDirections.actionResetPasswordFragmentToPasswordRecoveryFragment());
+            }
+        });
         return view;
     }
 

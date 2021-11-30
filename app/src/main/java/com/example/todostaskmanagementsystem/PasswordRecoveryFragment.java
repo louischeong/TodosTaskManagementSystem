@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +52,7 @@ public class PasswordRecoveryFragment extends Fragment {
         editTextEmail = view.findViewById(R.id.txt_recoveryEmail);
         btnContinue = view.findViewById(R.id.btn_continue);
         editTextOTP = view.findViewById(R.id.txt_OTP);
-
+        ImageButton back = view.findViewById(R.id.btn_back);
 
         btnSendCode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,6 +138,13 @@ public class PasswordRecoveryFragment extends Fragment {
                     }
                 });
 
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(getParentFragment()).navigate(PasswordRecoveryFragmentDirections.actionPasswordRecoveryFragmentToLoginFormFragment());
             }
         });
 

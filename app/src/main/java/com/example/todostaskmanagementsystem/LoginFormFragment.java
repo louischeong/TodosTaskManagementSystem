@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,7 @@ public class LoginFormFragment extends Fragment {
         });
 
         Button btn = view.findViewById(R.id.btn_login2);
+        ImageButton back = view.findViewById(R.id.btn_back);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,8 +142,12 @@ public class LoginFormFragment extends Fragment {
                 });
             }
         });
-
-
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(getParentFragment()).navigate(LoginFormFragmentDirections.actionLoginFormFragmentToStartPageFragment());
+            }
+        });
         return view;
     }
 }
