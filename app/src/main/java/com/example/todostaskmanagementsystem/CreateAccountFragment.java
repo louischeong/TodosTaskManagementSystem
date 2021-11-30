@@ -78,6 +78,7 @@ public class CreateAccountFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()){
                             //prompt email exists
+                            newEmail.setError("This email is existed. Please try a new email.");
                         }else{
                             if (email.matches(emailPattern) && android.util.Patterns.PHONE.matcher(contact).matches()) {
                                 if (pass.equals(conPass)) {
