@@ -95,7 +95,7 @@ public class TodoListDetailsFragment extends Fragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                roles.clear();
                 db.collection("Todolists").document(todolistID).collection("Roles").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -231,8 +231,6 @@ public class TodoListDetailsFragment extends Fragment {
         dialogRecyclerViewMark = dialogView.findViewById(R.id.recycler_roleListMark);
 
         //Link Adapter
-        checkedEditRole.add("Default");
-        checkedMarkRole.add("Default");
         RoleCheckAdapter roleCheckEditAdapter = new RoleCheckAdapter(roles, checkedEditRole);
         roleCheckEditAdapter.setOnActionClickedListener(new OnActionClicked() {
             @Override

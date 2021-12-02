@@ -326,6 +326,7 @@ public class SectionDetailsFragment extends Fragment {
     }
 
     private void createEditSectionDialog() {
+
         //Declare variables
         AlertDialog.Builder dialogBuilder;
         AlertDialog dialog;
@@ -347,7 +348,7 @@ public class SectionDetailsFragment extends Fragment {
         dialogSectionName.setText(sectionName);
         dialogMsg.setText("Edit Section");
         //Link Adapter
-        roleCheckEditAdapter = new RoleCheckAdapter(roles, checkedEditRole);
+        roleCheckEditAdapter = new RoleCheckAdapter(roles);
         roleCheckEditAdapter.setOnActionClickedListener(new OnActionClicked() {
             @Override
             public void onActionClicked(int position, String action) {
@@ -360,7 +361,7 @@ public class SectionDetailsFragment extends Fragment {
         dialogRecyclerViewEdit.setAdapter(roleCheckEditAdapter);
         dialogRecyclerViewEdit.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        roleCheckMarkAdapter = new RoleCheckAdapter(roles, checkedMarkRole);
+        roleCheckMarkAdapter = new RoleCheckAdapter(roles);
         roleCheckMarkAdapter.setOnActionClickedListener(new OnActionClicked() {
             @Override
             public void onActionClicked(int position, String action) {

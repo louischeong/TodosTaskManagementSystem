@@ -55,4 +55,5 @@ public class Role {
     public void setMembers(List<String> members) {
         this.members = members;
     }
+
 }
