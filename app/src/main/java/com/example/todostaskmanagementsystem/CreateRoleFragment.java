@@ -104,11 +104,13 @@ public class CreateRoleFragment extends Fragment {
 
                 if (TextUtils.isEmpty(roleName)) {
                     newName.setError("Role Name is required!");
+                    dialog.dismiss();
                     return;
                 }
 
                 if (TextUtils.isEmpty(desc)) {
                     newDesc.setError("Description is required!");
+                    dialog.dismiss();
                     return;
                 }
                 db.collection("Todolists").document(todolistID).collection("Data").document("Data").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

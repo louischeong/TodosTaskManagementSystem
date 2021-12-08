@@ -57,23 +57,25 @@ public class ResetPasswordFragment extends Fragment {
                 EditText conResetPass = view.findViewById(R.id.txt_resetConPass);
                 String conPass = conResetPass.getText().toString().trim();
 
-                if(TextUtils.isEmpty(newPass)){
+                if (TextUtils.isEmpty(newPass)) {
                     resetPass.setError("Password is required!");
                     return;
                 }
-                if(TextUtils.isEmpty(conPass)){
+                if (TextUtils.isEmpty(conPass)) {
                     conResetPass.setError("Confirm Password is required!");
                     return;
                 }
 
-                db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>(){
+                db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(newPass.equals(conPass)){
+                        if (newPass.equals(conPass)) {
                             DocumentReference docRef = db.collection("Users").document(email);
                             docRef.update("password", AESCrypt.encrypt(newPass));
                             Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
                             NavHostFragment.findNavController(getParentFragment()).navigate(ResetPasswordFragmentDirections.actionResetPasswordFragmentToStartPageFragment());
+                        } else {
+                            Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
