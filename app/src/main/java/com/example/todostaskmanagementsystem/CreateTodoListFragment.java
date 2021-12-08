@@ -63,11 +63,6 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         // Required empty public constructor
     }
 
-    public static CreateTodoListFragment newInstance(String param1, String param2) {
-        CreateTodoListFragment fragment = new CreateTodoListFragment();
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +83,6 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         Button btn2 = view.findViewById(R.id.btn_createNewTodolist);
         btn2.setOnClickListener(this);
 
-
         addMemberAdapter = new AddMemberAdapter(memberEmails);
         addMemberAdapter.setOnItemClickedListener(new OnItemClicked() {
             @Override
@@ -102,13 +96,6 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-
     }
 
     @Override
@@ -136,35 +123,45 @@ public class CreateTodoListFragment extends Fragment implements View.OnClickList
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //get current Todolist ID from database
                         int currTodolistID = Integer.parseInt(documentSnapshot.get("currTodolistID").toString());
                         currTodolistID += 1;
                         String strCurrTodolistID = Integer.toString(currTodolistID);
 
+                        //add creator's email into the todolist
                         List<String> emails = new ArrayList<>();
                         emails.add(userEmail);
+
+                        //creating todolist object and save to database
                         Todolist todolist = new Todolist(strCurrTodolistID, todolistTitle, todolistDesc, userEmail, emails);
                         db.collection("Todolists").document(Integer.toString(currTodolistID)).set(todolist);
 
-                        //Create Role Default
+                        //create the Default Role of this todolist and save it to the database
                         Role role = new Role("R1", "Default", "This is the dafault role of the todolist", emails);
-                        db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("Roles").document("R1").set(role);
+                        db.collection("Todolists").document(Integer.toString(currTodolistID))
+                                .collection("Roles").document("R1").set(role);
 
-                        //setMemberCollection(currTodolistID);
+                        //create a data collection and save it to the todolist
                         Map<String, Object> docData = new HashMap<>();
                         docData.put("currSectionID", 0);
                         docData.put("currTaskID", 0);
                         docData.put("currRoleID", 1);
-                        db.collection("Todolists").document(strCurrTodolistID).collection("Data").document("Data").set(docData);
-                        db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
-                        Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
+                        db.collection("Todolists").document(strCurrTodolistID)
+                                .collection("Data").document("Data").set(docData);
 
-                        //Create Invitation
+                        //update the current todolist ID
+                        db.collection("Data").document("todolistID").update("currTodolistID", currTodolistID);
+
+                        //create Notification for invited members and save to database
                         Notification notification = new Notification(strCurrTodolistID, todolistTitle, ownerName, Timestamp.now(), memberEmails);
                         db.collection("Notifications").document(strCurrTodolistID).set(notification);
 
-                        //update ChangesLog
+                        //update ChangesLog of the todolist
                         ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateTodolist", todolistTitle);
-                        db.collection("Todolists").document(Integer.toString(currTodolistID)).collection("ChangesLog").add(changesLog);
+                        db.collection("Todolists").document(Integer.toString(currTodolistID))
+                                .collection("ChangesLog").add(changesLog);
+
+                        Toast.makeText(getActivity(), "Todolist Created Successfully.", Toast.LENGTH_SHORT).show();
                         requireActivity().onBackPressed();
                     }
                 });

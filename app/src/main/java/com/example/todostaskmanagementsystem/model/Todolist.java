@@ -5,7 +5,6 @@ import java.util.Map;
 
 public class Todolist {
     private String id, name, desc, owner;
-    private int incomplete;
     private List<String> membersEmail;
 
     public Todolist(String id, String name, String desc, String owner, List<String> membersEmail) {
@@ -13,7 +12,6 @@ public class Todolist {
         this.name = name;
         this.desc = desc;
         this.owner = owner;
-        this.incomplete = 0;
         this.membersEmail = membersEmail;
     }
 
@@ -26,7 +24,6 @@ public class Todolist {
         this.name = null;
         this.desc = null;
         this.owner = null;
-        this.incomplete = 0;
         this.membersEmail = null;
     }
 
@@ -60,14 +57,6 @@ public class Todolist {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public int getIncomplete() {
-        return incomplete;
-    }
-
-    public void setIncomplete(int incomplete) {
-        this.incomplete = incomplete;
     }
 
     public List<String> getMembersEmail() {

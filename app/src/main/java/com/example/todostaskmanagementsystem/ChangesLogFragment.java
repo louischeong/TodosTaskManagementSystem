@@ -75,7 +75,9 @@ public class ChangesLogFragment extends Fragment {
 
     private void loadData() {
         changesLogs.clear();
-        db.collection("Todolists").document(todolistID).collection("ChangesLog").orderBy("dateTime", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("Todolists").document(todolistID).collection("ChangesLog")
+                .orderBy("dateTime", Query.Direction.DESCENDING)
+                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {

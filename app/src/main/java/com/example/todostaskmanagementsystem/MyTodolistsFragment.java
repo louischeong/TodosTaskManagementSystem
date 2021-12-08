@@ -109,7 +109,8 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
                 String todolistID = todolistIDs.get(position);
                 Bundle bundle = new Bundle();
                 bundle.putString("todolistID", todolistID);
-                NavHostFragment.findNavController(getParentFragment()).navigate(R.id.action_myTodolistsFragment_to_todoListDetailsFragment, bundle);
+                NavHostFragment.findNavController(getParentFragment())
+                        .navigate(R.id.action_myTodolistsFragment_to_todoListDetailsFragment, bundle);
                 closeKeyboard();
             }
         });
@@ -178,7 +179,8 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     private void loadData() {
         todolists.clear();
         todolistIDs.clear();
-        db.collection("Todolists").whereArrayContains("membersEmail", userEmail).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("Todolists").whereArrayContains("membersEmail", userEmail)
+                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
@@ -196,7 +198,9 @@ public class MyTodolistsFragment extends Fragment implements View.OnClickListene
     private void searchTodolist() {
         String keyword = searchBar.getText().toString();
         todolists.clear();
-        db.collection("Todolists").whereArrayContains("membersEmail", userEmail).whereGreaterThanOrEqualTo("name", keyword).whereLessThan("name", keyword + '\uf8ff').get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection("Todolists").whereArrayContains("membersEmail", userEmail)
+                .whereGreaterThanOrEqualTo("name", keyword).whereLessThan("name", keyword + '\uf8ff')
+                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {

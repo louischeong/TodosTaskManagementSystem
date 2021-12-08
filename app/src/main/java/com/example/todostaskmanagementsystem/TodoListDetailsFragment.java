@@ -270,21 +270,42 @@ public class TodoListDetailsFragment extends Fragment {
         dialogAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String sectionName = dialogSectionName.getText().toString();
-                db.collection("Todolists").document(todolistID).collection("Data").document("Data").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                if (sectionName.isEmpty()){
+                    dialogSectionName.setError("Section name is required.");
+                    return;
+                }
+                db.collection("Todolists").document(todolistID)
+                        .collection("Data").document("Data")
+                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //get current section ID and increase it by 1
                         int currSectionID = Integer.parseInt(documentSnapshot.get("currSectionID").toString()) + 1;
                         String secID = "S" + currSectionID;
+
+                        //creating section object
                         Section sec = new Section(secID, sectionName, checkedEditRole, checkedMarkRole);
                         sections.add(sec);
-                        db.collection("Todolists").document(todolistID).collection("Sections").document(secID).set(sec);
-                        db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currSectionID", currSectionID);
+
+                        //save to database
+                        db.collection("Todolists").document(todolistID)
+                                .collection("Sections").document(secID).set(sec);
+
+                        //update current section ID
+                        db.collection("Todolists").document(todolistID)
+                                .collection("Data").document("Data")
+                                .update("currSectionID", currSectionID);
                         updateRecycleView();
-                        SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                        SharedPreferences prefs = getActivity()
+                                .getSharedPreferences("user_details", Context.MODE_PRIVATE);
                         String userName = prefs.getString("pref_username", null);
-                        ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "CreateSection", sectionName);
-                        db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+                        //add changes log
+                        ChangesLog changesLog =
+                                new ChangesLog(Timestamp.now(), userName, "CreateSection", sectionName);
+                        db.collection("Todolists").document(todolistID)
+                                .collection("ChangesLog").add(changesLog);
                         dialog.dismiss();
                     }
                 });
@@ -378,7 +399,16 @@ public class TodoListDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String editName = dialogEditName.getText().toString();
+                if (editName.isEmpty()){
+                    dialogEditName.setError("Field is required.");
+                    return;
+                }
+
                 String editDesc = dialogEditDesc.getText().toString();
+                if (editDesc.isEmpty()){
+                    dialogEditDesc.setError("Field is required.");
+                    return;
+                }
                 Map<String, Object> data = new HashMap<>();
                 data.put("name", editName);
                 data.put("desc", editDesc);

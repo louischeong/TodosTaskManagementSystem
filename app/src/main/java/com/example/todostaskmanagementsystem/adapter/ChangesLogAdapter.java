@@ -83,12 +83,9 @@ public class ChangesLogAdapter extends RecyclerView.Adapter<ChangesLogAdapter.My
                 appendTextWithColor(builder, action, R.color.dark_gray_text);
                 break;
             case "EditSection":
-                action = " has edited the Section: ";
+                action = " has updated the Section details: ";
                 appendTextWithColor(builder, action, R.color.dark_gray_text);
                 appendTextWithColor(builder, changesLog.getParentName(), R.color.primary_blue);
-                action = " name to Section: ";
-                appendTextWithColor(builder, action, R.color.dark_gray_text);
-                appendTextWithColor(builder, changesLog.getChildName(), R.color.primary_blue);
                 break;
             case "EditTask":
                 action = " has updated the Task: ";

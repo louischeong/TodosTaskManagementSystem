@@ -61,6 +61,7 @@ public class TaskDetailsFragment extends Fragment {
     private int reminderID;
     private CheckBox checkBoxRemindMe;
     private EditText remindMeDays;
+    private boolean isOwner;
 
     public TaskDetailsFragment() {
         // Required empty public constructor
@@ -75,6 +76,7 @@ public class TaskDetailsFragment extends Fragment {
             sectionID = bundle.getString("sectionID");
             todoTasksID = bundle.getString("todoTasksID");
             sectionName = bundle.getString("sectionName");
+            isOwner = bundle.getBoolean("isOwner");
         }
         SharedPreferences prefs = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
         userEmail = prefs.getString("pref_email", null);
@@ -166,7 +168,7 @@ public class TaskDetailsFragment extends Fragment {
                         isMarkAllowed = section.getAllowedMark().contains(finalRoleName);
                         isEditAllowed = section.getAllowedEdit().contains(finalRoleName);
 
-                        if (!isEditAllowed) {
+                        if (!isEditAllowed && !isOwner) {
 
                             disableEditFields();
 
@@ -211,28 +213,56 @@ public class TaskDetailsFragment extends Fragment {
                             saveBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    String taskName = editTaskName.getText().toString();
+                                    String taskDesc = editDesc.getText().toString();
+
+                                    if(taskName.isEmpty()){
+                                        editTaskName.setError("Field is required.");
+                                        return;
+                                    }
+                                    if(taskDesc.isEmpty()){
+                                        editDesc.setError("Field is required.");
+                                        return;
+                                    }
+                                    //Check if the reminder is on or off
                                     if (checkBoxRemindMe.isChecked()) {
                                         EditText remindMeDays = view.findViewById(R.id.remindMe_days);
+                                        //validations
                                         if (remindMeDays.getText().toString() == null) {
-                                            Toast.makeText(getActivity(), "Please set the reminder days.", Toast.LENGTH_SHORT).show();
+                                            remindMeDays.setError("Please set the reminder days.");
                                             return;
                                         }
-
                                         int days = Integer.parseInt(remindMeDays.getText().toString());
                                         if (!(days > 0 && days < 4)) {
-                                            Toast.makeText(getActivity(), "The remind me days should be in between 1 to 3 only", Toast.LENGTH_SHORT).show();
+                                            remindMeDays.setError(
+                                                    "The remind me days should be in between 1 to 3 only");
                                             return;
                                         }
+                                        //save reminder
                                         Reminder reminder = new Reminder(reminderID, todolistID, sectionID, todoTasksID, days);
                                         db.collection("Reminders").document(String.valueOf(reminderID)).set(reminder);
                                     } else {
+                                        //delete reminder
                                         db.collection("Reminders").document(String.valueOf(reminderID)).delete();
                                     }
-                                    TodoTask todoTask = new TodoTask(todoTasksID, editTaskName.getText().toString(), editDesc.getText().toString(), editDueDate.getText().toString(), checkBoxComplete.isChecked(), reminderID);
-                                    db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(todoTasksID).set(todoTask);
+
+                                    //create task object
+                                    TodoTask todoTask = new TodoTask(todoTasksID, taskName, taskDesc,
+                                            editDueDate.getText().toString(), checkBoxComplete.isChecked(), reminderID);
+
+                                    //update task to database
+                                    db.collection("Todolists").document(todolistID)
+                                            .collection("Sections").document(sectionID)
+                                            .collection("TodoTasks").document(todoTasksID)
+                                            .set(todoTask);
+
                                     Toast.makeText(getActivity(), "Task Updated Successfully", Toast.LENGTH_SHORT).show();
-                                    ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditTask", sectionName, editTaskName.getText().toString());
-                                    db.collection("Todolists").document(todolistID).collection("ChangesLog").add(changesLog);
+
+                                    //create changes log and save to database
+                                    ChangesLog changesLog = new ChangesLog(Timestamp.now(), userName, "EditTask",
+                                            sectionName, editTaskName.getText().toString());
+                                    db.collection("Todolists").document(todolistID)
+                                            .collection("ChangesLog").add(changesLog);
                                     getActivity().onBackPressed();
                                 }
                             });

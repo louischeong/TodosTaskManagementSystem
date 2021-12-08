@@ -12,14 +12,11 @@ public class Notification {
     private List<String> recipientEmails;
 
     public Notification() {
-        this.todolistID = null;
-        this.todolistTitle = null;
-        this.owner = null;
-        this.dateTime = null;
-        this.recipientEmails = null;
+
     }
 
-    public Notification(String todolistID, String todolistTitle, String owner, Timestamp dateTime, List<String> recipientEmails) {
+    public Notification(String todolistID, String todolistTitle,
+                        String owner, Timestamp dateTime, List<String> recipientEmails) {
         this.todolistID = todolistID;
         this.todolistTitle = todolistTitle;
         this.owner = owner;

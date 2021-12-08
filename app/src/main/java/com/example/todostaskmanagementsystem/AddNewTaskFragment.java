@@ -120,56 +120,99 @@ public class AddNewTaskFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EditText editTextName = view.findViewById(R.id.new_task_name);
+                EditText editTextDesc = view.findViewById(R.id.new_task_desc);
+                if (editTextName.getText().toString().isEmpty()) {
+                    editTextName.setError("Name of the task is required.");
+                    return;
+                }
+                if (editTextName.getText().toString().isEmpty()) {
+                    editTextName.setError("Description of the task is required.");
+                    return;
+                }
 
                 if (dueDate.getText().toString().equals("--/--/--")) {
-                    Toast.makeText(getActivity(), "Please set the due date for the task", Toast.LENGTH_SHORT).show();
+                    dueDate.setError("Due Date of the task is required.");
                     return;
                 }
                 if (checkBox.isChecked()) {
                     if (remindMeDays.getText().toString() == null) {
-                        Toast.makeText(getActivity(), "Please set the reminder days.", Toast.LENGTH_SHORT).show();
+                        remindMeDays.setError("Please set the reminder days.");
                         return;
                     }
 
                     int days = Integer.parseInt(remindMeDays.getText().toString());
                     if (!(days > 0 && days < 4)) {
-                        Toast.makeText(getActivity(), "The remind me days should be in between 1 to 3 only", Toast.LENGTH_SHORT).show();
+                        remindMeDays.setError("The remind me days should be in between 1 to 3 only");
                         return;
                     }
                 }
 
-                db.collection("Todolists").document(todolistID).collection("Data").document("Data").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                db.collection("Todolists").document(todolistID)
+                        .collection("Data").document("Data")
+                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //get current task id
                         int currTaskID = Integer.parseInt(documentSnapshot.get("currTaskID").toString()) + 1;
                         String taskID = "T" + currTaskID;
                         EditText editTextName = view.findViewById(R.id.new_task_name);
                         EditText editTextDesc = view.findViewById(R.id.new_task_desc);
 
-
-                        //Create reminders
+                        //Check if the reminder for this task is on
                         if (checkBox.isChecked()) {
-                            db.collection("Data").document("ReminderID").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            //get current reminder id
+                            db.collection("Data").document("ReminderID")
+                                    .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    //get current reminder id and increase by 1
                                     String id = documentSnapshot.get("currReminderID").toString();
                                     int currID = Integer.parseInt(id) + 1;
                                     int days = Integer.parseInt(remindMeDays.getText().toString());
-                                    Reminder reminder = new Reminder(currID, todolistID, sectionID, taskID, days);
-                                    db.collection("Data").document("ReminderID").update("currReminderID", currID);
-                                    db.collection("Reminders").document(String.valueOf(currID)).set(reminder);
-                                    TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString(), currID);
-                                    db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
-                                    db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
+
+                                    //create reminder object
+                                    Reminder reminder =
+                                            new Reminder(currID, todolistID, sectionID, taskID, days);
+
+                                    //update current reminder id
+                                    db.collection("Data").document("ReminderID")
+                                            .update("currReminderID", currID);
+
+                                    //save the reminder to the database
+                                    db.collection("Reminders").document(String.valueOf(currID))
+                                            .set(reminder);
+
+                                    //create task object
+                                    TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(),
+                                            editTextDesc.getText().toString(), dueDate.getText().toString(), currID);
+                                    //save task to database
+                                    db.collection("Todolists").document(todolistID)
+                                            .collection("Sections").document(sectionID)
+                                            .collection("TodoTasks").document(taskID).set(todoTask);
+                                    //update current task id
+                                    db.collection("Todolists").document(todolistID)
+                                            .collection("Data").document("Data")
+                                            .update("currTaskID", currTaskID);
+
                                     Toast.makeText(getActivity(), "Successfully Created Task", Toast.LENGTH_SHORT).show();
                                     addChangesLog(editTextName.getText().toString());
                                     requireActivity().onBackPressed();
                                 }
                             });
                         } else {
-                            TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(), editTextDesc.getText().toString(), dueDate.getText().toString());
-                            db.collection("Todolists").document(todolistID).collection("Sections").document(sectionID).collection("TodoTasks").document(taskID).set(todoTask);
-                            db.collection("Todolists").document(todolistID).collection("Data").document("Data").update("currTaskID", currTaskID);
+                            //create task object
+                            TodoTask todoTask = new TodoTask(taskID, editTextName.getText().toString(),
+                                    editTextDesc.getText().toString(), dueDate.getText().toString());
+                            //save task to database
+                            db.collection("Todolists").document(todolistID)
+                                    .collection("Sections").document(sectionID)
+                                    .collection("TodoTasks").document(taskID).set(todoTask);
+                            //update current task id
+                            db.collection("Todolists").document(todolistID)
+                                    .collection("Data").document("Data")
+                                    .update("currTaskID", currTaskID);
+
                             Toast.makeText(getActivity(), "Successfully Created Task", Toast.LENGTH_SHORT).show();
                             addChangesLog(editTextName.getText().toString());
                             requireActivity().onBackPressed();
