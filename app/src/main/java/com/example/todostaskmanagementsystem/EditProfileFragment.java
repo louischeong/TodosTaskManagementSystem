@@ -218,19 +218,36 @@ public class EditProfileFragment extends Fragment {
                 String newPass = dialogNewPass.getText().toString().trim();
                 String conNewPass = dialogConNewPass.getText().toString().trim();
 
+                if (TextUtils.isEmpty(oldPass)){
+                    dialogOldPass.setError("Please enter old password.");
+                }
+
+                if (TextUtils.isEmpty(newPass)){
+                    dialogNewPass.setError("Please enter new password.");
+                }
+
+                if (TextUtils.isEmpty(conNewPass)){
+                    dialogConNewPass.setError("Please confirm new password.");
+                }
+
                 db.collection("Users").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
                         String pass = AESCrypt.decrypt(user.getPassword());
-                        if (oldPass.equals(pass) && newPass.equals(conNewPass)) {
-                            DocumentReference docRef = db.collection("Users").document(email);
-                            docRef.update("password", AESCrypt.encrypt(newPass));
-                            dialog.dismiss();
-                            Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
+                        if (newPass.equals(conNewPass)) {
+                            if (oldPass.equals(pass)) {
+                                DocumentReference docRef = db.collection("Users").document(email);
+                                docRef.update("password", AESCrypt.encrypt(newPass));
+                                dialog.dismiss();
+                                Toast.makeText(getActivity(), "Successfully updated password!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Incorrect password!", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            Toast.makeText(getActivity(), "Incorrect password!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Password and confirm password is not match.", Toast.LENGTH_SHORT).show();
                         }
+
                     }
                 });
 
