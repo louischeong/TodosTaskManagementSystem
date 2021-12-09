@@ -110,12 +110,16 @@ public class PasswordRecoveryFragment extends Fragment {
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //TODO Validation For Email's EditText and OTP EditText
+                String otp = editTextOTP.getText().toString().trim();
                 String email = editTextEmail.getText().toString().trim();
 
                 if(TextUtils.isEmpty(email)){
                     editTextEmail.setError("Email is required!");
+                    return;
+                }
+
+                if(TextUtils.isEmpty(otp)){
+                    editTextOTP.setError("OTP is required!");
                     return;
                 }
 
@@ -124,7 +128,7 @@ public class PasswordRecoveryFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
                             String OTP = (String) documentSnapshot.get("OTP");
-                            
+
                             if(TextUtils.isEmpty(OTP)){
                                 editTextOTP.setError("OTP is required!");
                                 return;
