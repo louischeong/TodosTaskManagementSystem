@@ -116,6 +116,7 @@ public class PasswordRecoveryFragment extends Fragment {
 
                 if(TextUtils.isEmpty(email)){
                     editTextEmail.setError("Email is required!");
+                    return;
                 }
 
                 db.collection("OTP").document(email).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -123,7 +124,11 @@ public class PasswordRecoveryFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
                             String OTP = (String) documentSnapshot.get("OTP");
-
+                            
+                            if(TextUtils.isEmpty(OTP)){
+                                editTextOTP.setError("OTP is required!");
+                                return;
+                            }
                             if (OTP.equals(editTextOTP.getText().toString().trim())) {
                                 Bundle bundle = new Bundle();
                                 bundle.putString("email", email);
